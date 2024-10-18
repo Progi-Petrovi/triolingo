@@ -9,7 +9,7 @@ Open a terminal in the location where you want your project to be and run `git c
 
 ## Creating a branch
 
-So, you're set up the project and accepted a JIRA/Trello/whatever ticket for adding a new feature and want to start writting code.
+So, you've set up the project and accepted a JIRA/Trello/whatever ticket for adding a new feature and want to start writting code.
 Not so fast! First, you're going to want to create a new branch for that feature.
 Branch names for features should be formatted "[CATEGORY]/[TICKET]-[CREATOR_NAME]".
 
