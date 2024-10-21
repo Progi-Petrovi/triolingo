@@ -46,7 +46,7 @@ export default function Login() {
         </div>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
-          <Link to={PathConstants.SIGNUP} className="underline">
+          <Link to={PathConstants.REGISTER} className="underline">
             Sign up
           </Link>
         </div>
