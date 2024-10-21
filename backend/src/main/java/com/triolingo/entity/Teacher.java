@@ -34,7 +34,7 @@ public class Teacher {
     @NotEmpty
     private List<String> languages;
     @NotNull
-    private int yearsOfExperience;
+    private Integer yearsOfExperience;
     @ElementCollection
     @NotEmpty
     private List<String> qualifications;
