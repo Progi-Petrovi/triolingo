@@ -1,6 +1,6 @@
 package com.triolingo.repository;
 
-import com.triolingo.entity.Teacher;
+import com.triolingo.entity.teacher.Teacher;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,6 +1,6 @@
 package com.triolingo.db;
 
-import com.triolingo.entity.Teacher;
+import com.triolingo.entity.teacher.Teacher;
 import com.triolingo.repository.TeacherRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +18,11 @@ public class DatabaseTest {
     @Test
     public void ShouldSaveTeacher() {
         Teacher teacher = new Teacher();
-        teacher.setName("John Doe");
+        teacher.setFullName("John Doe");
 
         Teacher savedTeacher = teacherRepository.save(teacher);
 
         assertThat(savedTeacher.getId()).isNotNull();
-        assertThat(savedTeacher.getName()).isEqualTo("John Doe");
+        assertThat(savedTeacher.getFullName()).isEqualTo("John Doe");
     }
 }
