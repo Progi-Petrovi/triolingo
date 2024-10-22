@@ -1,6 +1,6 @@
 package com.triolingo.db;
 
-import com.triolingo.entity.teacher.Teacher;
+import com.triolingo.entity.Teacher;
 import com.triolingo.repository.TeacherRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

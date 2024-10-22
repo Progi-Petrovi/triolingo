@@ -1,4 +1,4 @@
-package com.triolingo.entity.teacher;
+package com.triolingo.entity;
 
 public enum TeachingStyle {
     GROUP,
