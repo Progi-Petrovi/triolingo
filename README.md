@@ -1,7 +1,8 @@
 # Triolingo
+
 Student project for FER Software Engineering.
 
-## Setup
+## Setup - development enviroment
 
 ### Frontend
 
@@ -25,8 +26,34 @@ To start the Vite app and test whether you've done everything correctly, run
 npm run dev
 ```
 
+## Setup - production enviroment
+
+### Installing docker
+
+Refer to https://docs.docker.com/engine/install to install the docker engine.
+
+### Building the images
+
+While in the project root, run
+
+```bash
+docker build -f /backend/deploy/Dockerfile -t triolingo-backend
+docker build -f /frontend/deploy/Dockerfile -t triolingo-frontend
+```
+
+### Running the containers
+
+In any terminal, run
+
+```bash
+docker run -p 5000:80 triolingo-backend
+docker run -p 80:80 triolingo-frontend
+```
+
 ## Contributing
+
 Please read [CONTRIBUTING.md](https://github.com/LeonardoSimunovic/Triolingo/blob/main/CONTRIBUTING.md) before contributing to this project.
 
 ## License
+
 This project is protected under the [MIT license](https://github.com/LeonardoSimunovic/Triolingo/blob/main/LICENSE).
