@@ -13,13 +13,15 @@ So, you've set up the project and accepted a JIRA/Trello/whatever ticket for add
 Not so fast! First, you're going to want to create a new branch for that feature.
 Branch names for features should be formatted "[CATEGORY]/[TICKET]-[CREATOR_NAME]".
 
-- CATEGORY is always "feature" when creating features. "bugfix" and "release" are the other possible categories.
+- CATEGORY is always "feature" when creating features. "patch" and "release" are the other possible categories.
 - TICKET is the id of the ticket you're working on, there should be one visibile on your ticket in JIRA/Trello/whatever.
 - CREATOR_NAME is usually just the first letter of your name and then your surname.
   For Zaphod Beelzebub that would be "zbeelzebub".
 
 To create a branch run `git branch [BRANCH_NAME]`.
 To work within the newly created branch run `git checkout [BRANCH_NAME]`
+
+Note: if you are doing something so small, you believe a ticket should not apply (something like editing the README.md file), use "patch/[SHORT_DESCRIPTION]-[CREATOR_NAME]".
 
 ## Commiting
 
