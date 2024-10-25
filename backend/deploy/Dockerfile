@@ -5,7 +5,7 @@ ADD ./backend .
 RUN mvn package
 
 #deploy with java 21
-FROM bellsoft/liberica-openjdk-alpine:21 AS deployment
+FROM bellsoft/liberica-openjdk-alpine:21 AS deploy
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
