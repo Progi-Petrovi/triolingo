@@ -1,4 +1,4 @@
-package com.triolingo.entity;
+package com.triolingo.entity.language;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
