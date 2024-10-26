@@ -36,20 +36,12 @@ Refer to https://maven.apache.org/install.html for installing Maven.
 
 Refer to https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html for installing the JDK.
 
-#### Packaging project
+#### Running project
 
-From the project root, run
-
-```sh
-mvn package
-```
-
-#### Running the project
-
-From the project root, run
+From the `/backend` directory, run
 
 ```sh
-java -jar target/*.jar
+mvn spring-boot:run
 ```
 
 ## Setup - production enviroment
