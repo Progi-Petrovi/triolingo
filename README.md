@@ -68,8 +68,8 @@ docker run -p 80:80 triolingo-frontend
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://github.com/LeonardoSimunovic/Triolingo/blob/main/CONTRIBUTING.md) before contributing to this project.
+Please read [CONTRIBUTING.md](https://github.com/Progi-Petrovi/Triolingo/blob/main/CONTRIBUTING.md) before contributing to this project.
 
 ## License
 
-This project is protected under the [MIT license](https://github.com/LeonardoSimunovic/Triolingo/blob/main/LICENSE).
+This project is protected under the [MIT license](https://github.com/Progi-Petrovi/Triolingo/blob/main/LICENSE).
