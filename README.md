@@ -28,6 +28,30 @@ To start the Vite app and test whether you've done everything correctly, run
 npm run dev
 ```
 
+### Backend
+
+#### Installing Maven and Java 21 JDK
+
+Refer to https://maven.apache.org/install.html for installing Maven.
+
+Refer to https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html for installing the JDK.
+
+#### Packaging project
+
+From the project root, run
+
+```sh
+mvn package
+```
+
+#### Running the project
+
+From the project root, run
+
+```sh
+java -jar target/*.jar
+```
+
 ## Setup - production enviroment
 
 ### Installing docker
