@@ -1,5 +1,6 @@
 package com.triolingo.entity;
 
+import com.triolingo.entity.language.Language;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
