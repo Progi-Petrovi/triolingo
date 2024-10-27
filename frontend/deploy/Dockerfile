@@ -9,5 +9,6 @@ RUN npm run build
 FROM nginx AS deploy
 WORKDIR /app
 
+EXPOSE 80
 COPY --from=build /app/deploy/nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /app/dist /app
