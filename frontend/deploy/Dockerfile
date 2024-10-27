@@ -1,7 +1,7 @@
 #build with TS and Vite
 FROM node:18-alpine AS build
 WORKDIR /app
-ADD ./frontend .
+ADD . .
 RUN npm i
 RUN npm run build
 
