@@ -1,7 +1,7 @@
 #build with maven
 FROM maven:latest AS build
 WORKDIR /app
-ADD . .
+ADD ./backend .
 RUN mvn package
 
 #deploy with java 21

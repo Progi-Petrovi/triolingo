@@ -3,16 +3,16 @@ version: '3'
 services:
   backend:
     build:
-      context: ./backend
-      dockerfile: deploy/Dockerfile
+      context: .
+      dockerfile: backend/deploy/Dockerfile
     image: triolingo-backend
     ports:
       - "5000:80"
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: deploy/Dockerfile
+      context: .
+      dockerfile: frontend/deploy/Dockerfile
     image: triolingo-frontend
     ports:
       - "80:80"
