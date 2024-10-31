@@ -63,7 +63,7 @@ export default function StudentRegister() {
           </TabsList>
           <TabsContent
             value={TabsTriggerValues.ACCOUNT}
-            className="flex flex-col gap-2 w-full my-10"
+            className="flex flex-col gap-2 w-full"
           >
             <p className="font-extrabold text-3xl my-4">Basic information</p>
             <FormField
@@ -135,16 +135,25 @@ export default function StudentRegister() {
             <div className="flex justify-end my-4">
               <Button
                 type="button"
-                onClick={() => {
-                  setTab(TabsTriggerValues.LANGUAGES);
-                  console.log(tab);
-                }}
+                onClick={() => setTab(TabsTriggerValues.LANGUAGES)}
               >
                 Next
               </Button>
             </div>
           </TabsContent>
-          <TabsContent value={TabsTriggerValues.LANGUAGES} className="w-full">
+          <TabsContent
+            value={TabsTriggerValues.LANGUAGES}
+            className="flex flex-col gap-2 w-full"
+          >
+            <p className="font-extrabold text-2xl my-4">
+              Languages you would like to learn:
+            </p>
+            <div className="flex w-full justify-center">
+              <Button type="button" className="bg-red-400">
+                + Add language
+              </Button>
+            </div>
+
             <div className="flex justify-between w-full">
               <Button
                 type="button"
@@ -160,7 +169,10 @@ export default function StudentRegister() {
               </Button>
             </div>
           </TabsContent>
-          <TabsContent value={TabsTriggerValues.ADDITIONAL} className="w-full">
+          <TabsContent
+            value={TabsTriggerValues.ADDITIONAL}
+            className="flex flex-col gap-2 w-full"
+          >
             <div className="flex justify-between w-full">
               <Button
                 type="button"
