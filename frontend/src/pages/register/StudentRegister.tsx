@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { StudentRegistration } from "@/types/studentRegistration";
+import { useToast } from "@/hooks/use-toast";
 
 const TabsTriggerValues = {
   ACCOUNT: "account",
@@ -40,7 +41,7 @@ const formSchema = z.object({
   password: z.string().min(8).max(250),
   repeatPassword: z.string().min(8).max(250),
   teachingStyle: z.enum(["Individual", "Group", "Flexible"]),
-  goals: z.string().max(250, {
+  goals: z.string().min(0).max(250, {
     message: "Can't be over 250 characters, keep it nice and short :)",
   }),
 });
@@ -48,7 +49,7 @@ const formSchema = z.object({
 export default function StudentRegister() {
   //TODO: get languages from backend
   const allLanguages = ["English", "Spanish", "French", "Croatian"];
-  const [tab, setTab] = useState(TabsTriggerValues.ACCOUNT);
+  const { toast } = useToast();
   const [learningLanguages, setLearningLanguages] = useState<LanguageLevel[]>(
     []
   );
@@ -87,6 +88,15 @@ export default function StudentRegister() {
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    if (learningLanguages.length === 0) {
+      toast({
+        title: "You need to pick atleast 1 language.",
+        description: "That's why we are here :)",
+      });
+
+      return;
+    }
+
     const totalValues: StudentRegistration = {
       ...values,
       languages: learningLanguages,
@@ -143,8 +153,7 @@ export default function StudentRegister() {
         className="h-[50vh] w-[50vw] relative"
       >
         <Tabs
-          value={tab}
-          onValueChange={setTab}
+          defaultValue={TabsTriggerValues.ACCOUNT}
           className="flex flex-col justify-center items-center"
         >
           <TabsList className="grid w-full grid-cols-3">
@@ -228,14 +237,6 @@ export default function StudentRegister() {
                 )}
               />
             </div>
-            <div className="absolute bottom-0 right-0">
-              <Button
-                type="button"
-                onClick={() => setTab(TabsTriggerValues.LANGUAGES)}
-              >
-                Next
-              </Button>
-            </div>
           </TabsContent>
 
           <TabsContent
@@ -254,22 +255,6 @@ export default function StudentRegister() {
               )}
             />
             {showPickedLanguages()}
-            <div className="absolute bottom-0 left-0">
-              <Button
-                type="button"
-                onClick={() => setTab(TabsTriggerValues.ACCOUNT)}
-              >
-                Previous
-              </Button>
-            </div>
-            <div className="absolute bottom-0 right-0">
-              <Button
-                type="button"
-                onClick={() => setTab(TabsTriggerValues.ADDITIONAL)}
-              >
-                Next
-              </Button>
-            </div>
           </TabsContent>
 
           <TabsContent
@@ -321,18 +306,8 @@ export default function StudentRegister() {
                 </FormItem>
               )}
             />
-            <div className="absolute bottom-0 left-0">
-              <Button
-                type="button"
-                onClick={() => setTab(TabsTriggerValues.LANGUAGES)}
-              >
-                Previous
-              </Button>
-            </div>
-            <div className="absolute bottom-0 right-0">
-              <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                Register
-              </Button>
+            <div className="flex justify-end">
+              <Button type="submit">Register</Button>
             </div>
           </TabsContent>
         </Tabs>
