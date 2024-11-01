@@ -121,9 +121,10 @@ export default function LanguageDialog({
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={() =>
-                    addLanguage(language, isStudent ? level : undefined)
-                  }
+                  onClick={() => {
+                    addLanguage(language, isStudent ? level : undefined);
+                    setLanguage("");
+                  }}
                 >
                   Add
                 </Button>

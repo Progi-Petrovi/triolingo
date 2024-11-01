@@ -35,16 +35,27 @@ const TabsTriggerValues = {
   ADDITIONAL: "additional",
 };
 
-const formSchema = z.object({
-  fullName: z.string().min(2).max(250),
-  email: z.string().email(),
-  password: z.string().min(8).max(250),
-  repeatPassword: z.string().min(8).max(250),
-  teachingStyle: z.enum(["Individual", "Group", "Flexible"]),
-  goals: z.string().min(0).max(250, {
-    message: "Can't be over 250 characters, keep it nice and short :)",
-  }),
-});
+const formSchema = z
+  .object({
+    fullName: z.string().min(2).max(250),
+    email: z.string().email(),
+    password: z.string().min(8).max(250),
+    confirmPassword: z.string().min(8).max(250),
+    teachingStyle: z.enum(["Individual", "Group", "Flexible"]),
+    goals: z.string().min(0).max(250, {
+      message: "Can't be over 250 characters, keep it nice and short :)",
+    }),
+    isVerified: z.boolean().optional(),
+  })
+  .superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        code: "custom",
+        message: "The passwords did not match",
+        path: ["confirmPassword"],
+      });
+    }
+  });
 
 export default function StudentRegister() {
   //TODO: get languages from backend
@@ -60,12 +71,13 @@ export default function StudentRegister() {
       fullName: "",
       email: "",
       password: "",
-      repeatPassword: "",
+      confirmPassword: "",
+      goals: "",
     },
   });
 
   function addLanguage(language: string, level?: string) {
-    if (level)
+    if (language && level)
       setLearningLanguages([...learningLanguages, { language, level }]);
   }
 
@@ -221,10 +233,10 @@ export default function StudentRegister() {
               />
               <FormField
                 control={form.control}
-                name="repeatPassword"
+                name="confirmPassword"
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <FormLabel>Repeat password</FormLabel>
+                    <FormLabel>Confirm password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
