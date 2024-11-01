@@ -10,9 +10,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import LanguageDialog from "./LanguageDialog";
+import { LanguageLevel } from "@/types/languageLevel";
 
 const TabsTriggerValues = {
   ACCOUNT: "account",
@@ -29,6 +32,9 @@ const formSchema = z.object({
 
 export default function StudentRegister() {
   const [tab, setTab] = useState(TabsTriggerValues.ACCOUNT);
+  const [learningLanguages, setLearningLanguages] = useState<LanguageLevel[]>(
+    []
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,6 +48,11 @@ export default function StudentRegister() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+  }
+
+  function addLanguage(language: string, level?: string) {
+    if (level)
+      setLearningLanguages([...learningLanguages, { language, level }]);
   }
 
   return (
@@ -148,11 +159,8 @@ export default function StudentRegister() {
             <p className="font-extrabold text-2xl my-4">
               Languages you would like to learn:
             </p>
-            <div className="flex w-full justify-center">
-              <Button type="button" className="bg-red-400">
-                + Add language
-              </Button>
-            </div>
+
+            <LanguageDialog addLanguage={addLanguage} isStudent={true} />
 
             <div className="flex justify-between w-full">
               <Button
