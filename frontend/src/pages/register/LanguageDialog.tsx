@@ -35,7 +35,7 @@ export default function LanguageDialog({
   pickedLanguages,
 }: LanguageDialogType) {
   const [language, setLanguage] = useState("");
-  const [level, setLevel] = useState("");
+  const [level, setLevel] = useState("Beginner");
   const { toast } = useToast();
 
   function renderAvailableLanguages() {
