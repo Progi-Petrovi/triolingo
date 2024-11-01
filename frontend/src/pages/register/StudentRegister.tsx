@@ -63,12 +63,24 @@ export default function StudentRegister() {
   function addLanguage(language: string, level?: string) {
     if (level)
       setLearningLanguages([...learningLanguages, { language, level }]);
+    console.log(learningLanguages);
   }
 
   function removeLanguage(learningLanguage: LanguageLevel) {
     const newLanguages = learningLanguages.filter(
       (lang) => lang != learningLanguage
     );
+    setLearningLanguages(newLanguages);
+  }
+
+  function changeKnowledgeLevel(
+    learningLanguage: LanguageLevel,
+    level: string
+  ) {
+    const newLanguages = learningLanguages.map((lang) =>
+      lang === learningLanguage ? { language: lang.language, level } : lang
+    );
+
     setLearningLanguages(newLanguages);
   }
 
@@ -84,7 +96,9 @@ export default function StudentRegister() {
             >
               <p>{lang.language}</p>
               <div>
-                <Select>
+                <Select
+                  onValueChange={(val) => changeKnowledgeLevel(lang, val)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder={lang.level} />
                   </SelectTrigger>
