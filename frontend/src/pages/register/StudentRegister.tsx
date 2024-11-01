@@ -23,7 +23,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectLabel,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 const TabsTriggerValues = {
   ACCOUNT: "account",
@@ -36,6 +38,10 @@ const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(250),
   repeatPassword: z.string().min(8).max(250),
+  teachingStyle: z.enum(["Individual", "Group", "Flexible"]),
+  goals: z.string().max(250, {
+    message: "Can't be over 250 characters, keep it nice and short :)",
+  }),
 });
 
 export default function StudentRegister() {
@@ -141,6 +147,7 @@ export default function StudentRegister() {
               Additional
             </TabsTrigger>
           </TabsList>
+
           <TabsContent
             value={TabsTriggerValues.ACCOUNT}
             className="flex flex-col gap-2 w-full"
@@ -221,6 +228,7 @@ export default function StudentRegister() {
               </Button>
             </div>
           </TabsContent>
+
           <TabsContent
             value={TabsTriggerValues.LANGUAGES}
             className="flex flex-col gap-2 w-full"
@@ -228,7 +236,6 @@ export default function StudentRegister() {
             <p className="font-extrabold text-2xl my-4">
               Languages you would like to learn:
             </p>
-
             <LanguageDialog
               addLanguage={addLanguage}
               isStudent={true}
@@ -237,9 +244,7 @@ export default function StudentRegister() {
                 ({ language }) => language
               )}
             />
-
             {showPickedLanguages()}
-
             <div className="flex justify-between w-full">
               <Button
                 type="button"
@@ -255,10 +260,56 @@ export default function StudentRegister() {
               </Button>
             </div>
           </TabsContent>
+
           <TabsContent
             value={TabsTriggerValues.ADDITIONAL}
             className="flex flex-col gap-2 w-full"
           >
+            <p className="font-extrabold text-2xl my-4">
+              We'd love to hear about your preferred teaching style and your
+              goals!
+            </p>
+            <FormField
+              control={form.control}
+              name="teachingStyle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Preffered Teaching Style</FormLabel>
+                  <Select onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Teaching style" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Teaching Style</SelectLabel>
+                        <SelectItem value="Individual">Individual</SelectItem>
+                        <SelectItem value="Group">Group</SelectItem>
+                        <SelectItem value="Flexible">Flexible</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="goals"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Goals</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="I want to speak proficient Spanish!"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="flex justify-between w-full">
               <Button
                 type="button"
