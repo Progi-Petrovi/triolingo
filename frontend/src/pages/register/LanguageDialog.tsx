@@ -23,19 +23,25 @@ import { useState } from "react";
 type LanguageDialogType = {
   addLanguage: (language: string, level?: string) => void;
   isStudent: boolean;
+  allLanguages: string[];
+  pickedLanguages: string[];
 };
 
 export default function LanguageDialog({
   addLanguage,
   isStudent,
+  allLanguages,
+  pickedLanguages,
 }: LanguageDialogType) {
   const [language, setLanguage] = useState("");
   const [level, setLevel] = useState("");
 
-  //TODO: get list of languages from backend
   function renderAvailableLanguages() {
-    const tempLanguages = ["English", "Spanish", "French", "Croatian"];
-    return tempLanguages.map((val) => (
+    const leftover = allLanguages.filter(
+      (lang) => !pickedLanguages.includes(lang)
+    );
+
+    return leftover.map((val) => (
       <SelectItem key={val} value={val}>
         {val}
       </SelectItem>
@@ -53,9 +59,9 @@ export default function LanguageDialog({
         <SelectContent>
           <SelectGroup>
             <SelectLabel>Level</SelectLabel>
-            <SelectItem value="beginner">Beginner</SelectItem>
-            <SelectItem value="intermediate">Intermediate</SelectItem>
-            <SelectItem value="advanced">Advanced</SelectItem>
+            <SelectItem value="Beginner">Beginner</SelectItem>
+            <SelectItem value="Intermediate">Intermediate</SelectItem>
+            <SelectItem value="Advanced">Advanced</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>

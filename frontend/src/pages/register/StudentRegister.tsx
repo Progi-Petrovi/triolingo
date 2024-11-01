@@ -16,6 +16,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import LanguageDialog from "./LanguageDialog";
 import { LanguageLevel } from "@/types/languageLevel";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const TabsTriggerValues = {
   ACCOUNT: "account",
@@ -31,6 +39,8 @@ const formSchema = z.object({
 });
 
 export default function StudentRegister() {
+  //TODO: get languages from backend
+  const allLanguages = ["English", "Spanish", "French", "Croatian"];
   const [tab, setTab] = useState(TabsTriggerValues.ACCOUNT);
   const [learningLanguages, setLearningLanguages] = useState<LanguageLevel[]>(
     []
@@ -53,6 +63,52 @@ export default function StudentRegister() {
   function addLanguage(language: string, level?: string) {
     if (level)
       setLearningLanguages([...learningLanguages, { language, level }]);
+  }
+
+  function removeLanguage(learningLanguage: LanguageLevel) {
+    const newLanguages = learningLanguages.filter(
+      (lang) => lang != learningLanguage
+    );
+    setLearningLanguages(newLanguages);
+  }
+
+  function showPickedLanguages() {
+    if (learningLanguages.length == 0) return null;
+    return (
+      <div className="p-8 m-1 border">
+        {learningLanguages.map((lang) => {
+          return (
+            <div
+              key={lang.language}
+              className="flex justify-between items-center p-2"
+            >
+              <p>{lang.language}</p>
+              <div>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder={lang.level} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="Beginner">Beginner</SelectItem>
+                      <SelectItem value="Intermediate">Intermediate</SelectItem>
+                      <SelectItem value="Advanced">Advanced</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => removeLanguage(lang)}
+              >
+                Delete
+              </Button>
+            </div>
+          );
+        })}
+      </div>
+    );
   }
 
   return (
@@ -160,7 +216,16 @@ export default function StudentRegister() {
               Languages you would like to learn:
             </p>
 
-            <LanguageDialog addLanguage={addLanguage} isStudent={true} />
+            <LanguageDialog
+              addLanguage={addLanguage}
+              isStudent={true}
+              allLanguages={allLanguages}
+              pickedLanguages={learningLanguages.map(
+                ({ language }) => language
+              )}
+            />
+
+            {showPickedLanguages()}
 
             <div className="flex justify-between w-full">
               <Button
