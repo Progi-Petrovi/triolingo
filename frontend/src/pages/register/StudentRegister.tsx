@@ -63,7 +63,6 @@ export default function StudentRegister() {
   function addLanguage(language: string, level?: string) {
     if (level)
       setLearningLanguages([...learningLanguages, { language, level }]);
-    console.log(learningLanguages);
   }
 
   function removeLanguage(learningLanguage: LanguageLevel) {

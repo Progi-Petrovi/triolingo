@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 type LanguageDialogType = {
   addLanguage: (language: string, level?: string) => void;
@@ -35,6 +36,7 @@ export default function LanguageDialog({
 }: LanguageDialogType) {
   const [language, setLanguage] = useState("");
   const [level, setLevel] = useState("");
+  const { toast } = useToast();
 
   function renderAvailableLanguages() {
     const leftover = allLanguages.filter(
@@ -73,47 +75,62 @@ export default function LanguageDialog({
       <Dialog>
         <div className="flex w-full justify-center">
           <DialogTrigger asChild>
-            <Button type="button" variant="outline">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={(e) => {
+                if (pickedLanguages.length === allLanguages.length) {
+                  toast({
+                    title:
+                      "You already picked all available languages! Amazing!",
+                    description: "How are you human?",
+                  });
+                  e.preventDefault();
+                }
+              }}
+            >
               + Add a language
             </Button>
           </DialogTrigger>
         </div>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader className="p-2">
-            <DialogTitle>Choose Your Language</DialogTitle>
-            <DialogDescription>
-              Select the language you'd like to learn and tell us about your
-              knowledge level.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center space-x-2">
-            <Select onValueChange={setLanguage}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a language" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Languages</SelectLabel>
-                  {renderAvailableLanguages()}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            {showKnowledgeLevelSelect()}
-          </div>
-          <DialogFooter className="sm:justify-end">
-            <DialogClose asChild>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() =>
-                  addLanguage(language, isStudent ? level : undefined)
-                }
-              >
-                Add
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
+        {pickedLanguages.length !== allLanguages.length ? (
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader className="p-2">
+              <DialogTitle>Choose Your Language</DialogTitle>
+              <DialogDescription>
+                Select the language you'd like to learn and tell us about your
+                knowledge level.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center space-x-2">
+              <Select onValueChange={setLanguage}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Languages</SelectLabel>
+                    {renderAvailableLanguages()}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {showKnowledgeLevelSelect()}
+            </div>
+            <DialogFooter className="sm:justify-end">
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() =>
+                    addLanguage(language, isStudent ? level : undefined)
+                  }
+                >
+                  Add
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        ) : null}
       </Dialog>
     </>
   );
