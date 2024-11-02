@@ -126,7 +126,7 @@ export default function TeacherRegister() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="h-[50vh] w-[50vw] relative"
+        className="h-[100vh] p-8 md:h-[50vh] md:w-[50vw]"
       >
         <Tabs
           defaultValue={TabsValues.ACCOUNT}

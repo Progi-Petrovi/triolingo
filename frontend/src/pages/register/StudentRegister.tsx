@@ -165,7 +165,7 @@ export default function StudentRegister() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="h-[50vh] w-[50vw] relative"
+        className="h-[100vh] p-8 md:h-[50vh] md:w-[50vw]"
       >
         <Tabs
           defaultValue={TabsValues.ACCOUNT}
@@ -187,7 +187,6 @@ export default function StudentRegister() {
             value={TabsValues.ACCOUNT}
             className="flex flex-col gap-2 w-full"
           >
-            <p className="font-extrabold text-3xl my-4">Basic information</p>
             <BasicInfo form={form} />
           </TabsContent>
 
