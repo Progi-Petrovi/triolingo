@@ -60,6 +60,7 @@ export default function TeacherRegister() {
       confirmPassword: "",
       yearsOfExperience: 0,
       hourlyRate: 0,
+      qualifications: "",
       preferredTeachingStyle: PreferredTeachingStyle.FLEXIBLE,
     },
   });
