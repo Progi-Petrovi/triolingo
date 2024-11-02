@@ -23,7 +23,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectLabel,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { StudentRegistration } from "@/types/studentRegistration";
@@ -73,6 +72,7 @@ export default function StudentRegister() {
       password: "",
       confirmPassword: "",
       goals: "",
+      teachingStyle: "Flexible",
     },
   });
 
@@ -104,6 +104,7 @@ export default function StudentRegister() {
       toast({
         title: "You need to pick atleast 1 language.",
         description: "That's why we are here :)",
+        variant: "destructive",
       });
 
       return;
@@ -115,6 +116,14 @@ export default function StudentRegister() {
     };
 
     console.log(totalValues);
+  }
+
+  function onError() {
+    toast({
+      title: "Please fill out all of the mandatory fields",
+      description: "Fields marked with *",
+      variant: "destructive",
+    });
   }
 
   function showPickedLanguages() {
@@ -161,7 +170,7 @@ export default function StudentRegister() {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit, onError)}
         className="h-[50vh] w-[50vw] relative"
       >
         <Tabs
@@ -188,7 +197,7 @@ export default function StudentRegister() {
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>* Full Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Hrvoje Horvat" {...field} />
                   </FormControl>
@@ -201,7 +210,7 @@ export default function StudentRegister() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>* Email</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
@@ -219,7 +228,7 @@ export default function StudentRegister() {
                 name="password"
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>* Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -236,7 +245,7 @@ export default function StudentRegister() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <FormLabel>Confirm password</FormLabel>
+                    <FormLabel>* Confirm password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -282,16 +291,15 @@ export default function StudentRegister() {
               name="teachingStyle"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Preffered Teaching Style</FormLabel>
+                  <FormLabel>* Preffered Teaching Style</FormLabel>
                   <Select onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Teaching style" />
+                        <SelectValue placeholder={field.value} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectLabel>Teaching Style</SelectLabel>
                         <SelectItem value="Individual">Individual</SelectItem>
                         <SelectItem value="Group">Group</SelectItem>
                         <SelectItem value="Flexible">Flexible</SelectItem>
