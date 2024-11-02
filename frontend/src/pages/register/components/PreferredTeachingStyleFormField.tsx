@@ -28,7 +28,7 @@ export default function PreferredTeachingStyleFormField({
       name="preferredTeachingStyle"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>* Preffered Teaching Style</FormLabel>
+          <FormLabel>* Preferred Teaching Style</FormLabel>
           <Select onValueChange={field.onChange}>
             <FormControl>
               <SelectTrigger>
