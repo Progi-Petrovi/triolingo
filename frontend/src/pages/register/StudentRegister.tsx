@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { Button } from "@/components/ui/button";
 import {
   FormField,
@@ -7,28 +11,24 @@ import {
   FormMessage,
   Form,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import LanguageDialog from "./components/LanguageDialog";
 import { LanguageLevel, KnowledgeLevel } from "@/types/language-level";
 import {
   Select,
   SelectContent,
-  SelectGroup,
-  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { StudentRegistration } from "@/pages/register/types/student-registration";
+import { StudentRegistration } from "@/pages/register/types/registration-types";
 import { useToast } from "@/hooks/use-toast";
 import { TabsValues } from "./types/tabs-values";
 import { TeachingStyle } from "../../types/teaching-style";
+import BasicInfo from "./components/BasicInfo";
+import TeachingStyleFormField from "./components/TeachingStyleFormField";
+import KnowledgeSelectGroup from "./components/KnowledgeSelectGroup";
 
 const formSchema = z
   .object({
@@ -143,17 +143,7 @@ export default function StudentRegister() {
                     <SelectValue placeholder={lang.level} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value={KnowledgeLevel.BEGINNER}>
-                        {KnowledgeLevel.BEGINNER}
-                      </SelectItem>
-                      <SelectItem value={KnowledgeLevel.INTERMEDIATE}>
-                        {KnowledgeLevel.INTERMEDIATE}
-                      </SelectItem>
-                      <SelectItem value={KnowledgeLevel.ADVANCED}>
-                        {KnowledgeLevel.ADVANCED}
-                      </SelectItem>
-                    </SelectGroup>
+                    <KnowledgeSelectGroup />
                   </SelectContent>
                 </Select>
               </div>
@@ -198,72 +188,7 @@ export default function StudentRegister() {
             className="flex flex-col gap-2 w-full"
           >
             <p className="font-extrabold text-3xl my-4">Basic information</p>
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>* Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Hrvoje Horvat" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>* Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="Hrvoje.Horvat@gmail.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex flex-wrap gap-4">
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>* Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="aVeryStrongPassword123!!"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>* Confirm password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="aVeryStrongPassword123!!"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <BasicInfo form={form} />
           </TabsContent>
 
           <TabsContent
@@ -292,35 +217,7 @@ export default function StudentRegister() {
               We'd love to hear about your preferred teaching style and your
               goals!
             </p>
-            <FormField
-              control={form.control}
-              name="teachingStyle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>* Preffered Teaching Style</FormLabel>
-                  <Select onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={field.value} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value={TeachingStyle.INDIVIDUAL}>
-                          {TeachingStyle.INDIVIDUAL}
-                        </SelectItem>
-                        <SelectItem value={TeachingStyle.GROUP}>
-                          {TeachingStyle.GROUP}
-                        </SelectItem>
-                        <SelectItem value={TeachingStyle.FLEXIBLE}>
-                          {TeachingStyle.FLEXIBLE}
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+            <TeachingStyleFormField form={form} />
             <FormField
               control={form.control}
               name="goals"

@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { KnowledgeLevel } from "@/types/language-level";
+import KnowledgeSelectGroup from "./KnowledgeSelectGroup";
 
 type LanguageDialogType = {
   addLanguage: (language: string, level?: KnowledgeLevel) => void;
@@ -60,17 +61,7 @@ export default function LanguageDialog({
           <SelectValue placeholder="Knowledge level" />
         </SelectTrigger>
         <SelectContent>
-          <SelectGroup>
-            <SelectItem value={KnowledgeLevel.BEGINNER}>
-              {KnowledgeLevel.BEGINNER}
-            </SelectItem>
-            <SelectItem value={KnowledgeLevel.INTERMEDIATE}>
-              {KnowledgeLevel.INTERMEDIATE}
-            </SelectItem>
-            <SelectItem value={KnowledgeLevel.ADVANCED}>
-              {KnowledgeLevel.ADVANCED}
-            </SelectItem>
-          </SelectGroup>
+          <KnowledgeSelectGroup />
         </SelectContent>
       </Select>
     );
