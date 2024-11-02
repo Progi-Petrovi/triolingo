@@ -16,9 +16,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import LanguageDialog from "./components/LanguageDialog";
 import { useToast } from "@/hooks/use-toast";
 import { TabsValues } from "./types/tabs-values";
-import { TeachingStyle } from "../../types/teaching-style";
+import { PreferredTeachingStyle } from "../../types/teaching-style";
 import BasicInfo from "./components/BasicInfo";
-import TeachingStyleFormField from "./components/TeachingStyleFormField";
+import PreferredTeachingStyleFormField from "./components/PreferredTeachingStyleFormField";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TeacherRegistration } from "./types/registration-types";
@@ -29,7 +29,7 @@ const formSchema = z
     email: z.string().email(),
     password: z.string().min(8).max(250),
     confirmPassword: z.string().min(8).max(250),
-    teachingStyle: z.nativeEnum(TeachingStyle),
+    preferredTeachingStyle: z.nativeEnum(PreferredTeachingStyle),
     yearsOfExperience: z.coerce.number().max(100),
     hourlyRate: z.coerce.number().max(100000),
     qualifications: z.string().max(500),
@@ -60,7 +60,7 @@ export default function TeacherRegister() {
       confirmPassword: "",
       yearsOfExperience: 0,
       hourlyRate: 0,
-      teachingStyle: TeachingStyle.FLEXIBLE,
+      preferredTeachingStyle: PreferredTeachingStyle.FLEXIBLE,
     },
   });
 
@@ -123,107 +123,110 @@ export default function TeacherRegister() {
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="h-[100vh] p-8 md:h-[50vh] md:w-[50vw]"
-      >
-        <Tabs
-          defaultValue={TabsValues.ACCOUNT}
-          className="flex flex-col justify-center items-center"
+    <div className="flex flex-col">
+      <p className="mx-auto text-3xl font-extrabold">Register as a teacher</p>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit, onError)}
+          className="h-[90vh] p-8 md:h-[70vh] md:w-[50vw]"
         >
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value={TabsValues.ACCOUNT}>
-              {TabsValues.ACCOUNT}
-            </TabsTrigger>
-            <TabsTrigger value={TabsValues.LANGUAGES}>
-              {TabsValues.LANGUAGES}
-            </TabsTrigger>
-            <TabsTrigger value={TabsValues.ADDITIONAL}>
-              {TabsValues.ADDITIONAL}
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent
-            value={TabsValues.ACCOUNT}
-            className="flex flex-col gap-2 w-full"
+          <Tabs
+            defaultValue={TabsValues.ACCOUNT}
+            className="flex flex-col justify-center items-center"
           >
-            <BasicInfo form={form} />
-          </TabsContent>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value={TabsValues.ACCOUNT}>
+                {TabsValues.ACCOUNT}
+              </TabsTrigger>
+              <TabsTrigger value={TabsValues.LANGUAGES}>
+                {TabsValues.LANGUAGES}
+              </TabsTrigger>
+              <TabsTrigger value={TabsValues.ADDITIONAL}>
+                {TabsValues.ADDITIONAL}
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent
-            value={TabsValues.LANGUAGES}
-            className="flex flex-col gap-2 w-full"
-          >
-            <p className="font-extrabold text-2xl my-4">
-              Languages you would like to teach:
-            </p>
-            <LanguageDialog
-              addLanguage={addLanguage}
-              isStudent={false}
-              allLanguages={allLanguages}
-              pickedLanguages={teachingLanguages}
-            />
-            {showPickedLanguages()}
-          </TabsContent>
+            <TabsContent
+              value={TabsValues.ACCOUNT}
+              className="flex flex-col gap-2 w-full"
+            >
+              <BasicInfo form={form} />
+            </TabsContent>
 
-          <TabsContent
-            value={TabsValues.ADDITIONAL}
-            className="flex flex-col gap-2 w-full"
-          >
-            <p className="font-extrabold text-2xl my-4">
-              Tell us more about your teaching history!
-            </p>
-            <TeachingStyleFormField form={form} />
-            <FormField
-              control={form.control}
-              name="yearsOfExperience"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Years of teaching experience</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="hourlyRate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Hourly rate (Euro €)</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="qualifications"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Qualifications</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Universities, past work, ceritificates..."
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-end">
-              <Button type="submit">Register</Button>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </form>
-    </Form>
+            <TabsContent
+              value={TabsValues.LANGUAGES}
+              className="flex flex-col gap-2 w-full"
+            >
+              <p className="text-2xl my-2">
+                Languages you would like to teach:
+              </p>
+              <LanguageDialog
+                addLanguage={addLanguage}
+                isStudent={false}
+                allLanguages={allLanguages}
+                pickedLanguages={teachingLanguages}
+              />
+              {showPickedLanguages()}
+            </TabsContent>
+
+            <TabsContent
+              value={TabsValues.ADDITIONAL}
+              className="flex flex-col gap-2 w-full"
+            >
+              <p className="text-2xl my-2">
+                Tell us more about your teaching history!
+              </p>
+              <PreferredTeachingStyleFormField form={form} />
+              <FormField
+                control={form.control}
+                name="yearsOfExperience"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Years of teaching experience</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="hourlyRate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Hourly rate (Euro €)</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="qualifications"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Qualifications</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Universities, past work, ceritificates..."
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end">
+                <Button type="submit">Register</Button>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </form>
+      </Form>
+    </div>
   );
 }

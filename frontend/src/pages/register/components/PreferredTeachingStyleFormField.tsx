@@ -12,20 +12,20 @@ import {
   FormLabel,
   FormControl,
 } from "@/components/ui/form";
-import { TeachingStyle } from "@/types/teaching-style";
+import { PreferredTeachingStyle } from "@/types/teaching-style";
 
-type TeachingStyleFormField = {
+type PreferredTeachingStyleFormField = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: any;
 };
 
-export default function TeachingStyleFormField({
+export default function PreferredTeachingStyleFormField({
   form,
-}: TeachingStyleFormField) {
+}: PreferredTeachingStyleFormField) {
   return (
     <FormField
       control={form.control}
-      name="teachingStyle"
+      name="preferredTeachingStyle"
       render={({ field }) => (
         <FormItem>
           <FormLabel>* Preffered Teaching Style</FormLabel>
@@ -37,14 +37,14 @@ export default function TeachingStyleFormField({
             </FormControl>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value={TeachingStyle.INDIVIDUAL}>
-                  {TeachingStyle.INDIVIDUAL}
+                <SelectItem value={PreferredTeachingStyle.INDIVIDUAL}>
+                  {PreferredTeachingStyle.INDIVIDUAL}
                 </SelectItem>
-                <SelectItem value={TeachingStyle.GROUP}>
-                  {TeachingStyle.GROUP}
+                <SelectItem value={PreferredTeachingStyle.GROUP}>
+                  {PreferredTeachingStyle.GROUP}
                 </SelectItem>
-                <SelectItem value={TeachingStyle.FLEXIBLE}>
-                  {TeachingStyle.FLEXIBLE}
+                <SelectItem value={PreferredTeachingStyle.FLEXIBLE}>
+                  {PreferredTeachingStyle.FLEXIBLE}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>

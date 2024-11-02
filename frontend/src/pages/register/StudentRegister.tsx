@@ -15,20 +15,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import LanguageDialog from "./components/LanguageDialog";
 import { LanguageLevel, KnowledgeLevel } from "@/types/language-level";
-import {
-  Select,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { StudentRegistration } from "@/pages/register/types/registration-types";
 import { useToast } from "@/hooks/use-toast";
 import { TabsValues } from "./types/tabs-values";
-import { TeachingStyle } from "../../types/teaching-style";
+import { PreferredTeachingStyle } from "../../types/teaching-style";
 import BasicInfo from "./components/BasicInfo";
-import TeachingStyleFormField from "./components/TeachingStyleFormField";
-import KnowledgeSelectGroup from "./components/KnowledgeSelectGroup";
+import PreferredTeachingStyleFormField from "./components/PreferredTeachingStyleFormField";
+import KnowledgeSelect from "./components/KnowledgeSelect";
 
 const formSchema = z
   .object({
@@ -36,7 +30,7 @@ const formSchema = z
     email: z.string().email(),
     password: z.string().min(8).max(250),
     confirmPassword: z.string().min(8).max(250),
-    teachingStyle: z.nativeEnum(TeachingStyle),
+    preferredTeachingStyle: z.nativeEnum(PreferredTeachingStyle),
     goals: z.string().min(0).max(250, {
       message: "Can't be over 250 characters, keep it nice and short :)",
     }),
@@ -68,7 +62,7 @@ export default function StudentRegister() {
       password: "",
       confirmPassword: "",
       goals: "",
-      teachingStyle: TeachingStyle.FLEXIBLE,
+      preferredTeachingStyle: PreferredTeachingStyle.FLEXIBLE,
     },
   });
 
@@ -98,7 +92,7 @@ export default function StudentRegister() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (learningLanguages.length === 0) {
       toast({
-        title: "You need to pick atleast 1 language.",
+        title: "You need to pick at least 1 language.",
         description: "That's why we are here :)",
         variant: "destructive",
       });
@@ -134,18 +128,12 @@ export default function StudentRegister() {
             >
               <p>{lang.language}</p>
               <div>
-                <Select
-                  onValueChange={(val) =>
-                    changeKnowledgeLevel(lang, val as KnowledgeLevel)
+                <KnowledgeSelect
+                  onValueChange={(val: KnowledgeLevel) =>
+                    changeKnowledgeLevel(lang, val)
                   }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={lang.level} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <KnowledgeSelectGroup />
-                  </SelectContent>
-                </Select>
+                  placeholder={lang.level}
+                />
               </div>
               <Button
                 type="button"
@@ -162,84 +150,87 @@ export default function StudentRegister() {
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="h-[100vh] p-8 md:h-[50vh] md:w-[50vw]"
-      >
-        <Tabs
-          defaultValue={TabsValues.ACCOUNT}
-          className="flex flex-col justify-center items-center"
+    <div className="flex flex-col">
+      <p className="mx-auto text-3xl font-extrabold">Register as a student</p>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit, onError)}
+          className="h-[90vh] p-8 md:h-[70vh] md:w-[50vw]"
         >
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value={TabsValues.ACCOUNT}>
-              {TabsValues.ACCOUNT}
-            </TabsTrigger>
-            <TabsTrigger value={TabsValues.LANGUAGES}>
-              {TabsValues.LANGUAGES}
-            </TabsTrigger>
-            <TabsTrigger value={TabsValues.ADDITIONAL}>
-              {TabsValues.ADDITIONAL}
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent
-            value={TabsValues.ACCOUNT}
-            className="flex flex-col gap-2 w-full"
+          <Tabs
+            defaultValue={TabsValues.ACCOUNT}
+            className="flex flex-col justify-center items-center"
           >
-            <BasicInfo form={form} />
-          </TabsContent>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value={TabsValues.ACCOUNT}>
+                {TabsValues.ACCOUNT}
+              </TabsTrigger>
+              <TabsTrigger value={TabsValues.LANGUAGES}>
+                {TabsValues.LANGUAGES}
+              </TabsTrigger>
+              <TabsTrigger value={TabsValues.ADDITIONAL}>
+                {TabsValues.ADDITIONAL}
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent
-            value={TabsValues.LANGUAGES}
-            className="flex flex-col gap-2 w-full"
-          >
-            <p className="font-extrabold text-2xl my-4">
-              Languages you would like to learn:
-            </p>
-            <LanguageDialog
-              addLanguage={addLanguage}
-              isStudent={true}
-              allLanguages={allLanguages}
-              pickedLanguages={learningLanguages.map(
-                ({ language }) => language
-              )}
-            />
-            {showPickedLanguages()}
-          </TabsContent>
+            <TabsContent
+              value={TabsValues.ACCOUNT}
+              className="flex flex-col gap-2 w-full"
+            >
+              <BasicInfo form={form} />
+            </TabsContent>
 
-          <TabsContent
-            value={TabsValues.ADDITIONAL}
-            className="flex flex-col gap-2 w-full"
-          >
-            <p className="font-extrabold text-2xl my-4">
-              We'd love to hear about your preferred teaching style and your
-              goals!
-            </p>
-            <TeachingStyleFormField form={form} />
-            <FormField
-              control={form.control}
-              name="goals"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Goals</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="I want to speak proficient Spanish!"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-end">
-              <Button type="submit">Register</Button>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </form>
-    </Form>
+            <TabsContent
+              value={TabsValues.LANGUAGES}
+              className="flex flex-col gap-2 w-full"
+            >
+              <p className="text-2xl my-2">
+                Languages you would like to learn:
+              </p>
+              <LanguageDialog
+                addLanguage={addLanguage}
+                isStudent={true}
+                allLanguages={allLanguages}
+                pickedLanguages={learningLanguages.map(
+                  ({ language }) => language
+                )}
+              />
+              {showPickedLanguages()}
+            </TabsContent>
+
+            <TabsContent
+              value={TabsValues.ADDITIONAL}
+              className="flex flex-col gap-2 w-full"
+            >
+              <p className="text-2xl my-2">
+                We'd love to hear about your preferred teaching style and your
+                goals!
+              </p>
+              <PreferredTeachingStyleFormField form={form} />
+              <FormField
+                control={form.control}
+                name="goals"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Goals</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="I want to speak proficient Spanish!"
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end">
+                <Button type="submit">Register</Button>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </form>
+      </Form>
+    </div>
   );
 }

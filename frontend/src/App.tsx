@@ -3,7 +3,6 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./components/Layout";
 import routes from "./routes";
-import { Toaster } from "./components/ui/toaster";
 
 function App() {
   const router = createBrowserRouter([
@@ -17,7 +16,6 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
-      <Toaster />
     </>
   );
 }

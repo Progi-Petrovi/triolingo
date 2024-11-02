@@ -15,7 +15,7 @@ type BasicInfoType = {
 export default function BasicInfo({ form }: BasicInfoType) {
   return (
     <>
-      <p className="font-extrabold text-3xl my-4">Basic information</p>
+      <p className="text-3xl my-2">Basic information</p>
       <FormField
         control={form.control}
         name="fullName"

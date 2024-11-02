@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { KnowledgeLevel } from "@/types/language-level";
-import KnowledgeSelectGroup from "./KnowledgeSelectGroup";
+import KnowledgeSelect from "./KnowledgeSelect";
 
 type LanguageDialogType = {
   addLanguage: (language: string, level?: KnowledgeLevel) => void;
@@ -56,14 +56,10 @@ export default function LanguageDialog({
     if (!isStudent) return null;
 
     return (
-      <Select onValueChange={(val) => setLevel(val as KnowledgeLevel)}>
-        <SelectTrigger>
-          <SelectValue placeholder="Knowledge level" />
-        </SelectTrigger>
-        <SelectContent>
-          <KnowledgeSelectGroup />
-        </SelectContent>
-      </Select>
+      <KnowledgeSelect
+        onValueChange={(val: KnowledgeLevel) => setLevel(val)}
+        placeholder="Knowledge level"
+      />
     );
   }
 

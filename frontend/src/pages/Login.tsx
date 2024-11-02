@@ -46,11 +46,11 @@ export default function Login() {
         </div>
         <div className="flex flex-col justify-center items-center pt-2">
           <p>Don&apos;t have an account?</p>
-          <Link to={PathConstants.TEACHER_REGISTER} className="underline">
-            Become a teacher
-          </Link>
           <Link to={PathConstants.STUDENT_REGISTER} className="underline">
             Become a student
+          </Link>
+          <Link to={PathConstants.TEACHER_REGISTER} className="underline">
+            Become a teacher
           </Link>
         </div>
       </CardContent>
