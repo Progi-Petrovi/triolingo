@@ -1,15 +1,15 @@
-import { Link } from "react-router-dom"
-import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import PathConstants from "@/routes/pathConstants"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import PathConstants from "@/routes/pathConstants";
 
 export default function Login() {
   return (
@@ -44,13 +44,16 @@ export default function Login() {
             Login
           </Button>
         </div>
-        <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link to={PathConstants.REGISTER} className="underline">
-            Sign up
+        <div className="flex flex-col justify-center items-center pt-2">
+          <p>Don&apos;t have an account?</p>
+          <Link to={PathConstants.STUDENT_REGISTER} className="underline">
+            Become a student
+          </Link>
+          <Link to={PathConstants.TEACHER_REGISTER} className="underline">
+            Become a teacher
           </Link>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
