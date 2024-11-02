@@ -1,11 +1,12 @@
-import { LanguageLevel } from "./languageLevel";
+import { TeachingStyle } from "@/types/teaching-style";
+import { LanguageLevel } from "@/types/language-level";
 
 export type StudentRegistration = {
   fullName: string;
   email: string;
   password: string;
   confirmPassword: string;
-  teachingStyle: "Individual" | "Group" | "Flexible";
+  teachingStyle: TeachingStyle;
   goals: string;
   languages: LanguageLevel[];
 };

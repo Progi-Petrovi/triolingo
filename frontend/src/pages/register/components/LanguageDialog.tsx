@@ -20,9 +20,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { KnowledgeLevel } from "@/types/language-level";
 
 type LanguageDialogType = {
-  addLanguage: (language: string, level?: string) => void;
+  addLanguage: (language: string, level?: KnowledgeLevel) => void;
   isStudent: boolean;
   allLanguages: string[];
   pickedLanguages: string[];
@@ -35,7 +36,7 @@ export default function LanguageDialog({
   pickedLanguages,
 }: LanguageDialogType) {
   const [language, setLanguage] = useState("");
-  const [level, setLevel] = useState("Beginner");
+  const [level, setLevel] = useState(KnowledgeLevel.BEGINNER);
   const { toast } = useToast();
 
   function renderAvailableLanguages() {
@@ -54,16 +55,21 @@ export default function LanguageDialog({
     if (!isStudent) return null;
 
     return (
-      <Select onValueChange={setLevel}>
+      <Select onValueChange={(val) => setLevel(val as KnowledgeLevel)}>
         <SelectTrigger>
           <SelectValue placeholder="Knowledge level" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>Level</SelectLabel>
-            <SelectItem value="Beginner">Beginner</SelectItem>
-            <SelectItem value="Intermediate">Intermediate</SelectItem>
-            <SelectItem value="Advanced">Advanced</SelectItem>
+            <SelectItem value={KnowledgeLevel.BEGINNER}>
+              {KnowledgeLevel.BEGINNER}
+            </SelectItem>
+            <SelectItem value={KnowledgeLevel.INTERMEDIATE}>
+              {KnowledgeLevel.INTERMEDIATE}
+            </SelectItem>
+            <SelectItem value={KnowledgeLevel.ADVANCED}>
+              {KnowledgeLevel.ADVANCED}
+            </SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>

@@ -14,8 +14,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import LanguageDialog from "./LanguageDialog";
-import { LanguageLevel } from "@/types/languageLevel";
+import LanguageDialog from "./components/LanguageDialog";
+import { LanguageLevel, KnowledgeLevel } from "@/types/language-level";
 import {
   Select,
   SelectContent,
@@ -25,14 +25,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { StudentRegistration } from "@/types/studentRegistration";
+import { StudentRegistration } from "@/pages/register/types/student-registration";
 import { useToast } from "@/hooks/use-toast";
-
-const TabsTriggerValues = {
-  ACCOUNT: "account",
-  LANGUAGES: "languages",
-  ADDITIONAL: "additional",
-};
+import { TabsValues } from "./types/tabs-values";
+import { TeachingStyle } from "../../types/teaching-style";
 
 const formSchema = z
   .object({
@@ -40,7 +36,7 @@ const formSchema = z
     email: z.string().email(),
     password: z.string().min(8).max(250),
     confirmPassword: z.string().min(8).max(250),
-    teachingStyle: z.enum(["Individual", "Group", "Flexible"]),
+    teachingStyle: z.nativeEnum(TeachingStyle),
     goals: z.string().min(0).max(250, {
       message: "Can't be over 250 characters, keep it nice and short :)",
     }),
@@ -72,11 +68,11 @@ export default function StudentRegister() {
       password: "",
       confirmPassword: "",
       goals: "",
-      teachingStyle: "Flexible",
+      teachingStyle: TeachingStyle.FLEXIBLE,
     },
   });
 
-  function addLanguage(language: string, level?: string) {
+  function addLanguage(language: string, level?: KnowledgeLevel) {
     if (language && level)
       setLearningLanguages([...learningLanguages, { language, level }]);
   }
@@ -89,11 +85,11 @@ export default function StudentRegister() {
   }
 
   function changeKnowledgeLevel(
-    learningLanguage: LanguageLevel,
-    level: string
+    language: LanguageLevel,
+    level: KnowledgeLevel
   ) {
     const newLanguages = learningLanguages.map((lang) =>
-      lang === learningLanguage ? { language: lang.language, level } : lang
+      lang === language ? { language: lang.language, level } : lang
     );
 
     setLearningLanguages(newLanguages);
@@ -139,16 +135,24 @@ export default function StudentRegister() {
               <p>{lang.language}</p>
               <div>
                 <Select
-                  onValueChange={(val) => changeKnowledgeLevel(lang, val)}
+                  onValueChange={(val) =>
+                    changeKnowledgeLevel(lang, val as KnowledgeLevel)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder={lang.level} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="Beginner">Beginner</SelectItem>
-                      <SelectItem value="Intermediate">Intermediate</SelectItem>
-                      <SelectItem value="Advanced">Advanced</SelectItem>
+                      <SelectItem value={KnowledgeLevel.BEGINNER}>
+                        {KnowledgeLevel.BEGINNER}
+                      </SelectItem>
+                      <SelectItem value={KnowledgeLevel.INTERMEDIATE}>
+                        {KnowledgeLevel.INTERMEDIATE}
+                      </SelectItem>
+                      <SelectItem value={KnowledgeLevel.ADVANCED}>
+                        {KnowledgeLevel.ADVANCED}
+                      </SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -174,21 +178,23 @@ export default function StudentRegister() {
         className="h-[50vh] w-[50vw] relative"
       >
         <Tabs
-          defaultValue={TabsTriggerValues.ACCOUNT}
+          defaultValue={TabsValues.ACCOUNT}
           className="flex flex-col justify-center items-center"
         >
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value={TabsTriggerValues.ACCOUNT}>Account</TabsTrigger>
-            <TabsTrigger value={TabsTriggerValues.LANGUAGES}>
-              Languages
+            <TabsTrigger value={TabsValues.ACCOUNT}>
+              {TabsValues.ACCOUNT}
             </TabsTrigger>
-            <TabsTrigger value={TabsTriggerValues.ADDITIONAL}>
-              Additional
+            <TabsTrigger value={TabsValues.LANGUAGES}>
+              {TabsValues.LANGUAGES}
+            </TabsTrigger>
+            <TabsTrigger value={TabsValues.ADDITIONAL}>
+              {TabsValues.ADDITIONAL}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent
-            value={TabsTriggerValues.ACCOUNT}
+            value={TabsValues.ACCOUNT}
             className="flex flex-col gap-2 w-full"
           >
             <p className="font-extrabold text-3xl my-4">Basic information</p>
@@ -261,7 +267,7 @@ export default function StudentRegister() {
           </TabsContent>
 
           <TabsContent
-            value={TabsTriggerValues.LANGUAGES}
+            value={TabsValues.LANGUAGES}
             className="flex flex-col gap-2 w-full"
           >
             <p className="font-extrabold text-2xl my-4">
@@ -279,7 +285,7 @@ export default function StudentRegister() {
           </TabsContent>
 
           <TabsContent
-            value={TabsTriggerValues.ADDITIONAL}
+            value={TabsValues.ADDITIONAL}
             className="flex flex-col gap-2 w-full"
           >
             <p className="font-extrabold text-2xl my-4">
@@ -300,9 +306,15 @@ export default function StudentRegister() {
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="Individual">Individual</SelectItem>
-                        <SelectItem value="Group">Group</SelectItem>
-                        <SelectItem value="Flexible">Flexible</SelectItem>
+                        <SelectItem value={TeachingStyle.INDIVIDUAL}>
+                          {TeachingStyle.INDIVIDUAL}
+                        </SelectItem>
+                        <SelectItem value={TeachingStyle.GROUP}>
+                          {TeachingStyle.GROUP}
+                        </SelectItem>
+                        <SelectItem value={TeachingStyle.FLEXIBLE}>
+                          {TeachingStyle.FLEXIBLE}
+                        </SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
