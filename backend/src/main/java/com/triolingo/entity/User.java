@@ -19,4 +19,6 @@ public abstract class User {
     private String email;
     @NotNull
     private String password;
+    @Column(columnDefinition = "BLOB")
+    private byte[] profilePicture;
 }
