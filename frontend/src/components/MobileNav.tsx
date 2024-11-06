@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react";
 import { Link, LinkProps, redirect } from "react-router-dom";
 
