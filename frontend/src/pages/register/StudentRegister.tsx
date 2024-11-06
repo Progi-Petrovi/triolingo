@@ -151,7 +151,7 @@ export default function StudentRegister() {
 
   return (
     <div className="flex flex-col">
-      <p className="mx-auto text-3xl font-extrabold">Register as a student</p>
+      <p className="mx-auto text-3xl font-extrabold">Register</p>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, onError)}

@@ -125,7 +125,7 @@ export default function TeacherRegister() {
 
   return (
     <div className="flex flex-col">
-      <p className="mx-auto text-3xl font-extrabold">Register as a teacher</p>
+      <p className="mx-auto text-3xl font-extrabold">Become a teacher</p>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, onError)}
