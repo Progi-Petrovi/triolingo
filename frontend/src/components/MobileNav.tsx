@@ -15,12 +15,9 @@ import {
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
 
-  const onOpenChange = React.useCallback(
-    (open: boolean) => {
-      setOpen(open)
-    },
-    [setOpen]
-  );
+  const onOpenChange = (open: boolean) => {
+    setOpen(open)
+  };
 
   const pathname = location.pathname;
 
