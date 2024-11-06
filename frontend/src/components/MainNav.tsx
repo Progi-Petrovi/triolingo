@@ -1,15 +1,14 @@
-"use client";
-
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import SiteConfig from "@/config/site";
 import { navConfig } from "@/config/header-nav";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 
+
 export function MainNav() {
+  const location = useLocation();
   const pathname = location.pathname;
-  console.log(pathname);
 
   return (
     <div className="mr-4 hidden md:flex">
@@ -24,6 +23,7 @@ export function MainNav() {
           (item) => (
             <Link
               to={item.href}
+              key={item.href}
               className={cn(
                 "transition-colors hover:text-foreground/80",
                 pathname === item.href ? "text-foreground" : "text-foreground/60"
