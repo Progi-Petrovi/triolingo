@@ -151,11 +151,11 @@ export default function StudentRegister() {
 
   return (
     <div className="flex flex-col">
-      <p className="mx-auto text-3xl font-extrabold">Register as a student</p>
+      <p className="mx-auto text-3xl font-extrabold">Register</p>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, onError)}
-          className="h-[90vh] p-8 md:h-[70vh] md:w-[50vw]"
+          className="h-[75vh] p-8 md:h-[70vh] md:w-[50vw]"
         >
           <Tabs
             defaultValue={TabsValues.ACCOUNT}

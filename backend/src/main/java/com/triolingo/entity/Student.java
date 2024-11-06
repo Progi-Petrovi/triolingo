@@ -27,6 +27,6 @@ public class Student extends User {
     private List<LearningLanguage> learningLanguages;
     @NotNull
     private TeachingStyle preferredTeachingStyle;
-    @ElementCollection
-    private List<String> learningGoals;
+    @Column(columnDefinition = "TEXT")
+    private String learningGoals;
 }

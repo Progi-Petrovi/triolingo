@@ -26,12 +26,10 @@ public class Teacher extends User {
     private List<Language> languages;
     @NotNull
     private Integer yearsOfExperience;
-    @ElementCollection
-    @NotEmpty
-    private List<String> qualifications;
+    @Column(columnDefinition = "TEXT")
+    private String qualifications;
     @NotNull
     private TeachingStyle teachingStyle;
-    private String profilePicture;
     @NotNull
     private Double hourlyRate;
 }
