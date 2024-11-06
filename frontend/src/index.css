@@ -138,3 +138,26 @@ button:focus-visible {
     @apply bg-background text-foreground;
   }
 }
+
+
+#drawer-button {
+  background: var(--background);
+}
+
+
+#drawer-button:hover {
+  background: var(--background) !important;
+  border: none;
+}
+
+
+#drawer-button:focus {
+  background: var(--background);
+  border: none;
+  outline: none;
+}
+
+
+.full-height {
+  height: calc(100vh - 57px);
+}
