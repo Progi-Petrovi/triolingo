@@ -22,6 +22,8 @@ export function MobileNav() {
     [setOpen]
   );
 
+  const pathname = location.pathname;
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>
@@ -57,6 +59,9 @@ export function MobileNav() {
                     key={item.href}
                     to={item.href}
                     onOpenChange={setOpen}
+                    className={cn(
+                      pathname === item.href ? "text-foreground" : "text-foreground/60"
+                    )}
                   >
                     {item.title}
                   </MobileLink>
