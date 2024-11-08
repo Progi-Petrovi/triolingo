@@ -1,17 +1,27 @@
 package com.triolingo.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.util.Arrays;
+import java.util.List;
 
-@MappedSuperclass
+import javax.validation.constraints.*;
+
+import org.springframework.security.core.GrantedAuthority;
+
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public abstract class User {
     @Id
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    protected Long id;
     @NotNull
     private String fullName;
     @NotNull
@@ -21,4 +31,8 @@ public abstract class User {
     private String password;
     @Column(columnDefinition = "BLOB")
     private byte[] profilePicture;
+
+    public List<GrantedAuthority> getAuthorities() {
+        return Arrays.asList(() -> "ROLE_USER");
+    }
 }
