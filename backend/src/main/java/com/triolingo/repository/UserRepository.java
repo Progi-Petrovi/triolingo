@@ -5,11 +5,11 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.triolingo.entity.Teacher;
+import com.triolingo.entity.User;
 
 @Repository
-public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
-    Optional<Teacher> findByEmail(String email);
+public interface UserRepository extends JpaRepository<User, Integer> {
+    Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
 }
