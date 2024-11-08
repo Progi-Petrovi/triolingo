@@ -1,11 +1,16 @@
 package com.triolingo.service;
 
 import com.triolingo.entity.Teacher;
-import com.triolingo.repository.TeacherRepository;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+
+import com.triolingo.dto.teacher.TeacherRegisterRequest;
+import com.triolingo.entity.Teacher;
+import com.triolingo.repository.TeacherRepository;
+
+import jakarta.servlet.http.HttpSession;
 
 @Service
 public class TeacherService {
@@ -42,7 +47,7 @@ public class TeacherService {
         Teacher teacher = fetch(id);
         if (teacher == null)
             throw new IllegalArgumentException("Teacher with that Id does not exist");
-        teacherRepository.deleteById(id);   //or .delete(teacher);
+        teacherRepository.deleteById(id); // or .delete(teacher);
         return teacher;
     }
 
