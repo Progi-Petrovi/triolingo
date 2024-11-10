@@ -2,17 +2,19 @@ package com.triolingo.service;
 
 import com.triolingo.entity.Teacher;
 import com.triolingo.repository.TeacherRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Service
 public class TeacherService {
 
-    @Autowired
-    private TeacherRepository teacherRepository;
+    private final TeacherRepository teacherRepository;
+
+    public TeacherService(TeacherRepository teacherRepository) {
+        this.teacherRepository = teacherRepository;
+    }
 
     public List<Teacher> listAll() {
         return teacherRepository.findAll();
@@ -23,21 +25,24 @@ public class TeacherService {
     }
 
     public Teacher createTeacher(Teacher teacher) {
-        Assert.notNull(teacher, "Teacher isn't provided");
-        Assert.isNull(teacher.getId(), "Teacher can't have ID yet");
-        Assert.isTrue(!teacherRepository.existsByEmail(teacher.getEmail()), "Teacher email already exists");
-        return teacherRepository.save(teacher);
+        if (teacher.getId() == null)
+            return teacherRepository.save(teacher);
+        else
+            throw new IllegalArgumentException("Teacher cannot have Id yet");
     }
 
-    public Teacher updateTeacher(Teacher teacher) {
-        Assert.notNull(teacher, "Teacher isn't provided");
-        Assert.isTrue(teacherRepository.existsById(teacher.getId()), "Teacher doesn't exist");
-        return teacherRepository.save(teacher);
+    public Teacher updateTeacher(@NotNull Teacher teacher) {
+        if (teacherRepository.existsById(teacher.getId()))
+            return teacherRepository.save(teacher);
+        else
+            throw new IllegalArgumentException("Teacher with that Id does not exist");
     }
 
     public Teacher deleteTeacher(Long id) {
         Teacher teacher = fetch(id);
-        teacherRepository.delete(teacher);
+        if (teacher == null)
+            throw new IllegalArgumentException("Teacher with that Id does not exist");
+        teacherRepository.deleteById(id);   //or .delete(teacher);
         return teacher;
     }
 

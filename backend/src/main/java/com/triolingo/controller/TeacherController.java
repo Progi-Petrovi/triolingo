@@ -2,7 +2,6 @@ package com.triolingo.controller;
 
 import com.triolingo.entity.Teacher;
 import com.triolingo.service.TeacherService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,13 +9,16 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/teachers")
+@RequestMapping("/api/teachers")
 public class TeacherController {
 
-    @Autowired
-    private TeacherService teacherService;
+    private final TeacherService teacherService;
 
-    @GetMapping("")
+    public TeacherController(TeacherService teacherService) {
+        this.teacherService = teacherService;
+    }
+
+    @GetMapping
     public List<Teacher> listTeachers() {
         return teacherService.listAll();
     }
@@ -26,7 +28,7 @@ public class TeacherController {
         return teacherService.fetch(id);
     }
 
-    @PostMapping("")
+    @PostMapping
     //@Secured("ROLE_ADMIN")  change when authorization implemented
     public ResponseEntity<Teacher> createTeacher(@RequestBody Teacher teacher) {
         Teacher saved = teacherService.createTeacher(teacher);
@@ -37,7 +39,7 @@ public class TeacherController {
     //@Secured("ROLE_ADMIN")
     public Teacher updateTeacher(@PathVariable("id") Long id, @RequestBody Teacher teacher) {
         if (!teacher.getId().equals(id))
-            throw new IllegalArgumentException("Teacher ID is different");
+            throw new IllegalArgumentException("Teacher Id is different");
         return teacherService.updateTeacher(teacher);
     }
 
