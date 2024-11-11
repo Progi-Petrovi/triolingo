@@ -19,7 +19,6 @@ public class DatabaseTest {
         this.teacherRepository = teacherRepository;
     }
 
-    @Autowired
     private StudentRepository studentRepository;
 
     @Test
