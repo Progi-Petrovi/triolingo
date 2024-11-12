@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -21,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @PrimaryKeyJoinColumn
 public class Teacher extends User {
-    @NotNull
+    @NotEmpty
     @ManyToMany
     @Builder.Default
     @JoinTable(name = "teacher_language", joinColumns = @JoinColumn(name = "teacher_id"), inverseJoinColumns = @JoinColumn(name = "language_id"))
