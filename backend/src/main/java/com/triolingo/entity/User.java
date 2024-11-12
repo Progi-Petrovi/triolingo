@@ -18,6 +18,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Data
 public abstract class User {
+
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +32,28 @@ public abstract class User {
     private String password;
 
     public List<GrantedAuthority> getAuthorities() {
-        return Arrays.asList(() -> "ROLE_USER");
+        return Arrays.asList(Role.USER.getAuthority());
+    }
+}
+
+enum Role {
+    USER(() -> "ROLE_USER"),
+    ADMIN(() -> "ROLE_ADMIN"),
+    TEACHER(() -> "ROLE_TEACHER"),
+    STUDENT(() -> "ROLE_STUDENT");
+
+    private final GrantedAuthority authority;
+
+    private Role(GrantedAuthority authority) {
+        this.authority = authority;
+    }
+
+    public GrantedAuthority getAuthority() {
+        return authority;
+    }
+
+    @Override
+    public String toString() {
+        return authority.getAuthority();
     }
 }

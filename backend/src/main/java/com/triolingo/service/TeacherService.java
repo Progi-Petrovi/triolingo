@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 import com.triolingo.repository.TeacherRepository;
 
@@ -29,15 +30,16 @@ public class TeacherService {
     }
 
     public Teacher createTeacher(TeacherCreateDTO teacherDto) {
-        return teacherRepository.save(teacherDto.Transform());
+        return teacherRepository.save(teacherDto.transformIntoTeacher());
     }
 
     public Teacher updateTeacher(@NotNull Long id, @NotNull TeacherCreateDTO teacherDTO) {
-        if (!teacherRepository.existsById(id))
+        Optional<Teacher> optionalTeacher = teacherRepository.findById(id);
+        if (optionalTeacher.isEmpty())
             throw new EntityNotFoundException("Teacher with that Id does not exist.");
 
-        Teacher teacher = teacherDTO.Transform();
-        teacher.setId(id);
+        Teacher teacher = optionalTeacher.get();
+        teacherDTO.updateTeacher(teacher);
         return teacherRepository.save(teacher);
     }
 

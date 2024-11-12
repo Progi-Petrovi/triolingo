@@ -30,7 +30,7 @@ public class TeacherController {
         return teacherService.listAll().stream().map(TeacherGetDTO::new).toList();
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     @Secured("ROLE_USER") // TODO: add ROLE_GUEST when guest is setup
     public TeacherGetDTO getTeacher(@PathVariable("id") Long id) {
         return new TeacherGetDTO(teacherService.fetch(id));
@@ -66,7 +66,7 @@ public class TeacherController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     // @Secured("ROLE_ADMIN") // TODO: add when ADMIN is setup
     public ResponseEntity<?> deleteTeacher(@PathVariable("id") Long id) {
         try {

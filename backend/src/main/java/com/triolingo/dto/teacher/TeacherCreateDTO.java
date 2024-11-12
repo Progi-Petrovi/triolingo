@@ -29,7 +29,7 @@ public record TeacherCreateDTO(
                 teacher.getHourlyRate());
     }
 
-    public Teacher Transform() {
+    public Teacher transformIntoTeacher() {
         return Teacher.builder()
                 .email(email)
                 .password(password)
@@ -42,4 +42,25 @@ public record TeacherCreateDTO(
                 .hourlyRate(hourlyRate).build();
     }
 
+    public void updateTeacher(Teacher teacher) {
+        if (email != null)
+            teacher.setEmail(email);
+        if (password != null)
+            teacher.setPassword(password);
+        if (fullName != null)
+            teacher.setFullName(fullName);
+        if (fullName != null)
+            teacher.setLanguages(languages);
+        if (fullName != null)
+            teacher.setYearsOfExperience(yearsOfExperience);
+        if (fullName != null)
+            teacher.setQualifications(qualifications);
+        if (fullName != null)
+            teacher.setTeachingStyle(teachingStyle);
+        if (fullName != null)
+            teacher.setProfilePictureHash(profilePictureHash);
+        if (fullName != null)
+            teacher.setHourlyRate(hourlyRate);
+
+    }
 }

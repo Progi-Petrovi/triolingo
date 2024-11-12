@@ -46,7 +46,7 @@ public class Teacher extends User {
 
     @Override
     public List<GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>(Arrays.asList(() -> "ROLE_TEACHER"));
+        List<GrantedAuthority> authorities = new ArrayList<>(Arrays.asList(Role.TEACHER.getAuthority()));
         authorities.addAll(super.getAuthorities());
         return authorities;
     }
