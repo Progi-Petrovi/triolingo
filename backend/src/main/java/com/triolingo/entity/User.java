@@ -1,17 +1,28 @@
 package com.triolingo.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.util.Arrays;
+import java.util.List;
 
-@MappedSuperclass
+import javax.validation.constraints.*;
+
+import org.springframework.security.core.GrantedAuthority;
+
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public abstract class User {
+
     @Id
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    protected Long id;
     @NotNull
     private String fullName;
     @NotNull
@@ -19,6 +30,30 @@ public abstract class User {
     private String email;
     @NotNull
     private String password;
-    @Column(columnDefinition = "BLOB")
-    private byte[] profilePicture;
+
+    public List<GrantedAuthority> getAuthorities() {
+        return Arrays.asList(Role.USER.getAuthority());
+    }
+}
+
+enum Role {
+    USER(() -> "ROLE_USER"),
+    ADMIN(() -> "ROLE_ADMIN"),
+    TEACHER(() -> "ROLE_TEACHER"),
+    STUDENT(() -> "ROLE_STUDENT");
+
+    private final GrantedAuthority authority;
+
+    private Role(GrantedAuthority authority) {
+        this.authority = authority;
+    }
+
+    public GrantedAuthority getAuthority() {
+        return authority;
+    }
+
+    @Override
+    public String toString() {
+        return authority.getAuthority();
+    }
 }
