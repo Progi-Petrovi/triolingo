@@ -32,9 +32,9 @@ public class Teacher extends User {
     private Integer yearsOfExperience;
 
     @NotNull
-    @ElementCollection
     @Builder.Default
-    private List<String> qualifications = new LinkedList();
+    @Column(columnDefinition = "TEXT")
+    private String qualifications = "";
 
     @NotNull
     private TeachingStyle teachingStyle;

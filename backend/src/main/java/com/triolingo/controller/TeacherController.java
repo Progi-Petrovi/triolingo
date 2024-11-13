@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/teachers")
+@RequestMapping("/api/teacher")
 public class TeacherController {
 
     private final TeacherService teacherService;
@@ -59,7 +59,7 @@ public class TeacherController {
     public ResponseEntity<?> updateTeacher(@RequestBody TeacherCreateDTO teacherDto,
             @AuthenticationPrincipal DatabaseUser principal) {
         try {
-            teacherService.updateTeacher(principal.storedUser.getId(), teacherDto);
+            teacherService.updateTeacher(principal.getStoredUser().getId(), teacherDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
