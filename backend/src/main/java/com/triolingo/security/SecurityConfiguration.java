@@ -100,16 +100,18 @@ public class SecurityConfiguration {
 
     private void authenticationFailureHandler(HttpServletRequest request, HttpServletResponse response,
             RuntimeException exception) throws IOException, ServletException {
+        exception.printStackTrace(System.err);
+
         if (exception instanceof BadCredentialsException)
             frontendRedirect(response, env.getProperty("path.frontend.login"), Map.of("badCredentials", ""));
 
         else if (exception instanceof OAuth2PrincipalAuthenticationException
                 && exception.getCause() instanceof UsernameNotFoundException)
-            frontendRedirect(response, env.getProperty("path.frontend.student.register"), Map.of("oauthFailed", "",
+            frontendRedirect(response, env.getProperty("path.frontend.student.register"), Map.of("oAuth2Failed", "",
                     "email", ((OAuth2PrincipalAuthenticationException) exception).getPrincipalName()));
 
         else if (exception instanceof OAuth2AuthenticationException)
-            frontendRedirect(response, env.getProperty("path.frontend.student.register"), Map.of("oauthFailed", ""));
+            frontendRedirect(response, env.getProperty("path.frontend.login"), Map.of("oAuth2Failed", ""));
 
         else
             frontendRedirect(response, env.getProperty("path.frontend.login"), Map.of("internalError", ""));
