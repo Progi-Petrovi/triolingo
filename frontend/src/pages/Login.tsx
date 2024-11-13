@@ -73,12 +73,14 @@ export default function Login() {
 					</Button>
 				</form>
 				<div className="flex flex-col justify-center items-center pt-2">
-					<Link
-						to="http://localhost:8080/oauth2/authorization/github"
-						className="underline"
-					>
-						Log in with Github
-					</Link>
+					<Button variant="outline" className="w-full">
+						<Link
+							to="http://localhost:8080/oauth2/authorization/github"
+							className="text-white"
+						>
+							Log in with Github
+						</Link>
+					</Button>
 				</div>
 				<div className="flex flex-col justify-center items-center pt-2">
 					<p>Don&apos;t have an account?</p>
