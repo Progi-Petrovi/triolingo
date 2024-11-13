@@ -11,7 +11,7 @@ public record TeacherGetDTO(
         String fullName,
         List<Language> languages,
         Integer yearsOfExperience,
-        List<String> qualifications,
+        String qualifications,
         TeachingStyle teachingStyle,
         String profilePictureHash,
         Double hourlyRate) {

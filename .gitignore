@@ -57,3 +57,6 @@ buildNumber.properties
 HELP.md
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+### Hidden Properties with Secrets ###
+oauth2.properties
