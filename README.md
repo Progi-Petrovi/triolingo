@@ -4,8 +4,6 @@ Student project for FER Software Engineering.
 
 ## Setup - development enviroment
 
-## Setup - development enviroment
-
 ### Frontend
 
 #### Installing Node JS
