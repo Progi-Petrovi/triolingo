@@ -8,7 +8,7 @@ RUN mvn package
 FROM bellsoft/liberica-openjdk-alpine:21 AS deploy
 WORKDIR /app
 
-EXPOSE 80
+EXPOSE 8080
 COPY --from=build /app/target/*.jar app.jar
 
 CMD ["java", "-jar", "app.jar"]

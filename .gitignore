@@ -59,4 +59,4 @@ HELP.md
 !**/src/test/**/target/
 
 ### Hidden Properties with Secrets ###
-oauth2.properties
+secret.properties

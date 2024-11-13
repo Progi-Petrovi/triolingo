@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySources;
 @SpringBootApplication
 @PropertySources({
         @PropertySource("classpath:application.properties"),
-        @PropertySource("classpath:oauth2.properties")
+        @PropertySource("classpath:secret.properties")
 })
 public class TriolingoApplication {
 
