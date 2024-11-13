@@ -4,17 +4,13 @@ import { Link, LinkProps, redirect } from "react-router-dom";
 import { navConfig } from "@/config/header-nav";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
 
   const onOpenChange = (open: boolean) => {
-    setOpen(open)
+    setOpen(open);
   };
 
   const pathname = location.pathname;
@@ -47,7 +43,7 @@ export function MobileNav() {
       <DrawerContent className="max-h-[60svh] p-0">
         <div className="overflow-auto p-6">
           <div className="flex flex-col space-y-3">
-            {navConfig.mainNav?.map(
+            {navConfig.mainNavMobile?.map(
               (item) =>
                 item.href && (
                   <MobileLink
@@ -55,7 +51,9 @@ export function MobileNav() {
                     to={item.href}
                     onOpenChange={setOpen}
                     className={cn(
-                      pathname === item.href ? "text-foreground" : "text-foreground/60"
+                      pathname === item.href
+                        ? "text-foreground"
+                        : "text-foreground/60"
                     )}
                   >
                     {item.title}
@@ -70,9 +68,9 @@ export function MobileNav() {
 }
 
 interface MobileLinkProps extends LinkProps {
-  onOpenChange?: (open: boolean) => void
-  children: React.ReactNode
-  className?: string
+  onOpenChange?: (open: boolean) => void;
+  children: React.ReactNode;
+  className?: string;
 }
 
 function MobileLink({
@@ -86,8 +84,8 @@ function MobileLink({
     <Link
       to={to}
       onClick={() => {
-        redirect(to.toString())
-        onOpenChange?.(false)
+        redirect(to.toString());
+        onOpenChange?.(false);
       }}
       className={cn("text-base", className)}
       {...props}
