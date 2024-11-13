@@ -1,27 +1,33 @@
-import PathConstants from "@/routes/pathConstants"
-import { MainNavItem } from "@/types/nav"
+import PathConstants from "@/routes/pathConstants";
+import { MainNavItem } from "@/types/nav";
+
+const nav = [
+  {
+    title: "Login",
+    href: PathConstants.LOGIN,
+  },
+  {
+    title: "Register",
+    href: PathConstants.STUDENT_REGISTER,
+  },
+  {
+    title: "Become a teacher",
+    href: PathConstants.TEACHER_REGISTER,
+  },
+];
 
 export interface NavConfig {
-  mainNav: MainNavItem[]
+  mainNav: MainNavItem[];
+  mainNavMobile: MainNavItem[];
 }
 
 export const navConfig: NavConfig = {
-  mainNav: [
-    // {
-    //   title: "Home",
-    //   href: PathConstants.HOME,
-    // },
+  mainNav: nav,
+  mainNavMobile: [
     {
-      title: "Login",
-      href: PathConstants.LOGIN,
+      title: "Home",
+      href: PathConstants.HOME,
     },
-    {
-      title: "Register",
-      href: PathConstants.STUDENT_REGISTER,
-    },
-    {
-      title: "Become a teacher",
-      href: PathConstants.TEACHER_REGISTER,
-    },
-  ]
-}
+    ...nav,
+  ],
+};
