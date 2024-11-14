@@ -10,7 +10,8 @@ export default function Login() {
 	async function submitLogin(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		const body = new FormData(event.currentTarget);
-		fetch("http://localhost:8080/login", {
+		console.log(PathConstants.API_URL);
+		fetch(new URL("login", PathConstants.API_URL), {
 			method: "POST",
 			body,
 		}).then((res) => {

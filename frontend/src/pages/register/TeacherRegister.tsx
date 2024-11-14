@@ -54,7 +54,7 @@ export default function TeacherRegister() {
 	const [teachingLanguages, setTeachingLanguages] = useState<string[]>([]);
 
 	async function submitRegister(registrationData: TeacherRegistration) {
-		fetch("http://localhost:8080/teacher/register", {
+		fetch(new URL("teacher/register", PathConstants.API_URL), {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
