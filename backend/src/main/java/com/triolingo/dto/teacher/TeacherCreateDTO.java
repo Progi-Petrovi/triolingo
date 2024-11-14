@@ -2,15 +2,17 @@ package com.triolingo.dto.teacher;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import com.triolingo.entity.Teacher;
 import com.triolingo.entity.TeachingStyle;
-import com.triolingo.entity.language.Language;
+import com.triolingo.repository.LanguageRepository;
 
 public record TeacherCreateDTO(
         String email,
         String password,
         String fullName,
-        List<Language> languages,
+        List<String> languages,
         Integer yearsOfExperience,
         String qualifications,
         TeachingStyle teachingStyle,
@@ -21,7 +23,7 @@ public record TeacherCreateDTO(
         this(teacher.getEmail(),
                 teacher.getPassword(),
                 teacher.getFullName(),
-                teacher.getLanguages(),
+                teacher.getLanguages().stream().map(language -> language.getName()).toList(),
                 teacher.getYearsOfExperience(),
                 teacher.getQualifications(),
                 teacher.getTeachingStyle(),
@@ -29,12 +31,14 @@ public record TeacherCreateDTO(
                 teacher.getHourlyRate());
     }
 
-    public Teacher transformIntoTeacher() {
+    public Teacher transformIntoTeacher(LanguageRepository languageRepository, PasswordEncoder passwordEncoder) {
         return Teacher.builder()
                 .email(email)
-                .password(password)
+                .password(passwordEncoder.encode(password))
                 .fullName(fullName)
-                .languages(languages)
+                .languages(languages.stream()
+                        .map(languageName -> languageRepository.findByName(languageName).get())
+                        .toList())
                 .yearsOfExperience(yearsOfExperience)
                 .qualifications(qualifications)
                 .teachingStyle(teachingStyle)
@@ -42,15 +46,17 @@ public record TeacherCreateDTO(
                 .hourlyRate(hourlyRate).build();
     }
 
-    public void updateTeacher(Teacher teacher) {
+    public void updateTeacher(Teacher teacher, LanguageRepository languageRepository, PasswordEncoder passwordEncoder) {
         if (email != null)
             teacher.setEmail(email);
         if (password != null)
-            teacher.setPassword(password);
+            teacher.setPassword(passwordEncoder.encode(password));
         if (fullName != null)
             teacher.setFullName(fullName);
         if (fullName != null)
-            teacher.setLanguages(languages);
+            teacher.setLanguages(languages.stream()
+                    .map(languageName -> languageRepository.findByName(languageName).get())
+                    .toList());
         if (fullName != null)
             teacher.setYearsOfExperience(yearsOfExperience);
         if (fullName != null)

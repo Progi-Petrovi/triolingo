@@ -56,12 +56,13 @@ export default function TeacherRegister() {
 	async function submitRegister(registrationData: TeacherRegistration) {
 		fetch("http://localhost:8080/teacher/register", {
 			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
 			body: JSON.stringify(registrationData),
 		}).then((res) => {
-			if (res.status == 201)
-				redirect(
-					PathConstants.HOME
-				); //Instead of forcefully redirecting use react router somehow?
+			if (res.status == 201) redirect(PathConstants.HOME);
+			//Instead of forcefully redirecting use react router somehow?
 			else
 				toast({
 					title: "Registration failed...",

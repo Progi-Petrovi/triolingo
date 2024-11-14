@@ -2,23 +2,32 @@ package com.triolingo.service;
 
 import com.triolingo.dto.teacher.TeacherCreateDTO;
 import com.triolingo.entity.Teacher;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
+import com.triolingo.repository.LanguageRepository;
 import com.triolingo.repository.TeacherRepository;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class TeacherService {
 
     private final TeacherRepository teacherRepository;
+    private final LanguageRepository languageRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public TeacherService(TeacherRepository teacherRepository) {
+    public TeacherService(TeacherRepository teacherRepository, LanguageRepository languageRepository,
+            PasswordEncoder passwordEncoder) {
         this.teacherRepository = teacherRepository;
+        this.languageRepository = languageRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Teacher> listAll() {
@@ -30,7 +39,9 @@ public class TeacherService {
     }
 
     public Teacher createTeacher(TeacherCreateDTO teacherDto) {
-        return teacherRepository.save(teacherDto.transformIntoTeacher());
+        if (teacherRepository.existsByEmail(teacherDto.email()))
+            throw new EntityExistsException("Teacher with that email already exists");
+        return teacherRepository.save(teacherDto.transformIntoTeacher(languageRepository, passwordEncoder));
     }
 
     public Teacher updateTeacher(@NotNull Long id, @NotNull TeacherCreateDTO teacherDTO) {
@@ -39,7 +50,7 @@ public class TeacherService {
             throw new EntityNotFoundException("Teacher with that Id does not exist.");
 
         Teacher teacher = optionalTeacher.get();
-        teacherDTO.updateTeacher(teacher);
+        teacherDTO.updateTeacher(teacher, languageRepository, passwordEncoder);
         return teacherRepository.save(teacher);
     }
 

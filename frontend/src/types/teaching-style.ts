@@ -1,5 +1,5 @@
 export enum TeachingStyle {
-  INDIVIDUAL = "Individual",
-  GROUP = "Group",
-  FLEXIBLE = "Flexible",
+  INDIVIDUAL = "INDIVIDUAL",
+  GROUP = "GROUP",
+  FLEXIBLE = "FLEXIBLE",
 }
