@@ -77,10 +77,13 @@ export default function Login() {
 				<div className="flex flex-col justify-center items-center pt-2">
 					<Button variant="outline" className="w-full">
 						<Link
-							to={new URL(
-								"oauth2/authorization/github",
-								PathConstants.API_URL
-							).toString()}
+							to="#"
+							onClick={() =>
+								(window.location.href = new URL(
+									"oauth2/authorization/github",
+									PathConstants.API_URL
+								).toString())
+							}
 							className="text-white"
 						>
 							Log in with Github
