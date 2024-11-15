@@ -5,17 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PathConstants from "@/routes/pathConstants";
 import { FormEvent } from "react";
+import { useFetch } from "@/hooks/use-fetch";
 
 export default function Login() {
+	const fetch = useFetch();
+
 	async function submitLogin(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		const body = new FormData(event.currentTarget);
-		console.log(PathConstants.API_URL);
-		fetch(new URL("login", PathConstants.API_URL), {
+		await fetch("login", {
 			method: "POST",
 			body,
-		}).then((res) => {
-			if (res.redirected) window.location.href = res.url; //Instead of forcefully redirecting use react router somehow?
+			redirect: "follow",
 		});
 	}
 
@@ -76,7 +77,10 @@ export default function Login() {
 				<div className="flex flex-col justify-center items-center pt-2">
 					<Button variant="outline" className="w-full">
 						<Link
-							to="http://localhost:8080/oauth2/authorization/github"
+							to={new URL(
+								"oauth2/authorization/github",
+								PathConstants.API_URL
+							).toString()}
 							className="text-white"
 						>
 							Log in with Github

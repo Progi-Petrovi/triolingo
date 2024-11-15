@@ -22,8 +22,9 @@ import TeachingStyleFormField from "./components/TeachingStyleFormField";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TeacherRegistration } from "./types/registration-types";
-import { redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PathConstants from "@/routes/pathConstants";
+import { useFetch } from "@/hooks/use-fetch";
 
 const formSchema = z
 	.object({
@@ -52,17 +53,18 @@ export default function TeacherRegister() {
 	const allLanguages = ["English", "Spanish", "French", "Croatian"];
 	const { toast } = useToast();
 	const [teachingLanguages, setTeachingLanguages] = useState<string[]>([]);
+	const fetch = useFetch();
+	const navigate = useNavigate();
 
 	async function submitRegister(registrationData: TeacherRegistration) {
-		fetch(new URL("teacher/register", PathConstants.API_URL), {
+		fetch("teacher/register", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(registrationData),
 		}).then((res) => {
-			if (res.status == 201) redirect(PathConstants.HOME);
-			//Instead of forcefully redirecting use react router somehow?
+			if (res.status == 201) navigate(PathConstants.HOME);
 			else
 				toast({
 					title: "Registration failed...",
