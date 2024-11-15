@@ -1,10 +1,10 @@
 import { TeachingStyle } from "./teaching-style";
 
 export type TeacherTableRow = {
-  id: number;
-  name: string;
-  languages: string[];
-  teachingStyle: TeachingStyle;
-  yearsOfExperience: number;
-  hourlyRate: number;
+	id: number;
+	fullName: string;
+	languages: string[];
+	teachingStyle: TeachingStyle;
+	yearsOfExperience: number;
+	hourlyRate: number;
 };

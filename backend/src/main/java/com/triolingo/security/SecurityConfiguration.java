@@ -41,14 +41,7 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(this.corsConfiguration()))
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/teacher/register", "/student/register",
-                                "/login/*")
-                        .permitAll()
-                        .requestMatchers("/teacher/**").hasRole("TEACHER")
-                        .requestMatchers("/student/**").hasRole("STUDENT")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().permitAll())
+                .authorizeHttpRequests((auth) -> auth.anyRequest().permitAll())
                 .exceptionHandling((e) -> e.accessDeniedHandler(this::authenticationFailureHandler))
                 .formLogin(config -> config
                         .loginProcessingUrl("/login")
@@ -69,7 +62,7 @@ public class SecurityConfiguration {
     @Primary
     public CorsConfigurationSource corsConfiguration() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(List.of(env.getProperty("path.frontend.base")));
+        corsConfig.setAllowedOriginPatterns(List.of(env.getProperty("cors.allowedOrigin")));
         corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         corsConfig.setAllowedHeaders(List.of("Content-Type"));
         corsConfig.setAllowCredentials(true);
