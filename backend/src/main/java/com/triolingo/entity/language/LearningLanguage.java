@@ -13,7 +13,7 @@ public class LearningLanguage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
+    @ManyToOne
     private Language language;
     private KnowledgeLevel knowledgeLevel;
 }
