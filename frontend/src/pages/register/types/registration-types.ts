@@ -1,4 +1,4 @@
-import { PreferredTeachingStyle } from "@/types/teaching-style";
+import { TeachingStyle } from "@/types/teaching-style";
 import { LanguageLevel } from "@/types/language-level";
 
 type UserRegistration = {
@@ -6,7 +6,7 @@ type UserRegistration = {
   email: string;
   password: string;
   confirmPassword: string;
-  preferredTeachingStyle: PreferredTeachingStyle;
+  teachingStyle: TeachingStyle;
 };
 
 export type StudentRegistration = UserRegistration & {

@@ -5,7 +5,10 @@ import com.triolingo.dto.teacher.TeacherGetDTO;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.TeacherService;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/teachers")
+@RequestMapping("/teacher")
 public class TeacherController {
 
     private final TeacherService teacherService;
@@ -39,7 +42,19 @@ public class TeacherController {
     @PostMapping("/create")
     // @Secured("ROLE_ADMIN") // TODO: add when ADMIN is setup
     public ResponseEntity<?> createTeacher(@RequestBody TeacherCreateDTO teacherDto) {
+        try {
+            teacherService.createTeacher(teacherDto);
+        } catch (EntityExistsException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registerTeacher(@RequestBody TeacherCreateDTO teacherDto, HttpServletRequest request)
+            throws ServletException {
         teacherService.createTeacher(teacherDto);
+        request.login(teacherDto.email(), teacherDto.password());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -59,7 +74,7 @@ public class TeacherController {
     public ResponseEntity<?> updateTeacher(@RequestBody TeacherCreateDTO teacherDto,
             @AuthenticationPrincipal DatabaseUser principal) {
         try {
-            teacherService.updateTeacher(principal.storedUser.getId(), teacherDto);
+            teacherService.updateTeacher(principal.getStoredUser().getId(), teacherDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);

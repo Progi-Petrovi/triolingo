@@ -10,11 +10,13 @@ export default function Login() {
 	async function submitLogin(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		const body = new FormData(event.currentTarget);
-		const res = await fetch("http://localhost:8080/login", {
+		console.log(PathConstants.API_URL);
+		fetch(new URL("login", PathConstants.API_URL), {
 			method: "POST",
 			body,
+		}).then((res) => {
+			if (res.redirected) window.location.href = res.url; //Instead of forcefully redirecting use react router somehow?
 		});
-		if (res.status == 401) console.log("Failed to auth."); //TODO: create some kind of message for the user, the request might hold some info about the description of the error.
 	}
 
 	return (
@@ -71,6 +73,16 @@ export default function Login() {
 						Login
 					</Button>
 				</form>
+				<div className="flex flex-col justify-center items-center pt-2">
+					<Button variant="outline" className="w-full">
+						<Link
+							to="http://localhost:8080/oauth2/authorization/github"
+							className="text-white"
+						>
+							Log in with Github
+						</Link>
+					</Button>
+				</div>
 				<div className="flex flex-col justify-center items-center pt-2">
 					<p>Don&apos;t have an account?</p>
 					<Link
