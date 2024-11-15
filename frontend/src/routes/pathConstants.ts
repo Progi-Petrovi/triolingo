@@ -3,7 +3,7 @@ const PathConstants = {
     LOGIN: "/login",
     STUDENT_REGISTER: "/student/register",
     TEACHER_REGISTER: "/teacher/register",
-    API_URL: import.meta.env.VITE_API_URL ?? "http://localhost:8080",
-}
+    API_URL: import.meta.env.VITE_API_URL ?? "http://localhost:5000",
+};
 
-export default PathConstants
+export default PathConstants;
