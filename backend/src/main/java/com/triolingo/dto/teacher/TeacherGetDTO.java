@@ -4,12 +4,11 @@ import java.util.List;
 
 import com.triolingo.entity.Teacher;
 import com.triolingo.entity.TeachingStyle;
-import com.triolingo.entity.language.Language;
 
 public record TeacherGetDTO(
         Long id,
         String fullName,
-        List<Language> languages,
+        List<String> languages,
         Integer yearsOfExperience,
         String qualifications,
         TeachingStyle teachingStyle,
@@ -19,7 +18,7 @@ public record TeacherGetDTO(
     public TeacherGetDTO(Teacher teacher) {
         this(teacher.getId(),
                 teacher.getFullName(),
-                teacher.getLanguages(),
+                teacher.getLanguages().stream().map(language -> language.getName()).toList(),
                 teacher.getYearsOfExperience(),
                 teacher.getQualifications(),
                 teacher.getTeachingStyle(),
