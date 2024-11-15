@@ -20,7 +20,7 @@ export default function Home() {
 		fetchApi("teacher").then((res) => {
 			setTeachers(res.body as TeacherTableRow[]);
 		});
-	});
+	}, []);
 
 	return (
 		<div className="w-[80vw]">
