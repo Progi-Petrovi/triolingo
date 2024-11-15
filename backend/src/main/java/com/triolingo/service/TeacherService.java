@@ -38,28 +38,27 @@ public class TeacherService {
         return teacherRepository.findById(id).orElse(null);
     }
 
-    public Teacher createTeacher(TeacherCreateDTO teacherDto) {
+    public void createTeacher(TeacherCreateDTO teacherDto) {
         if (teacherRepository.existsByEmail(teacherDto.email()))
             throw new EntityExistsException("Teacher with that email already exists");
-        return teacherRepository.save(teacherDto.transformIntoTeacher(languageRepository, passwordEncoder));
+        teacherRepository.save(teacherDto.transformIntoTeacher(languageRepository, passwordEncoder));
     }
 
-    public Teacher updateTeacher(@NotNull Long id, @NotNull TeacherCreateDTO teacherDTO) {
+    public void updateTeacher(@NotNull Long id, @NotNull TeacherCreateDTO teacherDTO) {
         Optional<Teacher> optionalTeacher = teacherRepository.findById(id);
         if (optionalTeacher.isEmpty())
             throw new EntityNotFoundException("Teacher with that Id does not exist.");
 
         Teacher teacher = optionalTeacher.get();
         teacherDTO.updateTeacher(teacher, languageRepository, passwordEncoder);
-        return teacherRepository.save(teacher);
+        teacherRepository.save(teacher);
     }
 
-    public Teacher deleteTeacher(Long id) {
+    public void deleteTeacher(Long id) {
         Teacher teacher = fetch(id);
         if (teacher == null)
             throw new EntityNotFoundException("Teacher with that Id does not exist.");
         teacherRepository.deleteById(id); // or .delete(teacher);
-        return teacher;
     }
 
 }
