@@ -69,7 +69,7 @@ public class SecurityConfiguration {
     @Primary
     public CorsConfigurationSource corsConfiguration() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(List.of(env.getProperty("path.frontend.base")));
+        corsConfig.setAllowedOriginPatterns(List.of(env.getProperty("cors.allowedOrigin")));
         corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         corsConfig.setAllowedHeaders(List.of("Content-Type"));
         corsConfig.setAllowCredentials(true);
