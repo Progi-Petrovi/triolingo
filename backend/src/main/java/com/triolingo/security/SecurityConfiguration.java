@@ -41,14 +41,7 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(this.corsConfiguration()))
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/teacher/register", "/student/register",
-                                "/login/*")
-                        .permitAll()
-                        .requestMatchers("/teacher/**").hasRole("TEACHER")
-                        .requestMatchers("/student/**").hasRole("STUDENT")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().permitAll())
+                .authorizeHttpRequests((auth) -> auth.anyRequest().permitAll())
                 .exceptionHandling((e) -> e.accessDeniedHandler(this::authenticationFailureHandler))
                 .formLogin(config -> config
                         .loginProcessingUrl("/login")
