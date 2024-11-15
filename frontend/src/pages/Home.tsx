@@ -41,7 +41,7 @@ export default function Home() {
 					{teachers.map((teacher) => (
 						<TableRow key={teacher.id}>
 							<TableCell className="font-medium">
-								{teacher.name}
+								{teacher.fullName}
 							</TableCell>
 							<TableCell>
 								{teacher.languages.join(", ")}
