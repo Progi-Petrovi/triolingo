@@ -1,17 +1,15 @@
 package com.triolingo.service;
 
 import com.triolingo.dto.teacher.TeacherCreateDTO;
+import com.triolingo.dto.teacher.TeacherTranslator;
 import com.triolingo.entity.Teacher;
+import com.triolingo.repository.TeacherRepository;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
-
-import com.triolingo.repository.LanguageRepository;
-import com.triolingo.repository.TeacherRepository;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,14 +18,11 @@ import jakarta.persistence.EntityNotFoundException;
 public class TeacherService {
 
     private final TeacherRepository teacherRepository;
-    private final LanguageRepository languageRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final TeacherTranslator teacherTranslator;
 
-    public TeacherService(TeacherRepository teacherRepository, LanguageRepository languageRepository,
-            PasswordEncoder passwordEncoder) {
+    public TeacherService(TeacherRepository teacherRepository, TeacherTranslator teacherTranslator) {
         this.teacherRepository = teacherRepository;
-        this.languageRepository = languageRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.teacherTranslator = teacherTranslator;
     }
 
     public List<Teacher> listAll() {
@@ -41,7 +36,7 @@ public class TeacherService {
     public void createTeacher(TeacherCreateDTO teacherDto) {
         if (teacherRepository.existsByEmail(teacherDto.email()))
             throw new EntityExistsException("Teacher with that email already exists");
-        teacherRepository.save(teacherDto.transformIntoTeacher(languageRepository, passwordEncoder));
+        return teacherRepository.save(teacherTranslator.fromDTO(teacherDto));
     }
 
     public void updateTeacher(@NotNull Long id, @NotNull TeacherCreateDTO teacherDTO) {
@@ -50,8 +45,8 @@ public class TeacherService {
             throw new EntityNotFoundException("Teacher with that Id does not exist.");
 
         Teacher teacher = optionalTeacher.get();
-        teacherDTO.updateTeacher(teacher, languageRepository, passwordEncoder);
-        teacherRepository.save(teacher);
+        teacherTranslator.updateTeacher(teacher, teacherDTO);
+        return teacherRepository.save(teacher);
     }
 
     public void deleteTeacher(Long id) {

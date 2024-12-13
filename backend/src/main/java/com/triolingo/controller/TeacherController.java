@@ -2,6 +2,7 @@ package com.triolingo.controller;
 
 import com.triolingo.dto.teacher.TeacherCreateDTO;
 import com.triolingo.dto.teacher.TeacherGetDTO;
+import com.triolingo.dto.teacher.TeacherTranslator;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.TeacherService;
 
@@ -23,20 +24,22 @@ import java.util.List;
 public class TeacherController {
 
     private final TeacherService teacherService;
+    private final TeacherTranslator teacherTranslator;
 
-    public TeacherController(TeacherService teacherService) {
+    public TeacherController(TeacherService teacherService, TeacherTranslator teacherTranslator) {
         this.teacherService = teacherService;
+        this.teacherTranslator = teacherTranslator;
     }
 
     @GetMapping
     public List<TeacherGetDTO> listTeachers() {
-        return teacherService.listAll().stream().map(TeacherGetDTO::new).toList();
+        return teacherService.listAll().stream().map((teacher) -> teacherTranslator.toDTO(teacher)).toList();
     }
 
     @GetMapping("/{id}")
     @Secured("ROLE_USER") // TODO: add ROLE_GUEST when guest is setup
     public TeacherGetDTO getTeacher(@PathVariable("id") Long id) {
-        return new TeacherGetDTO(teacherService.fetch(id));
+        return teacherTranslator.toDTO(teacherService.fetch(id));
     }
 
     @PostMapping("/create")
