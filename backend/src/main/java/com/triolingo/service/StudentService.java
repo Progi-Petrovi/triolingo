@@ -1,16 +1,15 @@
 package com.triolingo.service;
 
 import com.triolingo.dto.student.StudentCreateDTO;
+import com.triolingo.dto.student.StudentTranslator;
 import com.triolingo.entity.Student;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
-import com.triolingo.repository.LanguageRepository;
 import com.triolingo.repository.StudentRepository;
 
 import jakarta.persistence.EntityExistsException;
@@ -20,14 +19,12 @@ import jakarta.persistence.EntityNotFoundException;
 public class StudentService {
 
     private final StudentRepository studentRepository;
-    private final LanguageRepository languageRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final StudentTranslator studentTranslator;
 
-    public StudentService(StudentRepository studentRepository, LanguageRepository languageRepository,
-                          PasswordEncoder passwordEncoder) {
+    public StudentService(StudentRepository studentRepository,
+            StudentTranslator studentTranslator) {
         this.studentRepository = studentRepository;
-        this.languageRepository = languageRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.studentTranslator = studentTranslator;
     }
 
     public List<Student> listAll() {
@@ -41,7 +38,7 @@ public class StudentService {
     public void createStudent(StudentCreateDTO studentDto) {
         if (studentRepository.existsByEmail(studentDto.email()))
             throw new EntityExistsException("Student with that email already exists");
-        studentRepository.save(studentDto.transformIntoStudent(languageRepository, passwordEncoder));
+        studentRepository.save(studentTranslator.fromDTO(studentDto));
     }
 
     public void updateStudent(@NotNull Long id, @NotNull StudentCreateDTO studentDTO) {
@@ -50,7 +47,7 @@ public class StudentService {
             throw new EntityNotFoundException("Student with that Id does not exist.");
 
         Student student = optionalStudent.get();
-        studentDTO.updateStudent(student, languageRepository, passwordEncoder);
+        studentTranslator.updateStudent(student, studentDTO);
         studentRepository.save(student);
     }
 
@@ -58,7 +55,7 @@ public class StudentService {
         Student student = fetch(id);
         if (student == null)
             throw new EntityNotFoundException("Student with that Id does not exist.");
-        studentRepository.deleteById(id); // or .delete(student);
+        studentRepository.deleteById(id);
     }
 
 }

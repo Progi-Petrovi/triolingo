@@ -53,7 +53,7 @@ public class TeacherService {
         Teacher teacher = fetch(id);
         if (teacher == null)
             throw new EntityNotFoundException("Teacher with that Id does not exist.");
-        teacherRepository.deleteById(id); // or .delete(teacher);
+        teacherRepository.deleteById(id);
     }
 
 }
