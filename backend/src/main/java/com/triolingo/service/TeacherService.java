@@ -33,13 +33,13 @@ public class TeacherService {
         return teacherRepository.findById(id).orElse(null);
     }
 
-    public void createTeacher(TeacherCreateDTO teacherDto) {
+    public Teacher createTeacher(TeacherCreateDTO teacherDto) {
         if (teacherRepository.existsByEmail(teacherDto.email()))
             throw new EntityExistsException("Teacher with that email already exists");
         return teacherRepository.save(teacherTranslator.fromDTO(teacherDto));
     }
 
-    public void updateTeacher(@NotNull Long id, @NotNull TeacherCreateDTO teacherDTO) {
+    public Teacher updateTeacher(@NotNull Long id, @NotNull TeacherCreateDTO teacherDTO) {
         Optional<Teacher> optionalTeacher = teacherRepository.findById(id);
         if (optionalTeacher.isEmpty())
             throw new EntityNotFoundException("Teacher with that Id does not exist.");
