@@ -2,6 +2,7 @@ package com.triolingo.controller;
 
 import com.triolingo.dto.student.StudentCreateDTO;
 import com.triolingo.dto.student.StudentGetDTO;
+import com.triolingo.dto.student.StudentTranslator;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.StudentService;
 
@@ -23,21 +24,23 @@ import java.util.List;
 public class StudentController {
 
     private final StudentService studentService;
+    private final StudentTranslator studentTranslator;
 
-    public StudentController(StudentService studentService) {
+    public StudentController(StudentService studentService, StudentTranslator studentTranslator) {
         this.studentService = studentService;
+        this.studentTranslator = studentTranslator;
     }
 
     @GetMapping
     // @Secured("ROLE_ADMIN") // TODO: add when ADMIN is setup
     public List<StudentGetDTO> listStudents() {
-        return studentService.listAll().stream().map(StudentGetDTO::new).toList();
+        return studentService.listAll().stream().map(student -> studentTranslator.toDTO(student)).toList();
     }
 
     @GetMapping("/{id}")
     // @Secured("ROLE_ADMIN") // TODO: add when ADMIN is setup
     public StudentGetDTO getStudent(@PathVariable("id") Long id) {
-        return new StudentGetDTO(studentService.fetch(id));
+        return studentTranslator.toDTO(studentService.fetch(id));
     }
 
     @PostMapping("/create")
@@ -73,7 +76,7 @@ public class StudentController {
     @PutMapping("/update")
     @Secured("ROLE_STUDENT")
     public ResponseEntity<?> updateStudent(@RequestBody StudentCreateDTO studentDto,
-                                           @AuthenticationPrincipal DatabaseUser principal) {
+            @AuthenticationPrincipal DatabaseUser principal) {
         try {
             studentService.updateStudent(principal.getStoredUser().getId(), studentDto);
             return new ResponseEntity<>(HttpStatus.OK);
