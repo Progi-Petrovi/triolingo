@@ -6,6 +6,12 @@ import com.triolingo.dto.teacher.TeacherTranslator;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.TeacherService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
@@ -31,19 +37,42 @@ public class TeacherController {
         this.teacherTranslator = teacherTranslator;
     }
 
-    @GetMapping
+    @GetMapping("/all")
+    @Secured("ROLE_ADMIN")
+    @Operation(description = "Returns information regarding all teachers registered within the application.")
     public List<TeacherGetDTO> listTeachers() {
         return teacherService.listAll().stream().map((teacher) -> teacherTranslator.toDTO(teacher)).toList();
     }
 
     @GetMapping("/{id}")
     @Secured("ROLE_USER") // TODO: add ROLE_GUEST when guest is setup
+    @Operation(description = "Returns information regarding teacher with {id}.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
     public TeacherGetDTO getTeacher(@PathVariable("id") Long id) {
         return teacherTranslator.toDTO(teacherService.fetch(id));
     }
 
+    @GetMapping("/")
+    @Secured("ROLE_TEACHER") // TODO: add ROLE_GUEST when guest is setup
+    @Operation(description = "Returns information regarding teacher the current principal is logged in as.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
+    public TeacherGetDTO getTeacher(@AuthenticationPrincipal DatabaseUser principal) {
+        return teacherTranslator.toDTO(teacherService.fetch(principal.getStoredUser().getId()));
+    }
+
     @PostMapping("/create")
-    // @Secured("ROLE_ADMIN") // TODO: add when ADMIN is setup
+    @Secured("ROLE_ADMIN")
+    @Operation(description = "Creates a new teacher.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Teacher with that email already exists.", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
     public ResponseEntity<?> createTeacher(@RequestBody TeacherCreateDTO teacherDto) {
         try {
             teacherService.createTeacher(teacherDto);
@@ -54,6 +83,11 @@ public class TeacherController {
     }
 
     @PostMapping("/register")
+    @Operation(description = "Creates a new teacher and logs the current principal in as that student.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Teacher with that email already exists.", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
     public ResponseEntity<?> registerTeacher(@RequestBody TeacherCreateDTO teacherDto, HttpServletRequest request)
             throws ServletException {
         teacherService.createTeacher(teacherDto);
@@ -62,7 +96,12 @@ public class TeacherController {
     }
 
     @PutMapping("/update/{id}")
-    // @Secured("ROLE_ADMIN") // TODO: add when ADMIN is setup
+    @Secured("ROLE_ADMIN")
+    @Operation(description = "Updates the teacher with {id}.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
     public ResponseEntity<?> updateTeacher(@PathVariable("id") Long id, @RequestBody TeacherCreateDTO teacherDto) {
         try {
             teacherService.updateTeacher(id, teacherDto);
@@ -74,6 +113,11 @@ public class TeacherController {
 
     @PutMapping("/update")
     @Secured("ROLE_TEACHER")
+    @Operation(description = "Updates the teacher the current principal is logged in as.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
     public ResponseEntity<?> updateTeacher(@RequestBody TeacherCreateDTO teacherDto,
             @AuthenticationPrincipal DatabaseUser principal) {
         try {
@@ -85,7 +129,12 @@ public class TeacherController {
     }
 
     @DeleteMapping("/{id}")
-    // @Secured("ROLE_ADMIN") // TODO: add when ADMIN is setup
+    @Secured("ROLE_ADMIN")
+    @Operation(description = "Deletes the teacher with {id}.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
     public ResponseEntity<?> deleteTeacher(@PathVariable("id") Long id) {
         try {
             teacherService.deleteTeacher(id);

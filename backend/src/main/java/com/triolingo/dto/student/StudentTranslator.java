@@ -5,12 +5,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.triolingo.entity.*;
 import com.triolingo.entity.language.*;
 import com.triolingo.repository.LanguageRepository;
 import com.triolingo.repository.LearningLanguageRepository;
 
+@Service
 public class StudentTranslator {
 
     private final PasswordEncoder passwordEncoder;
