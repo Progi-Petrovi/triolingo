@@ -1,61 +1,64 @@
+
 # Triolingo
 
-Student project for FER Software Engineering.
+## Opis projekta
 
-## Setup - development environment
+Ovaj projekt rezultat je timskog rada razvijenog u sklopu projektnog zadatka kolegija [Programsko inženjerstvo](https://www.fer.unizg.hr/predmet/proinz) na Fakultetu elektrotehnike i računarstva Sveučilišta u Zagrebu.
+
+## Postavljanje - razvojno okruženje
 
 ### Frontend
 
-#### Installing Node JS
+#### Instalacija Node JS-a
 
-Refer to https://nodejs.org/en/ for installing node.js.
+Posjetite [Node.js](https://nodejs.org/en/) za instalaciju Node.js-a.
 
-#### Installing dependencies
+#### Instalacija ovisnosti
 
-In the terminal, go to the `frontend/` directory and run
+U terminalu idite u direktorij `frontend/` i pokrenite:
 ```bash
 npm install
 ```
 
-#### Starting the development server
+#### Pokretanje razvojnog poslužitelja
 
-To start the Vite app and test whether you've done everything correctly, run
+Za pokretanje Vite aplikacije i provjeru je li sve ispravno postavljeno, pokrenite:
 ```bash
 npm run dev
 ```
 
 ### Backend
 
-#### Installing Maven and Java 21 JDK
+#### Instalacija Maven-a i Java 21 JDK-a
 
-Refer to https://maven.apache.org/install.html for installing Maven.
+Posjetite [Maven](https://maven.apache.org/install.html) za instalaciju Maven-a.
 
-Refer to https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html for installing the JDK.
+Posjetite [Oracle JDK](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html) za instalaciju JDK-a.
 
-#### Running project
+#### Pokretanje projekta
 
-From the `/backend` directory, run
-```sh
+Iz direktorija `/backend` pokrenite:
+```bash
 mvn spring-boot:run
 ```
 
-## Setup - production environment
+## Postavljanje - produkcijsko okruženje
 
-### Installing docker
+### Instalacija Docker-a
 
-Refer to https://docs.docker.com/engine/install for installing the docker engine.
+Posjetite [Docker](https://docs.docker.com/engine/install) za instalaciju Docker-a.
 
-### Building the images
+### Izrada slika
 
-While in the project root, run
+Dok ste u korijenu projekta, pokrenite:
 ```bash
 docker build -f /backend/deploy/Dockerfile -t triolingo-backend
 docker build -f /frontend/deploy/Dockerfile -t triolingo-frontend
 ```
 
-### Running the containers
+### Pokretanje kontejnera
 
-In any terminal, run
+U bilo kojem terminalu pokrenite:
 ```bash
 docker run -p 5000:80 triolingo-backend -d
 docker run -p 80:80 triolingo-frontend -d
@@ -63,18 +66,17 @@ docker run -p 80:80 triolingo-frontend -d
 
 ### Docker Compose
 
-Alternatively, you can run the application using docker-compose.
+Alternativno, aplikaciju možete pokrenuti koristeći docker-compose.
 
-While in the project root, run
+Dok ste u korijenu projekta, pokrenite:
 ```bash
- docker compose up -d
+docker compose up -d
 ```
 
+## Contribuiranje
 
-## Contributing
+Molimo pročitajte [CONTRIBUTING.md](https://github.com/Progi-Petrovi/Triolingo/blob/main/CONTRIBUTING.md) prije nego što doprinosite ovom projektu.
 
-Please read [CONTRIBUTING.md](https://github.com/Progi-Petrovi/Triolingo/blob/main/CONTRIBUTING.md) before contributing to this project.
+## Licenca
 
-## License
-
-This project is protected under the [MIT license](https://github.com/Progi-Petrovi/Triolingo/blob/main/LICENSE).
+Ovaj projekt je zaštićen [MIT licencom](https://github.com/Progi-Petrovi/Triolingo/blob/main/LICENSE).
