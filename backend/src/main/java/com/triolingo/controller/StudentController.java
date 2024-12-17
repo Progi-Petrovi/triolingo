@@ -56,7 +56,7 @@ public class StudentController {
     }
 
     @GetMapping("/")
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_STUDENT")
     @Operation(description = "Returns information regarding student the current principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
