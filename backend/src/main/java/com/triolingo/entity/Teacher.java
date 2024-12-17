@@ -40,7 +40,7 @@ public class Teacher extends User {
     private TeachingStyle teachingStyle;
 
     @Builder.Default()
-    private String profilePictureHash = null;
+    private String profileImageHash = null;
 
     @NotNull
     private Double hourlyRate;
