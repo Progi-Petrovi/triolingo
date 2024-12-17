@@ -1,10 +1,12 @@
 package com.triolingo.dto.teacher;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.triolingo.entity.Teacher;
 import com.triolingo.repository.LanguageRepository;
 
+@Service
 public class TeacherTranslator {
 
     private final PasswordEncoder passwordEncoder;

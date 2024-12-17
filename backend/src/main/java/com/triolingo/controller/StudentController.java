@@ -6,6 +6,12 @@ import com.triolingo.dto.student.StudentTranslator;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.StudentService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
@@ -31,20 +37,42 @@ public class StudentController {
         this.studentTranslator = studentTranslator;
     }
 
-    @GetMapping
-    // @Secured("ROLE_ADMIN") // TODO: add when ADMIN is setup
+    @GetMapping("/all")
+    @Secured("ROLE_ADMIN")
+    @Operation(description = "Returns information regarding all students registered within the application.")
     public List<StudentGetDTO> listStudents() {
         return studentService.listAll().stream().map(student -> studentTranslator.toDTO(student)).toList();
     }
 
     @GetMapping("/{id}")
-    // @Secured("ROLE_ADMIN") // TODO: add when ADMIN is setup
+    @Secured("ROLE_ADMIN")
+    @Operation(description = "Returns information regarding student with {id}.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
     public StudentGetDTO getStudent(@PathVariable("id") Long id) {
         return studentTranslator.toDTO(studentService.fetch(id));
     }
 
+    @GetMapping("/")
+    @Secured("ROLE_STUDENT")
+    @Operation(description = "Returns information regarding student the current principal is logged in as.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
+    public StudentGetDTO getStudent(@AuthenticationPrincipal DatabaseUser principal) {
+        return studentTranslator.toDTO(studentService.fetch(principal.getStoredUser().getId()));
+    }
+
     @PostMapping("/create")
-    // @Secured("ROLE_ADMIN") // TODO: add when ADMIN is setup
+    @Secured("ROLE_ADMIN")
+    @Operation(description = "Creates a new student.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Student with that email already exists.", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
     public ResponseEntity<?> createStudent(@RequestBody StudentCreateDTO studentDto) {
         try {
             studentService.createStudent(studentDto);
@@ -55,6 +83,11 @@ public class StudentController {
     }
 
     @PostMapping("/register")
+    @Operation(description = "Creates a new student and logs the current principal in as that student.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Student with that email already exists.", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
     public ResponseEntity<?> registerStudent(@RequestBody StudentCreateDTO studentDto, HttpServletRequest request)
             throws ServletException {
         studentService.createStudent(studentDto);
@@ -63,7 +96,12 @@ public class StudentController {
     }
 
     @PutMapping("/update/{id}")
-    // @Secured("ROLE_ADMIN") // TODO: add when ADMIN is setup
+    @Secured("ROLE_ADMIN")
+    @Operation(description = "Updates the student with {id}.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
     public ResponseEntity<?> updateStudent(@PathVariable("id") Long id, @RequestBody StudentCreateDTO studentDto) {
         try {
             studentService.updateStudent(id, studentDto);
@@ -75,6 +113,11 @@ public class StudentController {
 
     @PutMapping("/update")
     @Secured("ROLE_STUDENT")
+    @Operation(description = "Updates the student the current principal is logged in as.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
     public ResponseEntity<?> updateStudent(@RequestBody StudentCreateDTO studentDto,
             @AuthenticationPrincipal DatabaseUser principal) {
         try {
@@ -86,7 +129,12 @@ public class StudentController {
     }
 
     @DeleteMapping("/{id}")
-    // @Secured("ROLE_ADMIN") // TODO: add when ADMIN is setup
+    @Secured("ROLE_ADMIN")
+    @Operation(description = "Deletes the student with {id}.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
     public ResponseEntity<?> deleteStudent(@PathVariable("id") Long id) {
         try {
             studentService.deleteStudent(id);
