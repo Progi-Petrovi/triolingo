@@ -9,16 +9,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.env.Environment;
 
+import javax.imageio.ImageIO;
 import javax.validation.constraints.NotNull;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -80,22 +85,43 @@ public class TeacherService {
 
     public String uploadProfileImage(@NotNull MultipartFile file, Teacher teacher)
             throws NoSuchAlgorithmException, IOException {
-        if (file.getContentType() != "image/jpeg")
-            throw new IllegalArgumentException("File must be of type 'image/jpeg'");
+        String contentType = file.getContentType();
+        if (contentType == null)
+            throw new IllegalArgumentException(
+                    "You must send a jpeg file.");
+        if (!contentType.equals("image/jpeg"))
+            throw new IllegalArgumentException(
+                    "File must be of type 'image/jpeg', and not '" + file.getContentType() + "'");
 
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hash = digest.digest(file.getBytes());
-        String fileName = new String(hash, StandardCharsets.ISO_8859_1);
+        // Turn MultipartFile into awt image, so we can resize it into a required
+        // resolution and save it.
+        @SuppressWarnings("null")
+        int imageSize = env.getProperty("profileImage.saveSize", Integer.class);
+        Image image = ImageIO.read(file.getInputStream()).getScaledInstance(imageSize, imageSize, Image.SCALE_SMOOTH);
+        if (image == null)
+            throw new IllegalArgumentException(
+                    "Unable to process image, it may be of the incorrect media type or corrupted.");
+        BufferedImage resizedImage = new BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_RGB);
 
-        Files.copy(file.getInputStream(), Path.of(
-                env.getProperty("fileSystem.publicPath"),
+        Graphics2D graphics = resizedImage.createGraphics();
+        graphics.drawImage(image, 0, 0, null);
+        graphics.dispose();
+
+        String fileName = UUID.randomUUID().toString();
+
+        File imageSaveFile = Path.of(env.getProperty("fileSystem.publicPath"),
                 env.getProperty("fileSystem.profileImagePath"),
-                fileName));
+                fileName + ".jpg").toFile();
+        System.out.println(imageSaveFile.getAbsolutePath());
+        System.out.println(Arrays.toString(ImageIO.getWriterFormatNames()));
+        if (!ImageIO.write(resizedImage, "jpg", imageSaveFile))
+            throw new RuntimeException("Failed to save new profile image.");
+
         if (teacher.getProfileImageHash() != null)
             Files.deleteIfExists(
                     Path.of(env.getProperty("fileSystem.publicPath"),
                             env.getProperty("fileSystem.profileImagePath"),
-                            teacher.getProfileImageHash()));
+                            teacher.getProfileImageHash() + ".jpg"));
 
         teacher.setProfileImageHash(fileName);
         teacherRepository.save(teacher);
