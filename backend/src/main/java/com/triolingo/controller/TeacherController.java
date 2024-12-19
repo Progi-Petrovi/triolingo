@@ -149,9 +149,9 @@ public class TeacherController {
         }
     }
 
-    @Secured("ROLE_TEACHER")
-    @RequestMapping(path = "/update/profileImage", method = RequestMethod.POST, consumes = MediaType.IMAGE_JPEG_VALUE)
-    @Operation(description = "Expects an 'image/jpeg' file, saves it, assigns a hash and saves it under that hash. The images are statically provided on images/profile/{image-hash}.jpg")
+    @Secured({ "ROLE_TEACHER" })
+    @RequestMapping(path = "/update/profileImage", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(description = "Expects a 'multipart/form-data' with an image file. Assigns a hash to the file and saves it under that hash. The images are statically provided on images/profile/{image-hash}.jpg")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The filename (hash) of the saved file.", content = @Content(mediaType = "text/plain")),
             @ApiResponse(responseCode = "400", description = "Image is of the incorrect type.", content = @Content(schema = @Schema(implementation = Void.class)))
@@ -163,9 +163,10 @@ public class TeacherController {
         try {
             fileName = teacherService.uploadProfileImage(file, (Teacher) principal.getStoredUser());
         } catch (IllegalArgumentException e) {
+            System.err.println(e);
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<String>(fileName, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<String>(fileName, HttpStatus.CREATED);
     }
 
 }
