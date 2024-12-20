@@ -7,13 +7,16 @@ import java.util.Map;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.web.cors.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -25,6 +28,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
     private final DatabaseUserService databaseUserService;
@@ -42,7 +47,8 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(this.corsConfiguration()))
                 .authorizeHttpRequests((auth) -> auth.anyRequest().permitAll())
-                .exceptionHandling((e) -> e.accessDeniedHandler(this::authenticationFailureHandler))
+                .exceptionHandling((e) -> e.accessDeniedHandler(this::authenticationFailureHandler)
+                        .authenticationEntryPoint(new Http403ForbiddenEntryPoint()))
                 .formLogin(config -> config
                         .loginProcessingUrl("/login")
                         .usernameParameter("email")

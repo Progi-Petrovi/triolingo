@@ -29,7 +29,7 @@ public class TeacherTranslator {
                 .yearsOfExperience(dto.yearsOfExperience())
                 .qualifications(dto.qualifications())
                 .teachingStyle(dto.teachingStyle())
-                .profilePictureHash(dto.profilePictureHash())
+                .profileImageHash(dto.profileImageHash())
                 .hourlyRate(dto.hourlyRate()).build();
     }
 
@@ -40,7 +40,7 @@ public class TeacherTranslator {
                 teacher.getYearsOfExperience(),
                 teacher.getQualifications(),
                 teacher.getTeachingStyle(),
-                teacher.getProfilePictureHash(),
+                teacher.getProfileImageHash(),
                 teacher.getHourlyRate());
     }
 
@@ -61,8 +61,8 @@ public class TeacherTranslator {
             teacher.setQualifications(dto.qualifications());
         if (dto.teachingStyle() != null)
             teacher.setTeachingStyle(dto.teachingStyle());
-        if (dto.profilePictureHash() != null)
-            teacher.setProfilePictureHash(dto.profilePictureHash());
+        if (dto.profileImageHash() != null)
+            teacher.setProfileImageHash(dto.profileImageHash());
         if (dto.hourlyRate() != null)
             teacher.setHourlyRate(dto.hourlyRate());
 
