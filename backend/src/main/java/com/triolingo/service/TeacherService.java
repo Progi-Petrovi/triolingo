@@ -107,11 +107,11 @@ public class TeacherService {
         graphics.drawImage(image, 0, 0, null);
         graphics.dispose();
 
-        String fileName = UUID.randomUUID().toString();
+        String fileName = UUID.randomUUID().toString() + ".jpg";
 
         File imageSaveFile = Path.of(env.getProperty("fileSystem.publicPath"),
                 env.getProperty("fileSystem.profileImagePath"),
-                fileName + ".jpg").toFile();
+                fileName).toFile();
         System.out.println(imageSaveFile.getAbsolutePath());
         System.out.println(Arrays.toString(ImageIO.getWriterFormatNames()));
         if (!ImageIO.write(resizedImage, "jpg", imageSaveFile))
@@ -121,7 +121,7 @@ public class TeacherService {
             Files.deleteIfExists(
                     Path.of(env.getProperty("fileSystem.publicPath"),
                             env.getProperty("fileSystem.profileImagePath"),
-                            teacher.getProfileImageHash() + ".jpg"));
+                            teacher.getProfileImageHash()));
 
         teacher.setProfileImageHash(fileName);
         teacherRepository.save(teacher);
