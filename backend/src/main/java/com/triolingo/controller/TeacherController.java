@@ -160,7 +160,7 @@ public class TeacherController {
             @ApiResponse(responseCode = "200", description = "The filename (hash) of the saved file.", content = @Content(mediaType = "text/plain")),
             @ApiResponse(responseCode = "400", description = "Image is of the incorrect type.", content = @Content(schema = @Schema(implementation = Void.class)))
     })
-    public ResponseEntity<?> updateProfileImage(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<?> updateProfileImage(@RequestParam(value = "file") MultipartFile file,
             @AuthenticationPrincipal DatabaseUser principal)
             throws ServletException, NoSuchAlgorithmException, IOException {
         String fileName;
