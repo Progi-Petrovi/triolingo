@@ -95,7 +95,11 @@ public class TeacherController {
     })
     public ResponseEntity<?> registerTeacher(@RequestBody TeacherCreateDTO teacherDto, HttpServletRequest request)
             throws ServletException {
-        teacherService.createTeacher(teacherDto);
+        try {
+            teacherService.createTeacher(teacherDto);
+        } catch (EntityExistsException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         request.login(teacherDto.email(), teacherDto.password());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
