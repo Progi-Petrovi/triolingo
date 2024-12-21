@@ -11,7 +11,7 @@ public record TeacherCreateDTO(
         Integer yearsOfExperience,
         String qualifications,
         TeachingStyle teachingStyle,
-        String profilePictureHash,
+        String profileImageHash,
         Double hourlyRate) {
 
 }

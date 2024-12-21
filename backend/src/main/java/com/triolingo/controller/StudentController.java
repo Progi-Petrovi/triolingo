@@ -90,7 +90,11 @@ public class StudentController {
     })
     public ResponseEntity<?> registerStudent(@RequestBody StudentCreateDTO studentDto, HttpServletRequest request)
             throws ServletException {
-        studentService.createStudent(studentDto);
+        try {
+            studentService.createStudent(studentDto);
+        } catch (EntityExistsException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         request.login(studentDto.email(), studentDto.password());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
