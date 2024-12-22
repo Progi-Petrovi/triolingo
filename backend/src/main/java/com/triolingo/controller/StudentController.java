@@ -41,7 +41,7 @@ public class StudentController {
     @Secured("ROLE_ADMIN")
     @Operation(description = "Returns information regarding all students registered within the application.")
     public List<StudentGetDTO> listStudents() {
-        return studentService.listAll().stream().map(student -> studentTranslator.toDTO(student)).toList();
+        return studentService.listAll().stream().map(studentTranslator::toDTO).toList();
     }
 
     @GetMapping("/{id}")
@@ -49,7 +49,7 @@ public class StudentController {
     @Operation(description = "Returns information regarding student with {id}.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public StudentGetDTO getStudent(@PathVariable("id") Long id) {
         return studentTranslator.toDTO(studentService.fetch(id));
@@ -60,7 +60,7 @@ public class StudentController {
     @Operation(description = "Returns information regarding student the current principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public StudentGetDTO getStudent(@AuthenticationPrincipal DatabaseUser principal) {
         return studentTranslator.toDTO(studentService.fetch(principal.getStoredUser().getId()));
@@ -71,7 +71,7 @@ public class StudentController {
     @Operation(description = "Creates a new student.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "Student with that email already exists.", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "400", description = "Student with that email already exists.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> createStudent(@RequestBody StudentCreateDTO studentDto) {
         try {
@@ -86,7 +86,7 @@ public class StudentController {
     @Operation(description = "Creates a new student and logs the current principal in as that student.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "Student with that email already exists.", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "400", description = "Student with that email already exists.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> registerStudent(@RequestBody StudentCreateDTO studentDto, HttpServletRequest request)
             throws ServletException {
@@ -104,14 +104,14 @@ public class StudentController {
     @Operation(description = "Updates the student with {id}.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateStudent(@PathVariable("id") Long id, @RequestBody StudentCreateDTO studentDto) {
         try {
             studentService.updateStudent(id, studentDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -120,7 +120,7 @@ public class StudentController {
     @Operation(description = "Updates the student the current principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateStudent(@RequestBody StudentCreateDTO studentDto,
             @AuthenticationPrincipal DatabaseUser principal) {
@@ -128,7 +128,7 @@ public class StudentController {
             studentService.updateStudent(principal.getStoredUser().getId(), studentDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -137,14 +137,14 @@ public class StudentController {
     @Operation(description = "Deletes the student with {id}.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> deleteStudent(@PathVariable("id") Long id) {
         try {
             studentService.deleteStudent(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 

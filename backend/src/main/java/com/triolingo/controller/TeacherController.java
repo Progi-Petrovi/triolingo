@@ -43,10 +43,10 @@ public class TeacherController {
     }
 
     @GetMapping("/all")
-    @Secured("ROLE_ADMIN")
+    //@Secured("ROLE_GUEST")
     @Operation(description = "Returns information regarding all teachers registered within the application.")
     public List<TeacherGetDTO> listTeachers() {
-        return teacherService.listAll().stream().map((teacher) -> teacherTranslator.toDTO(teacher)).toList();
+        return teacherService.listAll().stream().map(teacherTranslator::toDTO).toList();
     }
 
     @GetMapping("/{id}")
@@ -54,7 +54,7 @@ public class TeacherController {
     @Operation(description = "Returns information regarding teacher with {id}.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public TeacherGetDTO getTeacher(@PathVariable("id") Long id) {
         return teacherTranslator.toDTO(teacherService.fetch(id));
@@ -65,7 +65,7 @@ public class TeacherController {
     @Operation(description = "Returns information regarding teacher the current principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public TeacherGetDTO getTeacher(@AuthenticationPrincipal DatabaseUser principal) {
         return teacherTranslator.toDTO(teacherService.fetch(principal.getStoredUser().getId()));
@@ -76,7 +76,7 @@ public class TeacherController {
     @Operation(description = "Creates a new teacher.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "Teacher with that email already exists.", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "400", description = "Teacher with that email already exists.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> createTeacher(@RequestBody TeacherCreateDTO teacherDto) {
         try {
@@ -91,7 +91,7 @@ public class TeacherController {
     @Operation(description = "Creates a new teacher and logs the current principal in as that student.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "Teacher with that email already exists.", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "400", description = "Teacher with that email already exists.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> registerTeacher(@RequestBody TeacherCreateDTO teacherDto, HttpServletRequest request)
             throws ServletException {
@@ -109,14 +109,14 @@ public class TeacherController {
     @Operation(description = "Updates the teacher with {id}. If profile image hash is set to null, the image is also deleted from the provider.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateTeacher(@PathVariable("id") Long id, @RequestBody TeacherCreateDTO teacherDto) {
         try {
             teacherService.updateTeacher(id, teacherDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -125,7 +125,7 @@ public class TeacherController {
     @Operation(description = "Updates the teacher the current principal is logged in as. If profile image hash is set to null, the image is also deleted from the provider.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateTeacher(@RequestBody TeacherCreateDTO teacherDto,
             @AuthenticationPrincipal DatabaseUser principal) {
@@ -133,7 +133,7 @@ public class TeacherController {
             teacherService.updateTeacher(principal.getStoredUser().getId(), teacherDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -142,14 +142,14 @@ public class TeacherController {
     @Operation(description = "Deletes the teacher with {id}.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> deleteTeacher(@PathVariable("id") Long id) {
         try {
             teacherService.deleteTeacher(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -158,7 +158,7 @@ public class TeacherController {
     @Operation(description = "Expects a 'multipart/form-data' with an image file. Assigns a hash to the file and saves it under that hash. The images are statically provided on images/profile/{image-hash}.jpg")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The filename (hash) of the saved file.", content = @Content(mediaType = "text/plain")),
-            @ApiResponse(responseCode = "400", description = "Image is of the incorrect type.", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "400", description = "Image is of the incorrect type.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateProfileImage(@RequestParam(value = "file") MultipartFile file,
             @AuthenticationPrincipal DatabaseUser principal)
@@ -168,9 +168,9 @@ public class TeacherController {
             fileName = teacherService.uploadProfileImage(file, (Teacher) principal.getStoredUser());
         } catch (IllegalArgumentException e) {
             System.err.println(e);
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<String>(fileName, HttpStatus.CREATED);
+        return new ResponseEntity<>(fileName, HttpStatus.CREATED);
     }
 
 }

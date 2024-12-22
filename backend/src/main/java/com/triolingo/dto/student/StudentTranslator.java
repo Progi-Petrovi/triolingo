@@ -63,15 +63,14 @@ public class StudentTranslator {
     private Map<String, KnowledgeLevel> serializeLearningLanguages(List<LearningLanguage> learningLanguages) {
         return learningLanguages.stream()
                 .collect(Collectors.toMap((learningLanguage) -> learningLanguage.getLanguage().getName(),
-                        (learningLanguage) -> learningLanguage.getKnowledgeLevel()));
+                        LearningLanguage::getKnowledgeLevel));
     }
 
     private List<LearningLanguage> deserializeLearningLanguages(Map<String, KnowledgeLevel> learningLanguageMap) {
         return learningLanguageMap.entrySet().stream().map((entry) -> {
             Language language = languageRepository.findByName(entry.getKey()).get();
-            LearningLanguage learningLanguage = learningLanguageRepository
+            return learningLanguageRepository
                     .findByLanguageAndKnowledgeLevel(language, entry.getValue()).get();
-            return learningLanguage;
         }).toList();
     }
 }

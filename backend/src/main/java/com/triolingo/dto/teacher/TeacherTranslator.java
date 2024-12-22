@@ -1,5 +1,6 @@
 package com.triolingo.dto.teacher;
 
+import com.triolingo.entity.language.Language;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,7 @@ public class TeacherTranslator {
     public TeacherGetDTO toDTO(Teacher teacher) {
         return new TeacherGetDTO(teacher.getId(),
                 teacher.getFullName(),
-                teacher.getLanguages().stream().map(language -> language.getName()).toList(),
+                teacher.getLanguages().stream().map(Language::getName).toList(),
                 teacher.getYearsOfExperience(),
                 teacher.getQualifications(),
                 teacher.getTeachingStyle(),
