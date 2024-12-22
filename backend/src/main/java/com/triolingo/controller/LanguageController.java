@@ -18,7 +18,7 @@ public class LanguageController {
     }
 
     @GetMapping
-    public List<Language> getAllLanguages() {
-        return languageRepository.findAll();
+    public List<String> getAllLanguages() {
+        return languageRepository.findAll().stream().map(Language::getName).toList();
     }
 }
