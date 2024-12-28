@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.Http403ForbiddenEntryPoin
 import org.springframework.web.cors.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.triolingo.entity.*;
+import com.triolingo.entity.user.*;
 import com.triolingo.service.DatabaseUserService;
 
 import jakarta.servlet.ServletException;

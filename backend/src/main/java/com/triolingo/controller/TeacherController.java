@@ -1,9 +1,10 @@
 package com.triolingo.controller;
 
+import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.teacher.TeacherCreateDTO;
-import com.triolingo.dto.teacher.TeacherGetDTO;
-import com.triolingo.dto.teacher.TeacherTranslator;
-import com.triolingo.entity.Teacher;
+import com.triolingo.dto.teacher.TeacherFullDTO;
+import com.triolingo.dto.teacher.TeacherViewDTO;
+import com.triolingo.entity.user.Teacher;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.TeacherService;
 
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,18 +37,21 @@ import java.util.List;
 public class TeacherController {
 
     private final TeacherService teacherService;
-    private final TeacherTranslator teacherTranslator;
+    private final DtoMapper dtoMapper;
+    private final EntityManager entityManager;
 
-    public TeacherController(TeacherService teacherService, TeacherTranslator teacherTranslator) {
+    public TeacherController(TeacherService teacherService, DtoMapper dtoMapper, EntityManager entityManager) {
         this.teacherService = teacherService;
-        this.teacherTranslator = teacherTranslator;
+        this.dtoMapper = dtoMapper;
+        this.entityManager = entityManager;
     }
 
     @GetMapping("/all")
-    //@Secured("ROLE_GUEST")
+    // @Secured("ROLE_GUEST")
     @Operation(description = "Returns information regarding all teachers registered within the application.")
-    public List<TeacherGetDTO> listTeachers() {
-        return teacherService.listAll().stream().map(teacherTranslator::toDTO).toList();
+    public List<TeacherViewDTO> listTeachers() {
+        return teacherService.listAll().stream().map((teacher) -> dtoMapper.createDto(teacher, TeacherViewDTO.class))
+                .toList();
     }
 
     @GetMapping("/{id}")
@@ -56,8 +61,8 @@ public class TeacherController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public TeacherGetDTO getTeacher(@PathVariable("id") Long id) {
-        return teacherTranslator.toDTO(teacherService.fetch(id));
+    public TeacherViewDTO getTeacher(@PathVariable("id") Long id) {
+        return dtoMapper.createDto(teacherService.fetch(id), TeacherViewDTO.class);
     }
 
     @GetMapping("/")
@@ -67,8 +72,9 @@ public class TeacherController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public TeacherGetDTO getTeacher(@AuthenticationPrincipal DatabaseUser principal) {
-        return teacherTranslator.toDTO(teacherService.fetch(principal.getStoredUser().getId()));
+    public TeacherFullDTO getTeacher(@AuthenticationPrincipal DatabaseUser principal) {
+        entityManager.refresh(principal.getStoredUser());
+        return dtoMapper.createDto(principal.getStoredUser(), TeacherFullDTO.class);
     }
 
     @PostMapping("/create")
@@ -80,7 +86,7 @@ public class TeacherController {
     })
     public ResponseEntity<?> createTeacher(@RequestBody TeacherCreateDTO teacherDto) {
         try {
-            teacherService.createTeacher(teacherDto);
+            teacherService.create(teacherDto);
         } catch (EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -96,7 +102,7 @@ public class TeacherController {
     public ResponseEntity<?> registerTeacher(@RequestBody TeacherCreateDTO teacherDto, HttpServletRequest request)
             throws ServletException {
         try {
-            teacherService.createTeacher(teacherDto);
+            teacherService.create(teacherDto);
         } catch (EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -113,7 +119,8 @@ public class TeacherController {
     })
     public ResponseEntity<?> updateTeacher(@PathVariable("id") Long id, @RequestBody TeacherCreateDTO teacherDto) {
         try {
-            teacherService.updateTeacher(id, teacherDto);
+            Teacher teacher = teacherService.fetch(id);
+            teacherService.update(teacher, teacherDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -130,7 +137,8 @@ public class TeacherController {
     public ResponseEntity<?> updateTeacher(@RequestBody TeacherCreateDTO teacherDto,
             @AuthenticationPrincipal DatabaseUser principal) {
         try {
-            teacherService.updateTeacher(principal.getStoredUser().getId(), teacherDto);
+            entityManager.refresh(principal.getStoredUser());
+            teacherService.update((Teacher) principal.getStoredUser(), teacherDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -146,7 +154,8 @@ public class TeacherController {
     })
     public ResponseEntity<?> deleteTeacher(@PathVariable("id") Long id) {
         try {
-            teacherService.deleteTeacher(id);
+            Teacher teacher = teacherService.fetch(id);
+            teacherService.delete(teacher);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

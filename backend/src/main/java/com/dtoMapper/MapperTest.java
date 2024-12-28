@@ -7,9 +7,9 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import com.triolingo.dto.teacher.TeacherGetDTO;
-import com.triolingo.entity.Teacher;
+import com.triolingo.dto.teacher.TeacherViewDTO;
 import com.triolingo.entity.language.Language;
+import com.triolingo.entity.user.Teacher;
 
 public class MapperTest {
 
@@ -36,18 +36,18 @@ public class MapperTest {
 
         dtoMapper.addTypeMapping(typeMapping);
 
-        TeacherGetDTO dto = dtoMapper.createDto(teacher, TeacherGetDTO.class);
+        TeacherViewDTO dto = dtoMapper.createDto(teacher, TeacherViewDTO.class);
         System.out.println(dto);
 
         Teacher teacher2 = dtoMapper.createEntity(dto, Teacher.class);
-        TeacherGetDTO dto2 = dtoMapper.createDto(teacher2, TeacherGetDTO.class);
+        TeacherViewDTO dto2 = dtoMapper.createDto(teacher2, TeacherViewDTO.class);
         System.out.println(dto2);
 
-        TeacherGetDTO dto3 = new TeacherGetDTO(null, "test test test", null, null, null, null, null, null);
+        TeacherViewDTO dto3 = new TeacherViewDTO(null, "test test test", null, null, null, null, null, null);
         System.out.println(dto3);
 
         dtoMapper.updateEntity(teacher2, dto3);
-        TeacherGetDTO dto4 = dtoMapper.createDto(teacher2, TeacherGetDTO.class);
+        TeacherViewDTO dto4 = dtoMapper.createDto(teacher2, TeacherViewDTO.class);
         System.out.println(dto4);
     }
 

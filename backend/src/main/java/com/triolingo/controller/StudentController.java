@@ -1,8 +1,8 @@
 package com.triolingo.controller;
 
-import com.triolingo.dto.student.StudentCreateDTO;
-import com.triolingo.dto.student.StudentGetDTO;
-import com.triolingo.dto.student.StudentTranslator;
+import com.dtoMapper.DtoMapper;
+import com.triolingo.dto.student.*;
+import com.triolingo.entity.user.Student;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.StudentService;
 
@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,18 +31,21 @@ import java.util.List;
 public class StudentController {
 
     private final StudentService studentService;
-    private final StudentTranslator studentTranslator;
+    private final DtoMapper dtoMapper;
+    private final EntityManager entityManager;
 
-    public StudentController(StudentService studentService, StudentTranslator studentTranslator) {
+    public StudentController(StudentService studentService, DtoMapper dtoMapper, EntityManager entityManager) {
         this.studentService = studentService;
-        this.studentTranslator = studentTranslator;
+        this.dtoMapper = dtoMapper;
+        this.entityManager = entityManager;
     }
 
     @GetMapping("/all")
     @Secured("ROLE_ADMIN")
     @Operation(description = "Returns information regarding all students registered within the application.")
-    public List<StudentGetDTO> listStudents() {
-        return studentService.listAll().stream().map(studentTranslator::toDTO).toList();
+    public List<StudentViewDTO> listStudents() {
+        return studentService.listAll().stream().map((student) -> dtoMapper.createDto(student, StudentViewDTO.class))
+                .toList();
     }
 
     @GetMapping("/{id}")
@@ -51,8 +55,8 @@ public class StudentController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public StudentGetDTO getStudent(@PathVariable("id") Long id) {
-        return studentTranslator.toDTO(studentService.fetch(id));
+    public StudentViewDTO getStudent(@PathVariable("id") Long id) {
+        return dtoMapper.createDto(studentService.fetch(id), StudentViewDTO.class);
     }
 
     @GetMapping("/")
@@ -62,8 +66,9 @@ public class StudentController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public StudentGetDTO getStudent(@AuthenticationPrincipal DatabaseUser principal) {
-        return studentTranslator.toDTO(studentService.fetch(principal.getStoredUser().getId()));
+    public StudentFullDTO getStudent(@AuthenticationPrincipal DatabaseUser principal) {
+        entityManager.refresh(principal.getStoredUser());
+        return dtoMapper.createDto(principal.getStoredUser(), StudentFullDTO.class);
     }
 
     @PostMapping("/create")
@@ -75,7 +80,7 @@ public class StudentController {
     })
     public ResponseEntity<?> createStudent(@RequestBody StudentCreateDTO studentDto) {
         try {
-            studentService.createStudent(studentDto);
+            studentService.create(studentDto);
         } catch (EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -91,7 +96,7 @@ public class StudentController {
     public ResponseEntity<?> registerStudent(@RequestBody StudentCreateDTO studentDto, HttpServletRequest request)
             throws ServletException {
         try {
-            studentService.createStudent(studentDto);
+            studentService.create(studentDto);
         } catch (EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -108,7 +113,8 @@ public class StudentController {
     })
     public ResponseEntity<?> updateStudent(@PathVariable("id") Long id, @RequestBody StudentCreateDTO studentDto) {
         try {
-            studentService.updateStudent(id, studentDto);
+            Student student = studentService.fetch(id);
+            studentService.update(student, studentDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -125,7 +131,8 @@ public class StudentController {
     public ResponseEntity<?> updateStudent(@RequestBody StudentCreateDTO studentDto,
             @AuthenticationPrincipal DatabaseUser principal) {
         try {
-            studentService.updateStudent(principal.getStoredUser().getId(), studentDto);
+            entityManager.refresh(principal.getStoredUser());
+            studentService.update((Student) principal.getStoredUser(), studentDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -141,7 +148,8 @@ public class StudentController {
     })
     public ResponseEntity<?> deleteStudent(@PathVariable("id") Long id) {
         try {
-            studentService.deleteStudent(id);
+            Student student = studentService.fetch(id);
+            studentService.delete(student);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

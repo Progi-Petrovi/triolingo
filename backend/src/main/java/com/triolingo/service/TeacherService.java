@@ -1,8 +1,8 @@
 package com.triolingo.service;
 
+import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.teacher.TeacherCreateDTO;
-import com.triolingo.dto.teacher.TeacherTranslator;
-import com.triolingo.entity.Teacher;
+import com.triolingo.entity.user.Teacher;
 import com.triolingo.repository.TeacherRepository;
 
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import jakarta.persistence.EntityExistsException;
@@ -31,12 +31,12 @@ import jakarta.persistence.EntityNotFoundException;
 public class TeacherService {
 
     private final TeacherRepository teacherRepository;
-    private final TeacherTranslator teacherTranslator;
+    private final DtoMapper dtoMapper;
     private final Environment env;
 
-    public TeacherService(TeacherRepository teacherRepository, TeacherTranslator teacherTranslator, Environment env) {
+    public TeacherService(TeacherRepository teacherRepository, DtoMapper dtoMapper, Environment env) {
         this.teacherRepository = teacherRepository;
-        this.teacherTranslator = teacherTranslator;
+        this.dtoMapper = dtoMapper;
         this.env = env;
     }
 
@@ -45,41 +45,26 @@ public class TeacherService {
     }
 
     public Teacher fetch(Long id) {
-        return teacherRepository.findById(id).orElse(null);
+        try {
+            return teacherRepository.findById(id).get();
+        } catch (NoSuchElementException e) {
+            throw new EntityNotFoundException("Teacher with that id does not exist");
+        }
     }
 
-    public Teacher createTeacher(TeacherCreateDTO teacherDto) {
+    public Teacher create(TeacherCreateDTO teacherDto) {
         if (teacherRepository.existsByEmail(teacherDto.email()))
             throw new EntityExistsException("Teacher with that email already exists");
-        return teacherRepository.save(teacherTranslator.fromDTO(teacherDto));
+        return teacherRepository.save(dtoMapper.createEntity(teacherDto, Teacher.class));
     }
 
-    public Teacher updateTeacher(@NotNull Long id, @NotNull TeacherCreateDTO teacherDTO) {
-        Optional<Teacher> optionalTeacher = teacherRepository.findById(id);
-        if (optionalTeacher.isEmpty())
-            throw new EntityNotFoundException("Teacher with that Id does not exist.");
-
-        Teacher teacher = optionalTeacher.get();
-        if (teacher.getProfileImageHash() != null && teacherDTO.profileImageHash() == null) {
-
-            try {
-                Files.deleteIfExists(
-                        Path.of(env.getProperty("fileSystem.publicPath"),
-                                env.getProperty("fileSystem.profileImagePath"),
-                                teacher.getProfileImageHash()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        teacherTranslator.updateTeacher(teacher, teacherDTO);
+    public Teacher update(@NotNull Teacher teacher, @NotNull TeacherCreateDTO teacherDTO) {
+        dtoMapper.updateEntity(teacher, teacherDTO);
         return teacherRepository.save(teacher);
     }
 
-    public void deleteTeacher(Long id) {
-        Teacher teacher = fetch(id);
-        if (teacher == null)
-            throw new EntityNotFoundException("Teacher with that Id does not exist.");
-        teacherRepository.deleteById(id);
+    public void delete(Teacher teacher) {
+        teacherRepository.delete(teacher);
     }
 
     public String uploadProfileImage(@NotNull MultipartFile file, Teacher teacher)
@@ -92,7 +77,7 @@ public class TeacherService {
             throw new IllegalArgumentException(
                     "File must be of type 'image/jpeg', and not '" + file.getContentType() + "'");
 
-        // Turn MultipartFile into awt image, so we can resize it into a required
+        // Turn MultipartFile into awt image, so we can resize it into the required
         // resolution and save it.
         @SuppressWarnings("null")
         int imageSize = env.getProperty("profileImage.saveSize", Integer.class);

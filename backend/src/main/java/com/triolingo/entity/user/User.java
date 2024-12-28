@@ -1,4 +1,4 @@
-package com.triolingo.entity;
+package com.triolingo.entity.user;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,12 +24,14 @@ public abstract class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
     @NotNull
-    private String fullName;
-    @NotNull
     @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", flags = Pattern.Flag.CASE_INSENSITIVE)
     private String email;
     @NotNull
     private String password;
+    @NotNull
+    private String fullName;
+    @NotNull
+    private boolean isVerified = false;
 
     public List<GrantedAuthority> getAuthorities() {
         return Arrays.asList(Role.USER.getAuthority());
