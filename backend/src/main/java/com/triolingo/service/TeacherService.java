@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -112,8 +111,6 @@ public class TeacherService {
         File imageSaveFile = Path.of(env.getProperty("fileSystem.publicPath"),
                 env.getProperty("fileSystem.profileImagePath"),
                 fileName).toFile();
-        System.out.println(imageSaveFile.getAbsolutePath());
-        System.out.println(Arrays.toString(ImageIO.getWriterFormatNames()));
         if (!ImageIO.write(resizedImage, "jpg", imageSaveFile))
             throw new RuntimeException("Failed to save new profile image.");
 
