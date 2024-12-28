@@ -35,7 +35,6 @@ public class MapperTest {
                 }.getType());
 
         dtoMapper.addTypeMapping(typeMapping);
-        dtoMapper.addMapping(Teacher.class, TeacherGetDTO.class);
 
         TeacherGetDTO dto = dtoMapper.createDto(teacher, TeacherGetDTO.class);
         System.out.println(dto);
