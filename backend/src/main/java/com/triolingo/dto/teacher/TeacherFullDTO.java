@@ -8,7 +8,7 @@ public record TeacherFullDTO(
         String email,
         String password,
         String fullName,
-        boolean isVerified,
+        Boolean verified,
         List<String> languages,
         Integer yearsOfExperience,
         String qualifications,

@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,16 +31,13 @@ public class StudentController {
 
     private final StudentService studentService;
     private final DtoMapper dtoMapper;
-    private final EntityManager entityManager;
 
-    public StudentController(StudentService studentService, DtoMapper dtoMapper, EntityManager entityManager) {
+    public StudentController(StudentService studentService, DtoMapper dtoMapper) {
         this.studentService = studentService;
         this.dtoMapper = dtoMapper;
-        this.entityManager = entityManager;
     }
 
     @GetMapping("/all")
-    // @Secured("ROLE_GUEST")
     @Operation(description = "Returns information regarding all students registered within the application.")
     public List<StudentViewDTO> listStudents() {
         return studentService.listAll().stream().map((student) -> dtoMapper.createDto(student, StudentViewDTO.class))
@@ -49,7 +45,6 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
-    @Secured("ROLE_USER")
     @Operation(description = "Returns information regarding student with {id}.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -67,7 +62,6 @@ public class StudentController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public StudentFullDTO getStudent(@AuthenticationPrincipal DatabaseUser principal) {
-        entityManager.refresh(principal.getStoredUser());
         return dtoMapper.createDto(principal.getStoredUser(), StudentFullDTO.class);
     }
 
@@ -101,6 +95,7 @@ public class StudentController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         request.login(studentDto.email(), studentDto.password());
+        // TODO: redirect to verification endpoint on user controller
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -122,7 +117,7 @@ public class StudentController {
     }
 
     @PutMapping("/update")
-    @Secured("ROLE_STUDENT")
+    @Secured({ "ROLE_STUDENT", "ROLE_VERIFIED" })
     @Operation(description = "Updates the student the current principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -131,7 +126,6 @@ public class StudentController {
     public ResponseEntity<?> updateStudent(@RequestBody StudentCreateDTO studentDto,
             @AuthenticationPrincipal DatabaseUser principal) {
         try {
-            entityManager.refresh(principal.getStoredUser());
             studentService.update((Student) principal.getStoredUser(), studentDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {

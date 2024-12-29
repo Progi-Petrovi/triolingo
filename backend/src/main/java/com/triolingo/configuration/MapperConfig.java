@@ -3,12 +3,14 @@ package com.triolingo.configuration;
 import java.util.Collection;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.dtoMapper.DtoMapper;
 import com.dtoMapper.TypeGetter;
 import com.dtoMapper.TypeMapping;
 import com.triolingo.entity.language.Language;
 
+@Configuration
 public class MapperConfig {
 
     @Bean

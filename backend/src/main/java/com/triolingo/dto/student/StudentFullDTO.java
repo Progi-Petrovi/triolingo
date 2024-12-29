@@ -10,7 +10,7 @@ public record StudentFullDTO(
         String email,
         String password,
         String fullName,
-        boolean isVerified,
+        Boolean verified,
         Map<String, KnowledgeLevel> learningLanguages,
         TeachingStyle preferredTeachingStyle,
         String learningGoals) {

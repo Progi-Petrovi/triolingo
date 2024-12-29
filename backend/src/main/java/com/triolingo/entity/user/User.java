@@ -31,10 +31,13 @@ public abstract class User {
     @NotNull
     private String fullName;
     @NotNull
-    private boolean isVerified = false;
+    private Boolean verified = false;
 
     public List<GrantedAuthority> getAuthorities() {
-        return Arrays.asList(Role.USER.getAuthority());
+        if (verified)
+            return Arrays.asList(Role.USER.getAuthority(), Role.VERIFIED.getAuthority());
+        else
+            return Arrays.asList(Role.USER.getAuthority());
     }
 }
 
@@ -42,7 +45,8 @@ enum Role {
     USER(() -> "ROLE_USER"),
     ADMIN(() -> "ROLE_ADMIN"),
     TEACHER(() -> "ROLE_TEACHER"),
-    STUDENT(() -> "ROLE_STUDENT");
+    STUDENT(() -> "ROLE_STUDENT"),
+    VERIFIED(() -> "ROLE_VERIFIED");
 
     private final GrantedAuthority authority;
 

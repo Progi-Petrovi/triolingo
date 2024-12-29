@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,16 +37,13 @@ public class TeacherController {
 
     private final TeacherService teacherService;
     private final DtoMapper dtoMapper;
-    private final EntityManager entityManager;
 
-    public TeacherController(TeacherService teacherService, DtoMapper dtoMapper, EntityManager entityManager) {
+    public TeacherController(TeacherService teacherService, DtoMapper dtoMapper) {
         this.teacherService = teacherService;
         this.dtoMapper = dtoMapper;
-        this.entityManager = entityManager;
     }
 
     @GetMapping("/all")
-    // @Secured("ROLE_GUEST")
     @Operation(description = "Returns information regarding all teachers registered within the application.")
     public List<TeacherViewDTO> listTeachers() {
         return teacherService.listAll().stream().map((teacher) -> dtoMapper.createDto(teacher, TeacherViewDTO.class))
@@ -55,7 +51,6 @@ public class TeacherController {
     }
 
     @GetMapping("/{id}")
-    @Secured("ROLE_USER") // TODO: add ROLE_GUEST when guest is setup
     @Operation(description = "Returns information regarding teacher with {id}.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -73,7 +68,6 @@ public class TeacherController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public TeacherFullDTO getTeacher(@AuthenticationPrincipal DatabaseUser principal) {
-        entityManager.refresh(principal.getStoredUser());
         return dtoMapper.createDto(principal.getStoredUser(), TeacherFullDTO.class);
     }
 
@@ -88,7 +82,7 @@ public class TeacherController {
         try {
             teacherService.create(teacherDto);
         } catch (EntityExistsException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -104,9 +98,10 @@ public class TeacherController {
         try {
             teacherService.create(teacherDto);
         } catch (EntityExistsException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         request.login(teacherDto.email(), teacherDto.password());
+        // TODO: redirect to verification endpoint on user controller
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -128,7 +123,7 @@ public class TeacherController {
     }
 
     @PutMapping("/update")
-    @Secured("ROLE_TEACHER")
+    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
     @Operation(description = "Updates the teacher the current principal is logged in as. If profile image hash is set to null, the image is also deleted from the provider.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -137,7 +132,6 @@ public class TeacherController {
     public ResponseEntity<?> updateTeacher(@RequestBody TeacherCreateDTO teacherDto,
             @AuthenticationPrincipal DatabaseUser principal) {
         try {
-            entityManager.refresh(principal.getStoredUser());
             teacherService.update((Teacher) principal.getStoredUser(), teacherDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
@@ -162,7 +156,7 @@ public class TeacherController {
         }
     }
 
-    @Secured({ "ROLE_TEACHER" })
+    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
     @RequestMapping(path = "/update/profileImage", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(description = "Expects a 'multipart/form-data' with an image file. Assigns a hash to the file and saves it under that hash. The images are statically provided on images/profile/{image-hash}.jpg")
     @ApiResponses(value = {
