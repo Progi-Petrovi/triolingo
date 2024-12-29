@@ -46,7 +46,8 @@ public class TeacherService {
 
     public Teacher fetch(Long id) {
         try {
-            return teacherRepository.findById(id).get();
+            Teacher teacher = teacherRepository.findById(id).get();
+            return teacher;
         } catch (NoSuchElementException e) {
             throw new EntityNotFoundException("Teacher with that id does not exist");
         }

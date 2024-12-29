@@ -66,7 +66,7 @@ public class TeacherController {
     }
 
     @GetMapping("/")
-    @Secured("ROLE_TEACHER") // TODO: add ROLE_GUEST when guest is setup
+    @Secured("ROLE_TEACHER")
     @Operation(description = "Returns information regarding teacher the current principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),

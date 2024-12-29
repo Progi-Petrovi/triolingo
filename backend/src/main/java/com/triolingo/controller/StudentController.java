@@ -41,7 +41,7 @@ public class StudentController {
     }
 
     @GetMapping("/all")
-    @Secured("ROLE_ADMIN")
+    // @Secured("ROLE_GUEST")
     @Operation(description = "Returns information regarding all students registered within the application.")
     public List<StudentViewDTO> listStudents() {
         return studentService.listAll().stream().map((student) -> dtoMapper.createDto(student, StudentViewDTO.class))
@@ -49,7 +49,7 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_USER")
     @Operation(description = "Returns information regarding student with {id}.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
