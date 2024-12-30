@@ -1,5 +1,6 @@
-package com.triolingo.entity;
+package com.triolingo.entity.user;
 
+import com.triolingo.entity.TeachingStyle;
 import com.triolingo.entity.language.LearningLanguage;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.triolingo.entity;
+package com.triolingo.entity.user;
 
 import jakarta.persistence.*;
 import lombok.Data;

@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.Http403ForbiddenEntryPoin
 import org.springframework.web.cors.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.triolingo.entity.*;
+import com.triolingo.entity.user.*;
 import com.triolingo.service.DatabaseUserService;
 
 import jakarta.servlet.ServletException;
@@ -29,7 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfiguration {
     private final DatabaseUserService databaseUserService;
     private final Environment env;
@@ -85,9 +85,11 @@ public class SecurityConfiguration {
     private void authenticationSuccessHandler(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
         User user = ((DatabaseUser) authentication.getPrincipal()).getStoredUser();
+        if (!user.getVerified())
+            frontendRedirect(response, env.getProperty("path.frontend.verify"));
 
         // TODO: add other user types
-        if (user.getClass().isAssignableFrom(Teacher.class))
+        else if (user.getClass().isAssignableFrom(Teacher.class))
             frontendRedirect(response, env.getProperty("path.frontend.teacher.home"));
         else if (user.getClass().isAssignableFrom(Student.class))
             frontendRedirect(response, env.getProperty("path.frontend.student.home"));

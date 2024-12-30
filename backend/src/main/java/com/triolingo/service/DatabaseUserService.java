@@ -25,7 +25,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.triolingo.entity.User;
+import com.triolingo.entity.user.User;
 import com.triolingo.repository.UserRepository;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.security.OAuth2PrincipalAuthenticationException;
