@@ -1,6 +1,7 @@
 package com.triolingo.entity;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
@@ -42,14 +43,13 @@ public class VerificationToken {
     @JoinColumn(nullable = false, name = "user_ID")
     private User user;
 
-    private Date expirationDate = calculateExpirationDate();
+    private Instant expirationDate = calculateExpirationDate();
 
-    private static Date calculateExpirationDate() {
-        int expiryTimeInMinutes = EXPIRATION;
+    private static Instant calculateExpirationDate() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Timestamp(cal.getTime().getTime()));
-        cal.add(Calendar.MINUTE, expiryTimeInMinutes);
-        return new Date(cal.getTime().getTime());
+        cal.add(Calendar.MINUTE, EXPIRATION);
+        return new Date(cal.getTime().getTime()).toInstant();
     }
 
     private static String generateToken() {
