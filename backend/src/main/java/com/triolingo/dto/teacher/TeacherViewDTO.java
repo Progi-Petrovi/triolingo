@@ -3,10 +3,7 @@ package com.triolingo.dto.teacher;
 import java.util.List;
 import com.triolingo.entity.TeachingStyle;
 
-import lombok.experimental.FieldNameConstants;
-
-@FieldNameConstants
-public record TeacherGetDTO(
+public record TeacherViewDTO(
         Long id,
         String fullName,
         List<String> languages,
@@ -15,5 +12,4 @@ public record TeacherGetDTO(
         TeachingStyle teachingStyle,
         String profilePictureHash,
         Double hourlyRate) {
-
 }

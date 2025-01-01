@@ -1,7 +1,7 @@
 package com.triolingo.db;
 
-import com.triolingo.entity.Student;
-import com.triolingo.entity.Teacher;
+import com.triolingo.entity.user.Student;
+import com.triolingo.entity.user.Teacher;
 import com.triolingo.repository.StudentRepository;
 import com.triolingo.repository.TeacherRepository;
 

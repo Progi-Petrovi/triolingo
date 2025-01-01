@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import com.triolingo.entity.User;
+import com.triolingo.entity.user.User;
 
 public class DatabaseUser implements OAuth2User, UserDetails {
 

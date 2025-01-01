@@ -1,14 +1,14 @@
 package com.triolingo.service;
 
+import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.student.StudentCreateDTO;
-import com.triolingo.dto.student.StudentTranslator;
-import com.triolingo.entity.Student;
+import com.triolingo.entity.user.Student;
 
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 import com.triolingo.repository.StudentRepository;
 
@@ -19,12 +19,12 @@ import jakarta.persistence.EntityNotFoundException;
 public class StudentService {
 
     private final StudentRepository studentRepository;
-    private final StudentTranslator studentTranslator;
+    private final DtoMapper dtoMapper;
 
     public StudentService(StudentRepository studentRepository,
-            StudentTranslator studentTranslator) {
+            DtoMapper dtoMapper) {
         this.studentRepository = studentRepository;
-        this.studentTranslator = studentTranslator;
+        this.dtoMapper = dtoMapper;
     }
 
     public List<Student> listAll() {
@@ -32,30 +32,26 @@ public class StudentService {
     }
 
     public Student fetch(Long id) {
-        return studentRepository.findById(id).orElse(null);
+        try {
+            return studentRepository.findById(id).get();
+        } catch (NoSuchElementException e) {
+            throw new EntityNotFoundException("Student with that id does not exist");
+        }
     }
 
-    public void createStudent(StudentCreateDTO studentDto) {
+    public void create(StudentCreateDTO studentDto) {
         if (studentRepository.existsByEmail(studentDto.email()))
             throw new EntityExistsException("Student with that email already exists");
-        studentRepository.save(studentTranslator.fromDTO(studentDto));
+        studentRepository.save(dtoMapper.createEntity(studentDto, Student.class));
     }
 
-    public void updateStudent(@NotNull Long id, @NotNull StudentCreateDTO studentDTO) {
-        Optional<Student> optionalStudent = studentRepository.findById(id);
-        if (optionalStudent.isEmpty())
-            throw new EntityNotFoundException("Student with that Id does not exist.");
-
-        Student student = optionalStudent.get();
-        studentTranslator.updateStudent(student, studentDTO);
+    public void update(@NotNull Student student, @NotNull StudentCreateDTO studentDTO) {
+        dtoMapper.updateEntity(student, studentDTO);
         studentRepository.save(student);
     }
 
-    public void deleteStudent(Long id) {
-        Student student = fetch(id);
-        if (student == null)
-            throw new EntityNotFoundException("Student with that Id does not exist.");
-        studentRepository.deleteById(id);
+    public void delete(@NotNull Student student) {
+        studentRepository.delete(student);
     }
 
 }

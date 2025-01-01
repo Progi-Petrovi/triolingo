@@ -1,9 +1,10 @@
 package com.triolingo.controller;
 
+import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.teacher.TeacherCreateDTO;
-import com.triolingo.dto.teacher.TeacherGetDTO;
-import com.triolingo.dto.teacher.TeacherTranslator;
-import com.triolingo.entity.Teacher;
+import com.triolingo.dto.teacher.TeacherFullDTO;
+import com.triolingo.dto.teacher.TeacherViewDTO;
+import com.triolingo.entity.user.Teacher;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.TeacherService;
 
@@ -35,40 +36,39 @@ import java.util.List;
 public class TeacherController {
 
     private final TeacherService teacherService;
-    private final TeacherTranslator teacherTranslator;
+    private final DtoMapper dtoMapper;
 
-    public TeacherController(TeacherService teacherService, TeacherTranslator teacherTranslator) {
+    public TeacherController(TeacherService teacherService, DtoMapper dtoMapper) {
         this.teacherService = teacherService;
-        this.teacherTranslator = teacherTranslator;
+        this.dtoMapper = dtoMapper;
     }
 
     @GetMapping("/all")
-    //@Secured("ROLE_GUEST")
     @Operation(description = "Returns information regarding all teachers registered within the application.")
-    public List<TeacherGetDTO> listTeachers() {
-        return teacherService.listAll().stream().map(teacherTranslator::toDTO).toList();
+    public List<TeacherViewDTO> listTeachers() {
+        return teacherService.listAll().stream().map((teacher) -> dtoMapper.createDto(teacher, TeacherViewDTO.class))
+                .toList();
     }
 
     @GetMapping("/{id}")
-    @Secured("ROLE_USER") // TODO: add ROLE_GUEST when guest is setup
     @Operation(description = "Returns information regarding teacher with {id}.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public TeacherGetDTO getTeacher(@PathVariable("id") Long id) {
-        return teacherTranslator.toDTO(teacherService.fetch(id));
+    public TeacherViewDTO getTeacher(@PathVariable("id") Long id) {
+        return dtoMapper.createDto(teacherService.fetch(id), TeacherViewDTO.class);
     }
 
     @GetMapping("/")
-    @Secured("ROLE_TEACHER") // TODO: add ROLE_GUEST when guest is setup
+    @Secured("ROLE_TEACHER")
     @Operation(description = "Returns information regarding teacher the current principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public TeacherGetDTO getTeacher(@AuthenticationPrincipal DatabaseUser principal) {
-        return teacherTranslator.toDTO(teacherService.fetch(principal.getStoredUser().getId()));
+    public TeacherFullDTO getTeacher(@AuthenticationPrincipal DatabaseUser principal) {
+        return dtoMapper.createDto(principal.getStoredUser(), TeacherFullDTO.class);
     }
 
     @PostMapping("/create")
@@ -80,9 +80,9 @@ public class TeacherController {
     })
     public ResponseEntity<?> createTeacher(@RequestBody TeacherCreateDTO teacherDto) {
         try {
-            teacherService.createTeacher(teacherDto);
+            teacherService.create(teacherDto);
         } catch (EntityExistsException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -96,11 +96,12 @@ public class TeacherController {
     public ResponseEntity<?> registerTeacher(@RequestBody TeacherCreateDTO teacherDto, HttpServletRequest request)
             throws ServletException {
         try {
-            teacherService.createTeacher(teacherDto);
+            teacherService.create(teacherDto);
         } catch (EntityExistsException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         request.login(teacherDto.email(), teacherDto.password());
+        // TODO: redirect to verification endpoint on user controller
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -113,7 +114,8 @@ public class TeacherController {
     })
     public ResponseEntity<?> updateTeacher(@PathVariable("id") Long id, @RequestBody TeacherCreateDTO teacherDto) {
         try {
-            teacherService.updateTeacher(id, teacherDto);
+            Teacher teacher = teacherService.fetch(id);
+            teacherService.update(teacher, teacherDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -121,7 +123,7 @@ public class TeacherController {
     }
 
     @PutMapping("/update")
-    @Secured("ROLE_TEACHER")
+    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
     @Operation(description = "Updates the teacher the current principal is logged in as. If profile image hash is set to null, the image is also deleted from the provider.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -130,7 +132,7 @@ public class TeacherController {
     public ResponseEntity<?> updateTeacher(@RequestBody TeacherCreateDTO teacherDto,
             @AuthenticationPrincipal DatabaseUser principal) {
         try {
-            teacherService.updateTeacher(principal.getStoredUser().getId(), teacherDto);
+            teacherService.update((Teacher) principal.getStoredUser(), teacherDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -146,14 +148,15 @@ public class TeacherController {
     })
     public ResponseEntity<?> deleteTeacher(@PathVariable("id") Long id) {
         try {
-            teacherService.deleteTeacher(id);
+            Teacher teacher = teacherService.fetch(id);
+            teacherService.delete(teacher);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
-    @Secured({ "ROLE_TEACHER" })
+    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
     @RequestMapping(path = "/update/profileImage", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(description = "Expects a 'multipart/form-data' with an image file. Assigns a hash to the file and saves it under that hash. The images are statically provided on images/profile/{image-hash}.jpg")
     @ApiResponses(value = {
