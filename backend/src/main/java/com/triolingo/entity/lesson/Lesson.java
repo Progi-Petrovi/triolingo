@@ -4,9 +4,9 @@ import java.time.Instant;
 
 import javax.validation.constraints.*;
 
-import com.triolingo.entity.Student;
-import com.triolingo.entity.Teacher;
 import com.triolingo.entity.language.Language;
+import com.triolingo.entity.user.Student;
+import com.triolingo.entity.user.Teacher;
 import jakarta.persistence.*;
 import lombok.*;
 

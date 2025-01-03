@@ -12,8 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -73,11 +71,7 @@ public class StudentController {
             @ApiResponse(responseCode = "400", description = "Student with that email already exists.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> createStudent(@RequestBody StudentCreateDTO studentDto) {
-        try {
-            studentService.create(studentDto);
-        } catch (EntityExistsException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        studentService.create(studentDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -89,11 +83,7 @@ public class StudentController {
     })
     public ResponseEntity<?> registerStudent(@RequestBody StudentCreateDTO studentDto, HttpServletRequest request)
             throws ServletException {
-        try {
-            studentService.create(studentDto);
-        } catch (EntityExistsException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        studentService.create(studentDto);
         request.login(studentDto.email(), studentDto.password());
         // TODO: redirect to verification endpoint on user controller
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -107,30 +97,22 @@ public class StudentController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateStudent(@PathVariable("id") Long id, @RequestBody StudentCreateDTO studentDto) {
-        try {
-            Student student = studentService.fetch(id);
-            studentService.update(student, studentDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        Student student = studentService.fetch(id);
+        studentService.update(student, studentDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/update")
-    @Secured({ "ROLE_STUDENT", "ROLE_VERIFIED" })
+    @Secured({"ROLE_STUDENT", "ROLE_VERIFIED"})
     @Operation(description = "Updates the student the current principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateStudent(@RequestBody StudentCreateDTO studentDto,
-            @AuthenticationPrincipal DatabaseUser principal) {
-        try {
-            studentService.update((Student) principal.getStoredUser(), studentDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+                                           @AuthenticationPrincipal DatabaseUser principal) {
+        studentService.update((Student) principal.getStoredUser(), studentDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -141,13 +123,9 @@ public class StudentController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> deleteStudent(@PathVariable("id") Long id) {
-        try {
-            Student student = studentService.fetch(id);
-            studentService.delete(student);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        Student student = studentService.fetch(id);
+        studentService.delete(student);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

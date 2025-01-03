@@ -14,8 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -79,11 +77,7 @@ public class TeacherController {
             @ApiResponse(responseCode = "400", description = "Teacher with that email already exists.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> createTeacher(@RequestBody TeacherCreateDTO teacherDto) {
-        try {
-            teacherService.create(teacherDto);
-        } catch (EntityExistsException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        teacherService.create(teacherDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -95,11 +89,7 @@ public class TeacherController {
     })
     public ResponseEntity<?> registerTeacher(@RequestBody TeacherCreateDTO teacherDto, HttpServletRequest request)
             throws ServletException {
-        try {
-            teacherService.create(teacherDto);
-        } catch (EntityExistsException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        teacherService.create(teacherDto);
         request.login(teacherDto.email(), teacherDto.password());
         // TODO: redirect to verification endpoint on user controller
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -113,30 +103,22 @@ public class TeacherController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateTeacher(@PathVariable("id") Long id, @RequestBody TeacherCreateDTO teacherDto) {
-        try {
-            Teacher teacher = teacherService.fetch(id);
-            teacherService.update(teacher, teacherDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        Teacher teacher = teacherService.fetch(id);
+        teacherService.update(teacher, teacherDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/update")
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @Secured({"ROLE_TEACHER", "ROLE_VERIFIED"})
     @Operation(description = "Updates the teacher the current principal is logged in as. If profile image hash is set to null, the image is also deleted from the provider.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateTeacher(@RequestBody TeacherCreateDTO teacherDto,
-            @AuthenticationPrincipal DatabaseUser principal) {
-        try {
-            teacherService.update((Teacher) principal.getStoredUser(), teacherDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+                                           @AuthenticationPrincipal DatabaseUser principal) {
+        teacherService.update((Teacher) principal.getStoredUser(), teacherDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -147,16 +129,12 @@ public class TeacherController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> deleteTeacher(@PathVariable("id") Long id) {
-        try {
-            Teacher teacher = teacherService.fetch(id);
-            teacherService.delete(teacher);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        Teacher teacher = teacherService.fetch(id);
+        teacherService.delete(teacher);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @Secured({"ROLE_TEACHER", "ROLE_VERIFIED"})
     @RequestMapping(path = "/update/profileImage", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(description = "Expects a 'multipart/form-data' with an image file. Assigns a hash to the file and saves it under that hash. The images are statically provided on images/profile/{image-hash}.jpg")
     @ApiResponses(value = {
@@ -164,7 +142,7 @@ public class TeacherController {
             @ApiResponse(responseCode = "400", description = "Image is of the incorrect type.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateProfileImage(@RequestParam(value = "file") MultipartFile file,
-            @AuthenticationPrincipal DatabaseUser principal)
+                                                @AuthenticationPrincipal DatabaseUser principal)
             throws ServletException, NoSuchAlgorithmException, IOException {
         String fileName;
         try {
