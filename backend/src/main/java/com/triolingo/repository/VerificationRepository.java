@@ -1,6 +1,6 @@
 package com.triolingo.repository;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,5 +16,5 @@ public interface VerificationRepository extends JpaRepository<VerificationToken,
 
     Optional<VerificationToken> findByToken(String token);
 
-    void deleteAllByExpirationDateGreaterThan(Date date);
+    void deleteAllByExpirationDateGreaterThan(Instant expirationDate);
 }

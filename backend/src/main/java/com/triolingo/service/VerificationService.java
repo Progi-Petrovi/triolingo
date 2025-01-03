@@ -1,7 +1,7 @@
 package com.triolingo.service;
 
 import java.net.URI;
-import java.util.Date;
+import java.time.Instant;
 
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -35,7 +35,7 @@ public class VerificationService {
     public VerificationToken createVerification(User user) {
         VerificationToken verificationToken = verificationRepository.findByUser(user).orElse(null);
         if (verificationToken != null) {
-            if (verificationToken.getExpirationDate().before(new Date()))
+            if (verificationToken.getExpirationDate().isBefore(Instant.now()))
                 verificationRepository.delete(verificationToken);
             else
                 throw new IllegalArgumentException("This user already has an active verification token");
@@ -67,6 +67,6 @@ public class VerificationService {
 
     @Scheduled(cron = "0 0 * ? * *")
     public void clearExpiredVerification() {
-        verificationRepository.deleteAllByExpirationDateGreaterThan(new Date());
+        verificationRepository.deleteAllByExpirationDateGreaterThan(Instant.now());
     }
 }
