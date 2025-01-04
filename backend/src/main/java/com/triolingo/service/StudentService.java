@@ -4,6 +4,7 @@ import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.student.StudentCreateDTO;
 import com.triolingo.entity.user.Student;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -19,11 +20,12 @@ import jakarta.persistence.EntityNotFoundException;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final PasswordEncoder passwordEncoder;
     private final DtoMapper dtoMapper;
 
-    public StudentService(StudentRepository studentRepository,
-            DtoMapper dtoMapper) {
+    public StudentService(StudentRepository studentRepository, PasswordEncoder passwordEncoder, DtoMapper dtoMapper) {
         this.studentRepository = studentRepository;
+        this.passwordEncoder = passwordEncoder;
         this.dtoMapper = dtoMapper;
     }
 
@@ -39,14 +41,20 @@ public class StudentService {
         }
     }
 
-    public void create(StudentCreateDTO studentDto) {
+    public Student create(StudentCreateDTO studentDto) {
         if (studentRepository.existsByEmail(studentDto.email()))
             throw new EntityExistsException("Student with that email already exists");
-        studentRepository.save(dtoMapper.createEntity(studentDto, Student.class));
+
+        Student student = dtoMapper.createEntity(studentDto, Student.class);
+        student.setPassword(passwordEncoder.encode(student.getPassword()));
+        return studentRepository.save(student);
     }
 
-    public void update(@NotNull Student student, @NotNull StudentCreateDTO studentDTO) {
-        dtoMapper.updateEntity(student, studentDTO);
+    public void update(@NotNull Student student, @NotNull StudentCreateDTO studentDto) {
+        dtoMapper.updateEntity(student, studentDto);
+        if (studentDto.password() != null)
+            student.setPassword(passwordEncoder.encode(student.getPassword()));
+
         studentRepository.save(student);
     }
 

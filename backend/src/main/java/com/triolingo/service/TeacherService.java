@@ -8,6 +8,7 @@ import com.triolingo.repository.TeacherRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.env.Environment;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.imageio.ImageIO;
 import javax.validation.constraints.NotNull;
@@ -31,11 +32,14 @@ import jakarta.persistence.EntityNotFoundException;
 public class TeacherService {
 
     private final TeacherRepository teacherRepository;
+    private final PasswordEncoder passwordEncoder;
     private final DtoMapper dtoMapper;
     private final Environment env;
 
-    public TeacherService(TeacherRepository teacherRepository, DtoMapper dtoMapper, Environment env) {
+    public TeacherService(TeacherRepository teacherRepository, PasswordEncoder passwordEncoder, DtoMapper dtoMapper,
+            Environment env) {
         this.teacherRepository = teacherRepository;
+        this.passwordEncoder = passwordEncoder;
         this.dtoMapper = dtoMapper;
         this.env = env;
     }
@@ -56,11 +60,17 @@ public class TeacherService {
     public Teacher create(TeacherCreateDTO teacherDto) {
         if (teacherRepository.existsByEmail(teacherDto.email()))
             throw new EntityExistsException("Teacher with that email already exists");
-        return teacherRepository.save(dtoMapper.createEntity(teacherDto, Teacher.class));
+
+        Teacher teacher = dtoMapper.createEntity(teacherDto, Teacher.class);
+        teacher.setPassword(passwordEncoder.encode(teacher.getPassword()));
+        return teacherRepository.save(teacher);
     }
 
-    public Teacher update(@NotNull Teacher teacher, @NotNull TeacherCreateDTO teacherDTO) {
-        dtoMapper.updateEntity(teacher, teacherDTO);
+    public Teacher update(@NotNull Teacher teacher, @NotNull TeacherCreateDTO teacherDto) {
+        dtoMapper.updateEntity(teacher, teacherDto);
+        if (teacherDto.password() != null)
+            teacher.setPassword(passwordEncoder.encode(teacher.getPassword()));
+
         return teacherRepository.save(teacher);
     }
 
