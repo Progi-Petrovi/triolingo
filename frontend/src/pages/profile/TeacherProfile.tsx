@@ -10,6 +10,7 @@ import emailIcon from "../../icons/email-outline.svg";
 import { Badge } from "@/components/ui/badge";
 import { TeachingStyle } from "@/types/teaching-style";
 import { Button } from "@/components/ui/button";
+import ChangePasswordDialog from "./components/ChangePasswordDialog";
 
 export default function TeacherProfile() {
     const allLanguages = ["Croatian", "Spanish", "English", "French"];
@@ -36,6 +37,9 @@ export default function TeacherProfile() {
                         <p>profile@gmail.com</p>
                     </CardContent>
                     <CardContent>Teacher</CardContent>
+                    <CardContent>
+                        <ChangePasswordDialog />
+                    </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>

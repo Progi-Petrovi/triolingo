@@ -123,14 +123,14 @@ public class TeacherController {
     }
 
     @PutMapping("/update")
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @Secured({"ROLE_TEACHER", "ROLE_VERIFIED"})
     @Operation(description = "Updates the teacher the current principal is logged in as. If profile image hash is set to null, the image is also deleted from the provider.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateTeacher(@RequestBody TeacherCreateDTO teacherDto,
-            @AuthenticationPrincipal DatabaseUser principal) {
+                                           @AuthenticationPrincipal DatabaseUser principal) {
         try {
             teacherService.update((Teacher) principal.getStoredUser(), teacherDto);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -156,7 +156,7 @@ public class TeacherController {
         }
     }
 
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @Secured({"ROLE_TEACHER", "ROLE_VERIFIED"})
     @RequestMapping(path = "/update/profileImage", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(description = "Expects a 'multipart/form-data' with an image file. Assigns a hash to the file and saves it under that hash. The images are statically provided on images/profile/{image-hash}.jpg")
     @ApiResponses(value = {
@@ -164,7 +164,7 @@ public class TeacherController {
             @ApiResponse(responseCode = "400", description = "Image is of the incorrect type.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateProfileImage(@RequestParam(value = "file") MultipartFile file,
-            @AuthenticationPrincipal DatabaseUser principal)
+                                                @AuthenticationPrincipal DatabaseUser principal)
             throws ServletException, NoSuchAlgorithmException, IOException {
         String fileName;
         try {

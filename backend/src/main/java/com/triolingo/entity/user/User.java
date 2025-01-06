@@ -1,6 +1,7 @@
 package com.triolingo.entity.user;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.constraints.*;
@@ -37,10 +38,11 @@ public abstract class User {
         if (verified)
             return Arrays.asList(Role.USER.getAuthority(), Role.VERIFIED.getAuthority());
         else
-            return Arrays.asList(Role.USER.getAuthority());
+            return Collections.singletonList(Role.USER.getAuthority());
     }
 }
 
+@Getter
 enum Role {
     USER(() -> "ROLE_USER"),
     ADMIN(() -> "ROLE_ADMIN"),
@@ -50,12 +52,8 @@ enum Role {
 
     private final GrantedAuthority authority;
 
-    private Role(GrantedAuthority authority) {
+    Role(GrantedAuthority authority) {
         this.authority = authority;
-    }
-
-    public GrantedAuthority getAuthority() {
-        return authority;
     }
 
     @Override
