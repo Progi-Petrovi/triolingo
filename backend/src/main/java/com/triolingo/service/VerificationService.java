@@ -2,7 +2,6 @@ package com.triolingo.service;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.Date;
 
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -68,6 +67,6 @@ public class VerificationService {
 
     @Scheduled(cron = "0 0 * ? * *")
     public void clearExpiredVerification() {
-        verificationRepository.deleteAllByExpirationDateGreaterThan(new Date());
+        verificationRepository.deleteAllByExpirationDateGreaterThan(Instant.now());
     }
 }
