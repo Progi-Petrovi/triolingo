@@ -14,8 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -79,11 +77,7 @@ public class TeacherController {
             @ApiResponse(responseCode = "400", description = "Teacher with that email already exists.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> createTeacher(@RequestBody TeacherCreateDTO teacherDto) {
-        try {
-            teacherService.create(teacherDto);
-        } catch (EntityExistsException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        teacherService.create(teacherDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -95,11 +89,7 @@ public class TeacherController {
     })
     public ResponseEntity<?> registerTeacher(@RequestBody TeacherCreateDTO teacherDto, HttpServletRequest request)
             throws ServletException {
-        try {
-            teacherService.create(teacherDto);
-        } catch (EntityExistsException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        teacherService.create(teacherDto);
         request.login(teacherDto.email(), teacherDto.password());
         // TODO: redirect to verification endpoint on user controller
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -113,13 +103,9 @@ public class TeacherController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateTeacher(@PathVariable("id") Long id, @RequestBody TeacherCreateDTO teacherDto) {
-        try {
-            Teacher teacher = teacherService.fetch(id);
-            teacherService.update(teacher, teacherDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        Teacher teacher = teacherService.fetch(id);
+        teacherService.update(teacher, teacherDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/update")
@@ -131,12 +117,8 @@ public class TeacherController {
     })
     public ResponseEntity<?> updateTeacher(@RequestBody TeacherCreateDTO teacherDto,
                                            @AuthenticationPrincipal DatabaseUser principal) {
-        try {
-            teacherService.update((Teacher) principal.getStoredUser(), teacherDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        teacherService.update((Teacher) principal.getStoredUser(), teacherDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -147,13 +129,9 @@ public class TeacherController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> deleteTeacher(@PathVariable("id") Long id) {
-        try {
-            Teacher teacher = teacherService.fetch(id);
-            teacherService.delete(teacher);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        Teacher teacher = teacherService.fetch(id);
+        teacherService.delete(teacher);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Secured({"ROLE_TEACHER", "ROLE_VERIFIED"})
