@@ -53,7 +53,6 @@ export default function ChangePasswordDialog() {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
         fetch("user/change-password", {
             method: "PUT",
             headers: {
@@ -67,10 +66,15 @@ export default function ChangePasswordDialog() {
                     description: `${res.body}`,
                 });
                 resetForm();
-            } else {
+            } else if (res.status === 400) {
                 toast({
                     title: "Changing password failed",
                     description: `${res.body}`,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: "Changing password failed",
                     variant: "destructive",
                 });
             }
