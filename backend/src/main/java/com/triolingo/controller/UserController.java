@@ -2,7 +2,6 @@ package com.triolingo.controller;
 
 import com.triolingo.dto.user.UserChangePasswordDTO;
 import com.triolingo.entity.user.User;
-import com.triolingo.exception.ChangePasswordException;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,12 +35,8 @@ public class UserController {
     })
     public ResponseEntity<?> changePassword(@RequestBody UserChangePasswordDTO userChangePasswordDTO,
                                             @AuthenticationPrincipal DatabaseUser principal) {
-        try {
-            User user = principal.getStoredUser();
-            userService.changePassword(user, userChangePasswordDTO);
-            return ResponseEntity.ok("Password changed successfully");
-        } catch(ChangePasswordException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        User user = principal.getStoredUser();
+        userService.changePassword(user, userChangePasswordDTO);
+        return ResponseEntity.ok("Password changed successfully");
     }
 }
