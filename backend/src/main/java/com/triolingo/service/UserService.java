@@ -4,7 +4,6 @@ import com.triolingo.dto.user.UserChangePasswordDTO;
 import com.triolingo.entity.user.User;
 import com.triolingo.exception.ChangePasswordException;
 import com.triolingo.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +14,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void changePassword(@NotNull User user, @NotNull UserChangePasswordDTO userChangePasswordDTO) {
