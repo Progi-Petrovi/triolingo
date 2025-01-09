@@ -9,12 +9,16 @@ const StudentRegister = React.lazy(
 const TeacherRegister = React.lazy(
   () => import("../pages/register/TeacherRegister")
 );
+const VerifySuccess = React.lazy(
+  () => import("../pages/register/VerifySuccess")
+);
 
 const routes = [
   { path: PathConstants.HOME, element: <Home /> },
   { path: PathConstants.LOGIN, element: <Login /> },
   { path: PathConstants.STUDENT_REGISTER, element: <StudentRegister /> },
   { path: PathConstants.TEACHER_REGISTER, element: <TeacherRegister /> },
+  { path: PathConstants.VERIFY_SUCCESS, element: <VerifySuccess /> },
 ];
 
 export default routes;
