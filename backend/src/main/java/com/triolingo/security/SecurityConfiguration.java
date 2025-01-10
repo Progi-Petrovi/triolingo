@@ -93,7 +93,7 @@ public class SecurityConfiguration {
             frontendRedirect(response, env.getProperty("path.frontend.teacher.home"));
         else if (user.getClass().isAssignableFrom(Student.class))
             frontendRedirect(response, env.getProperty("path.frontend.student.home"));
-        else if (user.getClass().isAssignableFrom(Student.class))
+        else if (user.getClass().isAssignableFrom(Admin.class))
             frontendRedirect(response, env.getProperty("path.frontend.admin.home"));
         else
             frontendRedirect(response, env.getProperty("path.frontend.home"));

@@ -48,7 +48,7 @@ export default function Home() {
                             <TableCell>{teacher.teachingStyle}</TableCell>
                             <TableCell>{teacher.yearsOfExperience}</TableCell>
                             <TableCell className="text-right">
-                                ${teacher.hourlyRate}
+                                €{teacher.hourlyRate}
                             </TableCell>
                         </TableRow>
                     ))}

@@ -125,7 +125,7 @@ export default function StudentRegister() {
     }
 
     function showPickedLanguages() {
-        if (learningLanguages.length == 0) return null;
+        if (learningLanguages.length === 0) return null;
         return (
             <div className="p-8 m-1 border overflow-scroll h-52">
                 {learningLanguages.map((lang) => {
