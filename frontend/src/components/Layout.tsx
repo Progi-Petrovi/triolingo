@@ -11,7 +11,7 @@ export default function Layout() {
             className="min-h-screen w-screen flex flex-col"
         >
             <Header />
-            <main className="flex-1 overflow-auto flex justify-center items-center">
+            <main className="flex-1 overflow-auto flex justify-center items-center pt-6">
                 <Suspense fallback={<div>Loading...</div>}>
                     <Outlet />
                 </Suspense>

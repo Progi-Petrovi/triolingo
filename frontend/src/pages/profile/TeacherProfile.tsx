@@ -16,8 +16,8 @@ export default function TeacherProfile() {
     const allLanguages = ["Croatian", "Spanish", "English", "French"];
 
     return (
-        <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row md:px-0">
-            <div className="flex flex-col gap-4 md:w-80">
+        <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row">
+            <div className="flex flex-col gap-4 md:w-96">
                 <Card className="flex flex-col justify-center items-center">
                     <CardHeader>
                         <CardTitle>
@@ -47,7 +47,7 @@ export default function TeacherProfile() {
                     </CardHeader>
                     <CardContent>€5</CardContent>
                 </Card>
-                <Card className="max-h-40 overflow-scroll">
+                <Card className="max-h-50 overflow-scroll">
                     <CardHeader>
                         <CardTitle>Languages</CardTitle>
                     </CardHeader>
@@ -59,7 +59,7 @@ export default function TeacherProfile() {
                 </Card>
             </div>
 
-            <div className="flex flex-col gap-4 justify-center w-full md:w-auto">
+            <div className="flex flex-col gap-4 justify-center w-full md:w-96">
                 <Card>
                     <CardHeader>
                         <CardTitle>Years of experience</CardTitle>
