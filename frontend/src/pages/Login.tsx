@@ -12,9 +12,17 @@ import { Label } from "@/components/ui/label";
 import PathConstants from "@/routes/pathConstants";
 import { FormEvent } from "react";
 import { useFetch } from "@/hooks/use-fetch";
+import { useToast } from "@/hooks/use-toast";
+
+const LoginErrors: Record<string, string> = {
+    "?badCredentials=": "Invalid credentials.",
+    "?oAuth2Failed=": "OAuth2 failed.",
+    "?internalError=": "Internal server error",
+};
 
 export default function Login() {
     const fetch = useFetch();
+    const { toast } = useToast();
 
     async function submitLogin(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -24,6 +32,18 @@ export default function Login() {
             body,
             redirect: "follow",
         });
+
+        checkForFailure();
+    }
+
+    function checkForFailure() {
+        const error = window.location.search;
+        if (error in LoginErrors) {
+            toast({
+                title: "Failed to login",
+                description: LoginErrors[error],
+            });
+        }
     }
 
     return (
