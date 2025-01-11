@@ -14,6 +14,10 @@ const VerifySuccess = React.lazy(() => import("../pages/verify/VerifySuccess"));
 const VerifyRequest = React.lazy(() => import("../pages/verify/VerifyRequest"));
 const Profile = React.lazy(() => import("../pages/profile/Profile"));
 
+const Calendar = React.lazy(() => import("../pages/Calendar"));
+
+const Teacher = React.lazy(() => import("../pages/Teacher"));
+
 const routes = [
     { path: PathConstants.HOME, element: <Home /> },
     { path: PathConstants.LOGIN, element: <Login /> },
@@ -22,6 +26,8 @@ const routes = [
     { path: PathConstants.VERIFY_SUCCESS, element: <VerifySuccess /> },
     { path: PathConstants.VERIFY_REQUEST, element: <VerifyRequest /> },
     { path: PathConstants.PROFILE, element: <Profile /> },
+    { path: PathConstants.CALENDAR, element: <Calendar /> },
+    { path: PathConstants.TEACHERPROFILE, element: <Teacher /> },
 ];
 
 export default routes;
