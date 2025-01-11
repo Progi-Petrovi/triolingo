@@ -2,9 +2,7 @@ package com.triolingo.service;
 
 import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.teacher.*;
-import com.triolingo.entity.language.Language;
 import com.triolingo.entity.user.Teacher;
-import com.triolingo.entity.user.User;
 import com.triolingo.repository.TeacherRepository;
 
 import org.springframework.stereotype.Service;
@@ -28,14 +26,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 
 @Service
 public class TeacherService {
@@ -43,16 +34,13 @@ public class TeacherService {
     private final TeacherRepository teacherRepository;
     private final PasswordEncoder passwordEncoder;
     private final DtoMapper dtoMapper;
-    private final EntityManager entityManager;
     private final Environment env;
 
     public TeacherService(TeacherRepository teacherRepository, PasswordEncoder passwordEncoder, DtoMapper dtoMapper,
-            EntityManager entityManager,
             Environment env) {
         this.teacherRepository = teacherRepository;
         this.passwordEncoder = passwordEncoder;
         this.dtoMapper = dtoMapper;
-        this.entityManager = entityManager;
         this.env = env;
     }
 
@@ -61,76 +49,9 @@ public class TeacherService {
     }
 
     public List<Teacher> listAll(@NotNull TeacherFilterDTO filterDTO) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Teacher> query = builder.createQuery(Teacher.class);
-
-        Root<Teacher> teacherRoot = query.from(Teacher.class);
-        Join<Teacher, Language> languageJoin = teacherRoot.join(Teacher.Fields.languages);
-
-        Predicate predicate = builder.and();
-        if (filterDTO.minHourlyRate() != null)
-            predicate = builder.and(predicate,
-                    builder.greaterThanOrEqualTo(
-                            teacherRoot.get(Teacher.Fields.hourlyRate),
-                            filterDTO.minHourlyRate()));
-        if (filterDTO.maxHourlyRate() != null)
-            predicate = builder.and(predicate,
-                    builder.lessThanOrEqualTo(
-                            teacherRoot.get(Teacher.Fields.hourlyRate),
-                            filterDTO.maxHourlyRate()));
-
-        if (filterDTO.minYearsOfExperience() != null)
-            predicate = builder.and(predicate,
-                    builder.greaterThanOrEqualTo(
-                            teacherRoot.get(Teacher.Fields.yearsOfExperience),
-                            filterDTO.minYearsOfExperience()));
-        if (filterDTO.maxYearsOfExperience() != null)
-            predicate = builder.and(predicate,
-                    builder.lessThanOrEqualTo(
-                            teacherRoot.get(Teacher.Fields.yearsOfExperience),
-                            filterDTO.maxYearsOfExperience()));
-
-        if (filterDTO.teachingStyles() != null)
-            predicate = builder.and(predicate,
-                    teacherRoot.get(Teacher.Fields.teachingStyle)
-                            .in(filterDTO.teachingStyles()));
-
-        if (filterDTO.languages() != null)
-            predicate = builder.and(predicate,
-                    languageJoin.get(Language.Fields.name)
-                            .in(filterDTO.languages()));
-
-        query = query.where(predicate).groupBy(teacherRoot.get(User.Fields.id));
-
-        if (filterDTO.languages() != null)
-            query = query.having(builder.equal(builder.count(teacherRoot), filterDTO.languages().size()));
-
-        Order order = builder.desc(teacherRoot.get(User.Fields.fullName));
-        if (filterDTO.order() != null)
-            switch (filterDTO.order()) {
-                case TeacherFilterDTO.Order.ALPHABETICAL_DESC:
-                    order = builder.desc(teacherRoot.get(User.Fields.fullName));
-                    break;
-                case TeacherFilterDTO.Order.ALPHABETICAL_ASC:
-                    order = builder.asc(teacherRoot.get(User.Fields.fullName));
-                    break;
-                case TeacherFilterDTO.Order.YEARS_OF_EXPERIANCE_DESC:
-                    order = builder.desc(teacherRoot.get(Teacher.Fields.yearsOfExperience));
-                    break;
-                case TeacherFilterDTO.Order.YEARS_OF_EXPERIANCE_ASC:
-                    order = builder.asc(teacherRoot.get(Teacher.Fields.yearsOfExperience));
-                    break;
-                case TeacherFilterDTO.Order.HOURLY_RATE_DESC:
-                    order = builder.desc(teacherRoot.get(Teacher.Fields.hourlyRate));
-                    break;
-                case TeacherFilterDTO.Order.HOURLY_RATE_ASC:
-                    order = builder.asc(teacherRoot.get(Teacher.Fields.hourlyRate));
-                    break;
-                default:
-                    break;
-            }
-
-        return entityManager.createQuery(query.orderBy(order)).getResultList();
+        return teacherRepository.listAll(filterDTO.languages(), filterDTO.minYearsOfExperience(),
+                filterDTO.maxYearsOfExperience(), filterDTO.teachingStyles(), filterDTO.minHourlyRate(),
+                filterDTO.maxHourlyRate(), filterDTO.order());
     }
 
     public Teacher fetch(Long id) {
