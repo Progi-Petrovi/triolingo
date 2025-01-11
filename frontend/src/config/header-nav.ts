@@ -19,6 +19,10 @@ const nav = [
         title: "Profile",
         href: PathConstants.PROFILE,
     },
+    {
+        title: "Calendar",
+        href: PathConstants.CALENDAR,
+    },
 ];
 
 export interface NavConfig {
