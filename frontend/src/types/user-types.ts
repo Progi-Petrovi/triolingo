@@ -1,4 +1,10 @@
-import { TeachingStyle } from './teaching-style';
+import { TeachingStyle } from "./teaching-style";
+
+export enum Role {
+    ROLE_TEACHER = "ROLE_TEACHER",
+    ROLE_STUDENT = "ROLE_STUDENT",
+    ROLE_ADMIN = "ROLE_ADMIN",
+}
 
 export type Teacher = {
     id: number;

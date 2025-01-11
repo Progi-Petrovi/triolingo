@@ -13,6 +13,7 @@ import PathConstants from "@/routes/pathConstants";
 import { FormEvent } from "react";
 import { useFetch } from "@/hooks/use-fetch";
 import { useToast } from "@/hooks/use-toast";
+import useUserContext from "@/context/useUserContext";
 
 const LoginErrors: Record<string, string> = {
     "?badCredentials=": "Invalid credentials.",
@@ -24,6 +25,7 @@ export default function Login() {
     const fetch = useFetch();
     const { toast } = useToast();
     const navigate = useNavigate();
+    const { fetchUser } = useUserContext();
 
     async function submitLogin(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -34,7 +36,7 @@ export default function Login() {
         });
 
         checkForFailure();
-
+        fetchUser();
         navigate("/verify");
     }
 

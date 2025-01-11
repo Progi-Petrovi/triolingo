@@ -20,7 +20,6 @@ function useFetch() {
 
         if (res.type == "opaqueredirect" || res.redirected) {
             const url: URL = new URL(res.url);
-            console.log(url);
             if (url.origin == new URL(window.location.href).origin)
                 navigate(url.pathname + url.search);
         }

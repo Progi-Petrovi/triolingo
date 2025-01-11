@@ -11,9 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import { TeachingStyle } from "@/types/teaching-style";
 import { Button } from "@/components/ui/button";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
+import useUserContext from "@/context/useUserContext";
 
 export default function TeacherProfile() {
-    const allLanguages = ["Croatian", "Spanish", "English", "French"];
+    const { user } = useUserContext();
+    const allLanguages = ["Croatian"];
 
     return (
         <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row">
@@ -29,7 +31,7 @@ export default function TeacherProfile() {
                             </Avatar>
                         </CardTitle>
                         <CardDescription className="text-center">
-                            Stjepan Bonić
+                            {user.fullName}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="flex gap-2">
