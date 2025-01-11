@@ -3,6 +3,7 @@ import {
     momentLocalizer,
 } from "react-big-calendar";
 import moment from "moment";
+import { LessonType as LessonEvent } from "@/types/lesson-event";
 
 import "@/calendar.css";
 
@@ -28,7 +29,7 @@ export default function Calendar() {
         },
     ];
 
-    function Lesson({ event }: { event: any }) {
+    function Lesson({ event }: { event: LessonEvent }) {
         return (
             <span>
                 <strong>{event.title}</strong> <br />
