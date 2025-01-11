@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useParams } from "react-router-dom";
 import { useFetch } from "@/hooks/use-fetch";
 import { useEffect, useState } from "react";
+import { initials } from "@/utils/main";
 
 export default function Teacher() {
     const fetch = useFetch();
@@ -23,11 +24,6 @@ export default function Teacher() {
             setTeacher(res.body as TeacherType);
         });
     }, [fetch, id]);
-
-    const initials = (fullName: string) => {
-        const names = fullName.split(" ");
-        return names[0][0] + names[names.length - 1][0];
-    };
 
     if (!teacher) {
         return <div>Loading...</div>;
