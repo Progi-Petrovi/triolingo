@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React from "react";
 import PathConstants from "./pathConstants";
 
@@ -9,9 +10,8 @@ const StudentRegister = React.lazy(
 const TeacherRegister = React.lazy(
     () => import("../pages/register/TeacherRegister")
 );
-const VerifySuccess = React.lazy(
-    () => import("../pages/register/VerifySuccess")
-);
+const VerifySuccess = React.lazy(() => import("../pages/verify/VerifySuccess"));
+const VerifyRequest = React.lazy(() => import("../pages/verify/VerifyRequest"));
 const Profile = React.lazy(() => import("../pages/profile/Profile"));
 
 const routes = [
@@ -20,6 +20,7 @@ const routes = [
     { path: PathConstants.STUDENT_REGISTER, element: <StudentRegister /> },
     { path: PathConstants.TEACHER_REGISTER, element: <TeacherRegister /> },
     { path: PathConstants.VERIFY_SUCCESS, element: <VerifySuccess /> },
+    { path: PathConstants.VERIFY_REQUEST, element: <VerifyRequest /> },
     { path: PathConstants.PROFILE, element: <Profile /> },
 ];
 
