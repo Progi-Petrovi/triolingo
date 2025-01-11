@@ -7,31 +7,20 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TeachingStyle } from "@/types/teaching-style";
+import { Teacher as TeacherType } from "@/types/teacher";
 import { Button } from "@/components/ui/button";
 import { useParams } from "react-router-dom";
 import { useFetch } from "@/hooks/use-fetch";
 import { useEffect, useState } from "react";
 
-type Teacher = {
-    id: number;
-    fullName: string;
-    hourlyRate: number;
-    languages: string[];
-    profilePictureHash: string | null;
-    qualifications: string;
-    teachingStyle: TeachingStyle;
-    yearsOfExperience: number;
-};
-
 export default function Teacher() {
     const fetch = useFetch();
     const { id } = useParams();
-    const [teacher, setTeacher] = useState<Teacher>();
+    const [teacher, setTeacher] = useState<TeacherType>();
 
     useEffect(() => {
         fetch(`teacher/${id}`).then((res) => {
-            setTeacher(res.body as Teacher);
+            setTeacher(res.body as TeacherType);
         });
     }, [fetch, id]);
 
