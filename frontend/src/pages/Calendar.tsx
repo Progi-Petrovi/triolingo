@@ -1,11 +1,13 @@
 import {
     Calendar as ReactBigCalendar,
+    View,
     momentLocalizer,
 } from "react-big-calendar";
 import moment from "moment";
 import { LessonType as LessonEvent } from "@/types/lesson-event";
 
 import "@/calendar.css";
+import { useState } from "react";
 
 const localizer = momentLocalizer(moment);
 
@@ -38,8 +40,18 @@ export default function Calendar() {
         );
     }
 
+    const [view, setView] = useState("month");
+
+    const handleViewChange = (newView: View) => {
+        setView(newView);
+    };
+
     return (
-        <div className="App">
+        <div
+            className={`App ${view === "week" ? "week-active" : ""} ${
+                view === "day" ? "day-active" : ""
+            }`}
+        >
             <ReactBigCalendar
                 localizer={localizer}
                 defaultDate={new Date()}
@@ -49,6 +61,7 @@ export default function Calendar() {
                 components={{
                     event: Lesson,
                 }}
+                onView={(newView) => handleViewChange(newView)}
             />
         </div>
     );

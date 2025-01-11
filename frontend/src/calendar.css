@@ -851,3 +851,16 @@ button.rbc-input::-moz-focus-inner {
 button {
   user-select: none !important;
 }
+
+
+@media (max-width: 765px) {
+  .week-active .rbc-time-view {
+    width: 70%;
+    position: relative;
+    left: 4rem;
+  }
+}
+
+@media (max-width: 435px) {
+  
+}
