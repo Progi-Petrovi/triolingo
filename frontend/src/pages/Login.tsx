@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -23,6 +23,7 @@ const LoginErrors: Record<string, string> = {
 export default function Login() {
     const fetch = useFetch();
     const { toast } = useToast();
+    const navigate = useNavigate();
 
     async function submitLogin(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -30,10 +31,11 @@ export default function Login() {
         await fetch("login", {
             method: "POST",
             body,
-            redirect: "follow",
         });
 
         checkForFailure();
+
+        navigate("/verify");
     }
 
     function checkForFailure() {
