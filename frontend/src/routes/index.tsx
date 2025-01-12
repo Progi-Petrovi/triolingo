@@ -4,6 +4,7 @@ import PathConstants from "./pathConstants";
 
 const Home = React.lazy(() => import("../pages/Home"));
 const Login = React.lazy(() => import("../pages/Login"));
+const Logout = React.lazy(() => import("../pages/Logout"));
 const StudentRegister = React.lazy(
     () => import("../pages/register/StudentRegister")
 );
@@ -21,6 +22,7 @@ const Teacher = React.lazy(() => import("../pages/Teacher"));
 const routes = [
     { path: PathConstants.HOME, element: <Home /> },
     { path: PathConstants.LOGIN, element: <Login /> },
+    { path: PathConstants.LOG_OUT, element: <Logout /> },
     { path: PathConstants.STUDENT_REGISTER, element: <StudentRegister /> },
     { path: PathConstants.TEACHER_REGISTER, element: <TeacherRegister /> },
     { path: PathConstants.VERIFY_SUCCESS, element: <VerifySuccess /> },

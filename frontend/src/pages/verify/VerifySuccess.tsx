@@ -1,6 +1,12 @@
-import {Card, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
-import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {
+    Card,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card.tsx";
+import PathConstants from "@/routes/pathConstants";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function VerifySuccess() {
     const navigate = useNavigate();
@@ -8,7 +14,7 @@ export default function VerifySuccess() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            navigate("../");
+            navigate(PathConstants.HOME);
         }, 2000);
 
         const dotting = setInterval(() => {
@@ -18,16 +24,16 @@ export default function VerifySuccess() {
         return () => {
             clearTimeout(timer);
             clearInterval(dotting);
-        }
+        };
     }, [navigate]);
 
     return (
         <Card className="mx-auto max-w-sm">
             <CardHeader>
-                <CardTitle className="text-2xl">Verification Successful!</CardTitle>
-                <CardDescription>
-                    Redirecting{dots}
-                </CardDescription>
+                <CardTitle className="text-2xl">
+                    Verification Successful!
+                </CardTitle>
+                <CardDescription>Redirecting{dots}</CardDescription>
             </CardHeader>
         </Card>
     );

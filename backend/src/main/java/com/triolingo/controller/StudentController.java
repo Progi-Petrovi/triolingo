@@ -78,14 +78,13 @@ public class StudentController {
     @PostMapping("/register")
     @Operation(description = "Creates a new student and logs the current principal in as that student.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400", description = "Student with that email already exists.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> registerStudent(@RequestBody StudentCreateDTO studentDto, HttpServletRequest request)
             throws ServletException {
         studentService.create(studentDto);
         request.login(studentDto.email(), studentDto.password());
-        // TODO: redirect to verification endpoint on user controller
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

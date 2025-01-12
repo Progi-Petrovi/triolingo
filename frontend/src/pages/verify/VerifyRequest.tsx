@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/card";
 import { useUser } from "@/context/use-user-context";
 import { useFetch } from "@/hooks/use-fetch";
+import PathConstants from "@/routes/pathConstants";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -19,7 +20,7 @@ export default function VerifyRequest() {
             method: "GET",
         }).then((res) => {
             if (res.status === 400) {
-                navigate("/");
+                navigate(PathConstants.HOME);
             }
         });
     }, []);

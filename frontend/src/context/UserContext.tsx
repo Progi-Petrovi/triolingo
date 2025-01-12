@@ -1,8 +1,9 @@
 import { createContext, useState, ReactNode } from "react";
 import { useFetch } from "../hooks/use-fetch";
-import { Teacher, Role, User, Student } from "@/types/users";
+import { Teacher, Role, User, Student, UserStorage } from "@/types/users";
 import { UserContextType } from "./use-user-context";
 import { useNavigate } from "react-router-dom";
+import PathConstants from "@/routes/pathConstants";
 
 const fetchBasedOnRoles: Record<string, string> = {
     ROLE_TEACHER: "/teacher",
@@ -34,17 +35,31 @@ export function UserProvider({ children }: UserProviderProps) {
             } else if (role === Role.ROLE_ADMIN) {
                 setUser({ ...(res.body as User), role } as User);
             }
+            sessionStorage.setItem(
+                UserStorage.TRIOLINGO_USER,
+                JSON.stringify({ ...res.body, role })
+            );
         });
 
         if (user?.verified) {
-            navigate("/");
+            navigate(PathConstants.HOME);
         } else {
-            navigate("/verify");
+            navigate(PathConstants.VERIFY_REQUEST);
         }
     }
 
+    async function logoutUser() {
+        await fetch("/user/logout").then((res) => {
+            if (res.status === 200) {
+                setUser(null);
+                sessionStorage.removeItem(UserStorage.TRIOLINGO_USER);
+                navigate(PathConstants.HOME);
+            }
+        });
+    }
+
     return (
-        <UserContext.Provider value={{ user, fetchUser }}>
+        <UserContext.Provider value={{ user, setUser, fetchUser, logoutUser }}>
             {children}
         </UserContext.Provider>
     );
