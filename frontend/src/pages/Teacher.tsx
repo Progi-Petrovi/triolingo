@@ -50,6 +50,54 @@ export default function Teacher() {
             comment: "Good teacher, but could be more patient.",
             date: moment().subtract(2, "days").toDate(),
         },
+        {
+            id: "3",
+            teacherId: "1",
+            user: "John Smith",
+            rating: 3,
+            comment: "Okay teacher, but not very patient.",
+            date: moment().subtract(3, "days").toDate(),
+        },
+        {
+            id: "4",
+            teacherId: "1",
+            user: "Alice Johnson",
+            rating: 5,
+            comment: "Excellent teacher, highly recommend.",
+            date: moment().subtract(4, "days").toDate(),
+        },
+        {
+            id: "5",
+            teacherId: "1",
+            user: "Bob Brown",
+            rating: 4,
+            comment: "Very good teacher, but sometimes hard to understand.",
+            date: moment().subtract(5, "days").toDate(),
+        },
+        {
+            id: "6",
+            teacherId: "1",
+            user: "Charlie Davis",
+            rating: 3,
+            comment: "Average teacher, could improve.",
+            date: moment().subtract(6, "days").toDate(),
+        },
+        {
+            id: "7",
+            teacherId: "1",
+            user: "Diana Evans",
+            rating: 5,
+            comment: "Fantastic teacher, very engaging.",
+            date: moment().subtract(7, "days").toDate(),
+        },
+        {
+            id: "8",
+            teacherId: "1",
+            user: "Evan Foster",
+            rating: 4,
+            comment: "Good teacher, but sometimes too fast.",
+            date: moment().subtract(8, "days").toDate(),
+        },
     ];
     // const [reviews, setReviews] = useState<Review[]>([]);
 
@@ -168,11 +216,11 @@ export default function Teacher() {
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-4">
+                        <Card className="flex flex-col gap-4 max-h-60 overflow-scroll p-2">
                             {lastFewReviews.map((review) => (
                                 <Review review={review} />
                             ))}
-                        </div>
+                        </Card>
 
                         {reviews && reviews.length > maxRatings && (
                             <Button>See all reviews</Button>
