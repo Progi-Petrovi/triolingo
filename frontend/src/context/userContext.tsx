@@ -36,7 +36,9 @@ export function UserProvider({ children }: UserProviderProps) {
             }
         });
 
-        if (!user?.verified) {
+        if (user?.verified) {
+            navigate("/");
+        } else {
             navigate("/verify");
         }
     }
