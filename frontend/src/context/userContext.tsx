@@ -2,6 +2,7 @@ import { createContext, useState, ReactNode } from "react";
 import { useFetch } from "../hooks/use-fetch";
 import { Teacher, Role, User, Student } from "@/types/users";
 import { UserContextType } from "./useUserContext";
+import { useNavigate } from "react-router-dom";
 
 const fetchBasedOnRoles: Record<string, string> = {
     ROLE_TEACHER: "/teacher",
@@ -17,6 +18,7 @@ const UserContext = createContext<UserContextType | null>(null);
 
 export function UserProvider({ children }: UserProviderProps) {
     const fetch = useFetch();
+    const navigate = useNavigate();
     const [user, setUser] = useState<User | Teacher | Student | null>(null);
 
     async function fetchUser() {
@@ -33,6 +35,10 @@ export function UserProvider({ children }: UserProviderProps) {
                 setUser({ ...(res.body as User), role } as User);
             }
         });
+
+        if (!user?.verified) {
+            navigate("/verify");
+        }
     }
 
     return (

@@ -12,6 +12,7 @@ export type User = {
     email: string;
     fullName: string;
     role: Role;
+    verified: boolean;
 };
 
 export type Teacher = User & {

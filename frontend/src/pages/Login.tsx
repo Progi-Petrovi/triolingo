@@ -16,15 +16,14 @@ import { useToast } from "@/hooks/use-toast";
 import useUserContext from "@/context/useUserContext";
 
 const LoginErrors: Record<string, string> = {
-    "?badCredentials=": "Invalid credentials.",
-    "?oAuth2Failed=": "OAuth2 failed.",
-    "?internalError=": "Internal server error",
+    "/login?badCredentials=": "Invalid credentials.",
+    "/login?oAuth2Failed=": "OAuth2 failed.",
+    "/login?internalError=": "Internal server error",
 };
 
 export default function Login() {
     const fetch = useFetch();
     const { toast } = useToast();
-    const navigate = useNavigate();
     const { fetchUser } = useUserContext();
 
     async function submitLogin(event: FormEvent<HTMLFormElement>) {
@@ -33,23 +32,20 @@ export default function Login() {
         await fetch("login", {
             method: "POST",
             body,
+        }).then((res) => {
+            if (res.status === 401) {
+                const error = res.body.redirectUrl;
+                if (error in LoginErrors) {
+                    toast({
+                        title: "Failed to login",
+                        description: LoginErrors[error],
+                    });
+                }
+            } else {
+                fetchUser();
+            }
         });
-
-        checkForFailure();
-        fetchUser();
-        navigate("/verify");
     }
-
-    function checkForFailure() {
-        const error = window.location.search;
-        if (error in LoginErrors) {
-            toast({
-                title: "Failed to login",
-                description: LoginErrors[error],
-            });
-        }
-    }
-
     return (
         <Card className="mx-auto max-w-sm">
             <CardHeader>

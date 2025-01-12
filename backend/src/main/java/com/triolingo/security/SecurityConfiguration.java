@@ -67,7 +67,7 @@ public class SecurityConfiguration {
     @Primary
     public CorsConfigurationSource corsConfiguration() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOriginPatterns(List.of(env.getProperty("cors.allowedOrigin")));
+        corsConfig.setAllowedOrigins(List.of(env.getProperty("cors.allowedOrigin")));
         corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         corsConfig.setAllowedHeaders(List.of("Content-Type"));
         corsConfig.setAllowCredentials(true);
@@ -83,42 +83,47 @@ public class SecurityConfiguration {
     }
 
     private void authenticationSuccessHandler(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) throws IOException, ServletException {
+                                              Authentication authentication) throws IOException {
         User user = ((DatabaseUser) authentication.getPrincipal()).getStoredUser();
+        String redirectUrl;
+
         if (!user.getVerified())
-            frontendRedirect(response, env.getProperty("path.frontend.verify"));
-
-        // TODO: add other user types
+            redirectUrl = env.getProperty("path.frontend.verify");
         else if (user.getClass().isAssignableFrom(Teacher.class))
-            frontendRedirect(response, env.getProperty("path.frontend.teacher.home"));
+            redirectUrl = env.getProperty("path.frontend.teacher.home");
         else if (user.getClass().isAssignableFrom(Student.class))
-            frontendRedirect(response, env.getProperty("path.frontend.student.home"));
+            redirectUrl = env.getProperty("path.frontend.student.home");
         else if (user.getClass().isAssignableFrom(Admin.class))
-            frontendRedirect(response, env.getProperty("path.frontend.admin.home"));
+            redirectUrl = env.getProperty("path.frontend.admin.home");
         else
-            frontendRedirect(response, env.getProperty("path.frontend.home"));
+            redirectUrl = env.getProperty("path.frontend.home");
 
+        response.setContentType("application/json");
+        response.getWriter().write("{\"redirectUrl\": \"" + redirectUrl + "\"}");
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 
     private void authenticationFailureHandler(HttpServletRequest request, HttpServletResponse response,
-            RuntimeException exception) throws IOException, ServletException {
+                                              RuntimeException exception) throws IOException {
         exception.printStackTrace(System.err);
+        String redirectUrl;
 
         if (exception instanceof BadCredentialsException)
-            frontendRedirect(response, env.getProperty("path.frontend.login"), Map.of("badCredentials", ""));
-
+            redirectUrl = env.getProperty("path.frontend.login") + "?badCredentials=";
         else if (exception instanceof OAuth2PrincipalAuthenticationException
-                && exception.getCause() instanceof UsernameNotFoundException)
-            frontendRedirect(response, env.getProperty("path.frontend.student.register"), Map.of("oAuth2Failed", "",
-                    "email", ((OAuth2PrincipalAuthenticationException) exception).getPrincipalName()));
-
-        else if (exception instanceof OAuth2AuthenticationException)
-            frontendRedirect(response, env.getProperty("path.frontend.login"), Map.of("oAuth2Failed", ""));
-
+                && exception.getCause() instanceof UsernameNotFoundException) {
+            OAuth2PrincipalAuthenticationException ex = (OAuth2PrincipalAuthenticationException) exception;
+            redirectUrl = env.getProperty("path.frontend.student.register") + "?oAuth2Failed=&email=" + ex.getPrincipalName();
+        } else if (exception instanceof OAuth2AuthenticationException)
+            redirectUrl = env.getProperty("path.frontend.login") + "?oAuth2Failed=";
         else
-            frontendRedirect(response, env.getProperty("path.frontend.login"), Map.of("internalError", ""));
+            redirectUrl = env.getProperty("path.frontend.login") + "?internalError=";
 
+        response.setContentType("application/json");
+        response.getWriter().write("{\"redirectUrl\": \"" + redirectUrl + "\"}");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
+
 
     private void encodeUriAndSendRedirect(HttpServletResponse response, String base, String path,
             Map<String, String> params)
