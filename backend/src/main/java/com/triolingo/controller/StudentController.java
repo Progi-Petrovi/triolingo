@@ -52,7 +52,7 @@ public class StudentController {
         return dtoMapper.createDto(studentService.fetch(id), StudentViewDTO.class);
     }
 
-    @GetMapping("/")
+    @GetMapping
     @Secured("ROLE_STUDENT")
     @Operation(description = "Returns information regarding student the current principal is logged in as.")
     @ApiResponses(value = {

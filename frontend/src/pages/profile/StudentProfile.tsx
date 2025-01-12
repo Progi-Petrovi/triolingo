@@ -11,23 +11,12 @@ import { Badge } from "@/components/ui/badge";
 import { TeachingStyle } from "@/types/teaching-style";
 import { Button } from "@/components/ui/button";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
-import { KnowledgeLevel } from "@/types/language-level";
+import { useUser } from "@/context/useUserContext";
+import { Student } from "@/types/users";
+import { initials } from "@/utils/main";
 
 export default function StudentProfile() {
-    const allLanguages = [
-        {
-            language: "Croatian",
-            knowledgeLevel: KnowledgeLevel.ADVANCED,
-        },
-        {
-            language: "Spanish",
-            knowledgeLevel: KnowledgeLevel.BEGINNER,
-        },
-        {
-            language: "French",
-            knowledgeLevel: KnowledgeLevel.INTERMEDIATE,
-        },
-    ];
+    const student = useUser() as Student;
 
     return (
         <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row md:px-0">
@@ -38,17 +27,17 @@ export default function StudentProfile() {
                             <Avatar className="w-32 h-32 cursor-pointer">
                                 <AvatarImage src="TODO:get_from_backend" />
                                 <AvatarFallback className="text-2xl md:text-4xl">
-                                    PP
+                                    {initials(student.fullName)}
                                 </AvatarFallback>
                             </Avatar>
                         </CardTitle>
                         <CardDescription className="text-center">
-                            Pero Perić
+                            {student.fullName}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="flex gap-2">
                         <img src={emailIcon} alt="mail" />
-                        <p>profile@gmail.com</p>
+                        <p>{student.email}</p>
                     </CardContent>
                     <CardContent>Student</CardContent>
                     <CardContent>
@@ -60,11 +49,13 @@ export default function StudentProfile() {
                         <CardTitle>Languages</CardTitle>
                     </CardHeader>
                     <CardContent className="flex gap-2 flex-wrap">
-                        {allLanguages.map(({ language, knowledgeLevel }) => (
-                            <Badge key={language}>
-                                {language} | {knowledgeLevel}
-                            </Badge>
-                        ))}
+                        {student.learningLanguages.map(
+                            ({ language, level }) => (
+                                <Badge key={language}>
+                                    {language} | {level}
+                                </Badge>
+                            )
+                        )}
                     </CardContent>
                 </Card>
             </div>
@@ -74,17 +65,18 @@ export default function StudentProfile() {
                     <CardHeader>
                         <CardTitle>Preferred teaching style</CardTitle>
                     </CardHeader>
-                    <CardContent>{TeachingStyle.FLEXIBLE}</CardContent>
+                    <CardContent>
+                        {student.preferredTeachingStyle as TeachingStyle}
+                    </CardContent>
                 </Card>
                 <Card className="md:w-96 max-h-60 overflow-scroll">
                     <CardHeader>
                         <CardTitle>Learning Goals</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        Lorem, ipsum dolor sit amet consectetur adipisicing
-                        elit. Commodi nam placeat, repellendus exercitationem
-                        sit assumenda impedit esse illum itaque quam, magni,
-                        voluptates delectus ipsam nemo?
+                        {student.learningGoals
+                            ? student.learningGoals
+                            : "No learning goals."}
                     </CardContent>
                 </Card>
                 <div className="flex justify-center items-center">

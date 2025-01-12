@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -46,6 +46,7 @@ export default function Login() {
             }
         });
     }
+
     return (
         <Card className="mx-auto max-w-sm">
             <CardHeader>
