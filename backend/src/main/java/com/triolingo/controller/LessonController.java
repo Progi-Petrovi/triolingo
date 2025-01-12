@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.mail.MessagingException;
-import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class LessonController {
     })
     @Transactional
     public ResponseEntity<?> createAvailability(@AuthenticationPrincipal DatabaseUser principal,
-            @NotNull @RequestBody LessonAvailabilityIntervalCreateDTO dto) throws MessagingException {
+            @RequestBody LessonAvailabilityIntervalCreateDTO dto) throws MessagingException {
         lessonService.createAvailabiltyInterval((Teacher) principal.getStoredUser(), dto);
         return new ResponseEntity<>(HttpStatus.OK);
     }

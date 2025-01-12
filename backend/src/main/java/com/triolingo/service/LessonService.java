@@ -54,13 +54,15 @@ public class LessonService {
     public LessonAvailabilityInterval createAvailabiltyInterval(@NotNull Teacher teacher,
             @NotNull LessonAvailabilityIntervalCreateDTO dto) {
 
-        var startOverlap = availabilityRepository.findByInstantWithinInterval(dto.startInstant()).orElse(null);
-        var endOverlap = availabilityRepository.findByInstantWithinInterval(dto.endInstant()).orElse(null);
-
         Instant startInstant = dto.startInstant();
         Instant endInstant = dto.endInstant();
         if (!startInstant.isBefore(endInstant))
             throw new IllegalArgumentException("Start instant must be set before the end instant");
+
+        var startOverlap = availabilityRepository.findByInstantWithinIntervalAndTeacher(startInstant, teacher)
+                .orElse(null);
+        var endOverlap = availabilityRepository.findByInstantWithinIntervalAndTeacher(endInstant, teacher)
+                .orElse(null);
 
         // if there is an interval that already contains the requested one, don't create
         // a new one
@@ -81,11 +83,12 @@ public class LessonService {
         }
 
         // delete any intervals fully contained within the new interval
-        availabilityRepository.deleteAllByStartDateBetween(startInstant, endInstant);
+        availabilityRepository.deleteAllByTeacherAndStartInstantBetween(teacher, startInstant, endInstant);
 
         var newAvailabilityInterval = new LessonAvailabilityInterval();
         newAvailabilityInterval.setStartInstant(startInstant);
         newAvailabilityInterval.setEndInstant(endInstant);
+        newAvailabilityInterval.setTeacher(teacher);
         availabilityRepository.save(newAvailabilityInterval);
 
         return newAvailabilityInterval;

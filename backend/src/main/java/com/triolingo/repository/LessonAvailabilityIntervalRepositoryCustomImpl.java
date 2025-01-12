@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import com.triolingo.entity.lesson.LessonAvailabilityInterval;
+import com.triolingo.entity.user.Teacher;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -19,7 +20,8 @@ public class LessonAvailabilityIntervalRepositoryCustomImpl implements LessonAva
     @PersistenceContext
     private EntityManager entityManager;
 
-    public Optional<LessonAvailabilityInterval> findByInstantWithinInterval(Instant instant) {
+    public Optional<LessonAvailabilityInterval> findByInstantWithinIntervalAndTeacher(Instant instant,
+            Teacher teacher) {
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<LessonAvailabilityInterval> query = builder.createQuery(LessonAvailabilityInterval.class);
@@ -28,8 +30,8 @@ public class LessonAvailabilityIntervalRepositoryCustomImpl implements LessonAva
 
         Predicate predicate = builder.and(
                 builder.lessThanOrEqualTo(intervalRoot.get(LessonAvailabilityInterval.Fields.startInstant), instant),
-                builder.greaterThanOrEqualTo(intervalRoot.get(LessonAvailabilityInterval.Fields.endInstant),
-                        instant));
+                builder.greaterThanOrEqualTo(intervalRoot.get(LessonAvailabilityInterval.Fields.endInstant), instant),
+                builder.equal(intervalRoot.get(LessonAvailabilityInterval.Fields.teacher), teacher));
 
         List<LessonAvailabilityInterval> results = entityManager.createQuery(query.where(predicate)).getResultList();
         try {

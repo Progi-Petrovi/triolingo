@@ -12,7 +12,7 @@ public interface LessonAvailabilityIntervalRepository
         extends JpaRepository<LessonAvailabilityInterval, Long>, LessonAvailabilityIntervalRepositoryCustom {
     List<LessonAvailabilityInterval> findAllByTeacher(Teacher teacher);
 
-    void deleteAllByStartDateBetween(Instant startInstant, Instant endInstant);
+    void deleteAllByTeacherAndStartInstantBetween(Teacher teacher, Instant startInstant, Instant endInstant);
 
     void deleteAllByEndInstantGreaterThan(Instant instant);
 }
