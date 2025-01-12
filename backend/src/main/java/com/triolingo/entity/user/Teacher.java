@@ -14,12 +14,14 @@ import org.springframework.security.core.GrantedAuthority;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @SuperBuilder
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@FieldNameConstants
 @Data
 @PrimaryKeyJoinColumn
 public class Teacher extends User {

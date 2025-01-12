@@ -4,34 +4,24 @@ import java.time.Instant;
 
 import javax.validation.constraints.*;
 
-import com.triolingo.entity.user.Student;
 import com.triolingo.entity.user.Teacher;
-import com.triolingo.entity.language.Language;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldNameConstants
 @Data
-public class Lesson {
+public class LessonAvailabilityInterval {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
     private Instant startInstant, endInstant;
-    @NotNull
-    private LessonStatus status;
     @ManyToOne
     @NotNull
     private Teacher teacher;
-    @ManyToOne
-    @NotNull
-    private Student student;
-    @ManyToOne
-    @NotNull
-    private Language language;
-    @NotNull
-    private Double teacherPayment;
 }

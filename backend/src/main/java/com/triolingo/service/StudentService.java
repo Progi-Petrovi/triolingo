@@ -1,7 +1,7 @@
 package com.triolingo.service;
 
 import com.dtoMapper.DtoMapper;
-import com.triolingo.dto.student.StudentCreateDTO;
+import com.triolingo.dto.student.*;
 import com.triolingo.entity.user.Student;
 
 import com.triolingo.repository.UserRepository;
@@ -53,11 +53,8 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
-    public void update(@NotNull Student student, @NotNull StudentCreateDTO studentDto) {
+    public void update(@NotNull Student student, @NotNull StudentUpdateDTO studentDto) {
         dtoMapper.updateEntity(student, studentDto);
-        if (studentDto.password() != null)
-            student.setPassword(passwordEncoder.encode(student.getPassword()));
-
         studentRepository.save(student);
     }
 

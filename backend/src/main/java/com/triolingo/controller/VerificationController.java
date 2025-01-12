@@ -52,11 +52,7 @@ public class VerificationController {
             @ApiResponse(responseCode = "400", description = "Failed to find verification token", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> verify(@PathVariable String token) {
-        try {
-            verificationService.verify(token);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        verificationService.verify(token);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

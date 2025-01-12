@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -17,6 +18,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldNameConstants
 @Data
 public abstract class User {
 
