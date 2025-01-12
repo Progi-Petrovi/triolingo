@@ -2,7 +2,6 @@ package com.triolingo.security;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
@@ -10,6 +9,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,18 +18,16 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.web.cors.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.triolingo.entity.user.*;
 import com.triolingo.service.DatabaseUserService;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
     private final DatabaseUserService databaseUserService;
     private final Environment env;
@@ -43,7 +41,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(this.corsConfiguration()))
                 .authorizeHttpRequests((auth) -> auth.anyRequest().permitAll())
                 .exceptionHandling((e) -> e.accessDeniedHandler(this::authenticationFailureHandler)
@@ -110,9 +108,8 @@ public class SecurityConfiguration {
 
         if (exception instanceof BadCredentialsException)
             redirectUrl = env.getProperty("path.frontend.login") + "?badCredentials=";
-        else if (exception instanceof OAuth2PrincipalAuthenticationException
+        else if (exception instanceof OAuth2PrincipalAuthenticationException ex
                 && exception.getCause() instanceof UsernameNotFoundException) {
-            OAuth2PrincipalAuthenticationException ex = (OAuth2PrincipalAuthenticationException) exception;
             redirectUrl = env.getProperty("path.frontend.student.register") + "?oAuth2Failed=&email=" + ex.getPrincipalName();
         } else if (exception instanceof OAuth2AuthenticationException)
             redirectUrl = env.getProperty("path.frontend.login") + "?oAuth2Failed=";
@@ -122,32 +119,5 @@ public class SecurityConfiguration {
         response.setContentType("application/json");
         response.getWriter().write("{\"redirectUrl\": \"" + redirectUrl + "\"}");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    }
-
-
-    private void encodeUriAndSendRedirect(HttpServletResponse response, String base, String path,
-            Map<String, String> params)
-            throws IOException {
-        String uri = generateURI(base, path, params);
-        response.sendRedirect(response.encodeRedirectURL(uri.toString()));
-    }
-
-    private void frontendRedirect(HttpServletResponse response, String path, Map<String, String> params)
-            throws IOException {
-        encodeUriAndSendRedirect(response, env.getProperty("path.frontend.base"), path, params);
-    }
-
-    private void frontendRedirect(HttpServletResponse response, String path)
-            throws IOException {
-        encodeUriAndSendRedirect(response, env.getProperty("path.frontend.base"), path, Map.of());
-    }
-
-    private String generateURI(String base, String path,
-            Map<String, String> params) {
-        UriComponentsBuilder uri = UriComponentsBuilder.fromUriString(base);
-        uri = uri.path(path);
-        for (Map.Entry<String, String> param : params.entrySet())
-            uri = uri.queryParam(param.getKey(), param.getValue());
-        return uri.build().encode().toUriString();
     }
 }
