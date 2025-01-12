@@ -1,6 +1,7 @@
 const PathConstants = {
     HOME: "/",
     LOGIN: "/login",
+    LOG_OUT: "/logout",
     STUDENT_REGISTER: "/student/register",
     TEACHER_REGISTER: "/teacher/register",
     VERIFY_REQUEST: "/verify",

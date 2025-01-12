@@ -1,8 +1,9 @@
-import { createContext, useState, ReactNode } from "react";
+import { createContext, useState, ReactNode, useEffect } from "react";
 import { useFetch } from "../hooks/use-fetch";
 import { Teacher, Role, User, Student } from "@/types/users";
 import { UserContextType } from "./use-user-context";
 import { useNavigate } from "react-router-dom";
+import PathConstants from "@/routes/pathConstants";
 
 const fetchBasedOnRoles: Record<string, string> = {
     ROLE_TEACHER: "/teacher",
@@ -21,6 +22,10 @@ export function UserProvider({ children }: UserProviderProps) {
     const navigate = useNavigate();
     const [user, setUser] = useState<User | Teacher | Student | null>(null);
 
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
     async function fetchUser() {
         const role = await fetch("/user/role").then(
             (res) => res.body[0].authority
@@ -37,14 +42,23 @@ export function UserProvider({ children }: UserProviderProps) {
         });
 
         if (user?.verified) {
-            navigate("/");
+            navigate(PathConstants.HOME);
         } else {
-            navigate("/verify");
+            navigate(PathConstants.VERIFY_REQUEST);
         }
     }
 
+    async function logoutUser() {
+        await fetch("/user/logout").then((res) => {
+            if (res.status === 200) {
+                setUser(null);
+                navigate(PathConstants.HOME);
+            }
+        });
+    }
+
     return (
-        <UserContext.Provider value={{ user, fetchUser }}>
+        <UserContext.Provider value={{ user, fetchUser, logoutUser }}>
             {children}
         </UserContext.Provider>
     );

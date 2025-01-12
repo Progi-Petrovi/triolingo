@@ -22,9 +22,8 @@ import TeachingStyleFormField from "./components/TeachingStyleFormField";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TeacherRegistration } from "./types/registration-types";
-import { useNavigate } from "react-router-dom";
-import PathConstants from "@/routes/pathConstants";
 import { useFetch } from "@/hooks/use-fetch";
+import useUserContext from "@/context/use-user-context";
 
 const formSchema = z
     .object({
@@ -51,7 +50,7 @@ const formSchema = z
 export default function TeacherRegister() {
     const { toast } = useToast();
     const fetch = useFetch();
-    const navigate = useNavigate();
+    const { fetchUser } = useUserContext();
 
     const [teachingLanguages, setTeachingLanguages] = useState<string[]>([]);
     const [allLanguages, setAllLanguages] = useState<string[]>([]);
@@ -70,11 +69,12 @@ export default function TeacherRegister() {
             },
             body: JSON.stringify(registrationData),
         }).then((res) => {
-            if (res.status == 201) navigate(PathConstants.HOME);
-            else
+            if (res.status == 201) {
+                fetchUser();
+            } else
                 toast({
-                    title: "Registration failed...",
-                    description: "Please, try again.",
+                    title: "Registration failed.",
+                    description: `${res.body}`,
                     variant: "destructive",
                 });
         });

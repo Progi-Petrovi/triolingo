@@ -3,6 +3,7 @@ import React, { Component, ErrorInfo } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { UserNotLoadedError } from "./context/user-not-loaded";
 import { useToast } from "./hooks/use-toast";
+import PathConstants from "./routes/pathConstants";
 
 class GlobalErrorBoundary extends Component<
     {
@@ -30,7 +31,7 @@ class GlobalErrorBoundary extends Component<
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         if (error instanceof UserNotLoadedError) {
-            this.props.navigate("/login");
+            this.props.navigate(PathConstants.LOGIN);
         } else {
             console.error("Unhandled error:", error, errorInfo);
         }
@@ -38,7 +39,7 @@ class GlobalErrorBoundary extends Component<
 
     render() {
         if (this.state.hasError) {
-            this.props.navigate("/login");
+            this.props.navigate(PathConstants.LOGIN);
             this.props.toast({
                 title: "Please login before accessing that page.",
                 variant: "destructive",

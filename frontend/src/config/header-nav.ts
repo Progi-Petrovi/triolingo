@@ -25,6 +25,10 @@ const userNav = [
         title: "Calendar",
         href: PathConstants.CALENDAR,
     },
+    {
+        title: "Log out",
+        href: PathConstants.LOG_OUT,
+    },
 ];
 
 export interface NavConfig {
