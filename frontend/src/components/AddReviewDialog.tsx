@@ -19,7 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { date, z } from "zod";
+import { z } from "zod";
 import { Textarea } from "./ui/textarea";
 import { Star } from "lucide-react";
 
@@ -29,7 +29,6 @@ const formSchema = z.object({
 });
 
 import { ControllerRenderProps } from "react-hook-form";
-import Teacher from "@/pages/Teacher";
 
 function StarRating({
     field,
@@ -133,7 +132,7 @@ export default function AddReviewDialog({
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Select a rating</DialogTitle>
+                    <DialogTitle>Add a review</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
                     <form
