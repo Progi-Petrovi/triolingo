@@ -1,9 +1,7 @@
 package com.triolingo.controller;
 
 import com.dtoMapper.DtoMapper;
-import com.triolingo.dto.teacher.TeacherCreateDTO;
-import com.triolingo.dto.teacher.TeacherFullDTO;
-import com.triolingo.dto.teacher.TeacherViewDTO;
+import com.triolingo.dto.teacher.*;
 import com.triolingo.entity.user.Teacher;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.TeacherService;
@@ -17,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +43,16 @@ public class TeacherController {
     @GetMapping("/all")
     @Operation(description = "Returns information regarding all teachers registered within the application.")
     public List<TeacherViewDTO> listTeachers() {
-        return teacherService.listAll().stream().map((teacher) -> dtoMapper.createDto(teacher, TeacherViewDTO.class))
+        return teacherService.listAll().stream()
+                .map((teacher) -> dtoMapper.createDto(teacher, TeacherViewDTO.class))
+                .toList();
+    }
+
+    @GetMapping("/filter")
+    @Operation(description = "Returns information regarding all teachers registered within the application which meet the provided criteria.")
+    public List<TeacherViewDTO> filterTeachers(TeacherFilterDTO teacherDto) {
+        return teacherService.listAll(teacherDto).stream()
+                .map((teacher) -> dtoMapper.createDto(teacher, TeacherViewDTO.class))
                 .toList();
     }
 
@@ -91,32 +99,33 @@ public class TeacherController {
             throws ServletException {
         teacherService.create(teacherDto);
         request.login(teacherDto.email(), teacherDto.password());
-        // TODO: redirect to verification endpoint on user controller
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/member/uploadImage");
+        return new ResponseEntity<String>(headers, HttpStatus.FOUND);
     }
 
     @PutMapping("/update/{id}")
     @Secured("ROLE_ADMIN")
-    @Operation(description = "Updates the teacher with {id}. If profile image hash is set to null, the image is also deleted from the provider.")
+    @Operation(description = "Updates the teacher with {id}.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public ResponseEntity<?> updateTeacher(@PathVariable("id") Long id, @RequestBody TeacherCreateDTO teacherDto) {
+    public ResponseEntity<?> updateTeacher(@PathVariable("id") Long id, @RequestBody TeacherUpdateDTO teacherDto) {
         Teacher teacher = teacherService.fetch(id);
         teacherService.update(teacher, teacherDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/update")
-    @Secured({"ROLE_TEACHER", "ROLE_VERIFIED"})
+    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
     @Operation(description = "Updates the teacher the current principal is logged in as. If profile image hash is set to null, the image is also deleted from the provider.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public ResponseEntity<?> updateTeacher(@RequestBody TeacherCreateDTO teacherDto,
-                                           @AuthenticationPrincipal DatabaseUser principal) {
+    public ResponseEntity<?> updateTeacher(@RequestBody TeacherUpdateDTO teacherDto,
+            @AuthenticationPrincipal DatabaseUser principal) {
         teacherService.update((Teacher) principal.getStoredUser(), teacherDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -134,7 +143,7 @@ public class TeacherController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Secured({"ROLE_TEACHER", "ROLE_VERIFIED"})
+    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
     @RequestMapping(path = "/update/profileImage", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(description = "Expects a 'multipart/form-data' with an image file. Assigns a hash to the file and saves it under that hash. The images are statically provided on images/profile/{image-hash}.jpg")
     @ApiResponses(value = {
@@ -142,7 +151,7 @@ public class TeacherController {
             @ApiResponse(responseCode = "400", description = "Image is of the incorrect type.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateProfileImage(@RequestParam(value = "file") MultipartFile file,
-                                                @AuthenticationPrincipal DatabaseUser principal)
+            @AuthenticationPrincipal DatabaseUser principal)
             throws ServletException, NoSuchAlgorithmException, IOException {
         String fileName;
         try {

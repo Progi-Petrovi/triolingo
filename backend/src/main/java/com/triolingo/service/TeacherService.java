@@ -1,7 +1,7 @@
 package com.triolingo.service;
 
 import com.dtoMapper.DtoMapper;
-import com.triolingo.dto.teacher.TeacherCreateDTO;
+import com.triolingo.dto.teacher.*;
 import com.triolingo.entity.user.Teacher;
 import com.triolingo.repository.TeacherRepository;
 
@@ -48,6 +48,12 @@ public class TeacherService {
         return teacherRepository.findAll();
     }
 
+    public List<Teacher> listAll(@NotNull TeacherFilterDTO filterDTO) {
+        return teacherRepository.listAll(filterDTO.languages(), filterDTO.minYearsOfExperience(),
+                filterDTO.maxYearsOfExperience(), filterDTO.teachingStyles(), filterDTO.minHourlyRate(),
+                filterDTO.maxHourlyRate(), filterDTO.order());
+    }
+
     public Teacher fetch(Long id) {
         try {
             Teacher teacher = teacherRepository.findById(id).get();
@@ -66,11 +72,8 @@ public class TeacherService {
         return teacherRepository.save(teacher);
     }
 
-    public Teacher update(@NotNull Teacher teacher, @NotNull TeacherCreateDTO teacherDto) {
+    public Teacher update(@NotNull Teacher teacher, @NotNull TeacherUpdateDTO teacherDto) {
         dtoMapper.updateEntity(teacher, teacherDto);
-        if (teacherDto.password() != null)
-            teacher.setPassword(passwordEncoder.encode(teacher.getPassword()));
-
         return teacherRepository.save(teacher);
     }
 
@@ -83,10 +86,7 @@ public class TeacherService {
         String contentType = file.getContentType();
         if (contentType == null)
             throw new IllegalArgumentException(
-                    "You must send a jpeg file.");
-        if (!contentType.equals("image/jpeg"))
-            throw new IllegalArgumentException(
-                    "File must be of type 'image/jpeg', and not '" + file.getContentType() + "'");
+                    "Unrecognized content type.");
 
         // Turn MultipartFile into awt image, so we can resize it into the required
         // resolution and save it.

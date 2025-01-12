@@ -96,21 +96,21 @@ public class StudentController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public ResponseEntity<?> updateStudent(@PathVariable("id") Long id, @RequestBody StudentCreateDTO studentDto) {
+    public ResponseEntity<?> updateStudent(@PathVariable("id") Long id, @RequestBody StudentUpdateDTO studentDto) {
         Student student = studentService.fetch(id);
         studentService.update(student, studentDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/update")
-    @Secured({"ROLE_STUDENT", "ROLE_VERIFIED"})
+    @Secured({ "ROLE_STUDENT", "ROLE_VERIFIED" })
     @Operation(description = "Updates the student the current principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public ResponseEntity<?> updateStudent(@RequestBody StudentCreateDTO studentDto,
-                                           @AuthenticationPrincipal DatabaseUser principal) {
+    public ResponseEntity<?> updateStudent(@RequestBody StudentUpdateDTO studentDto,
+            @AuthenticationPrincipal DatabaseUser principal) {
         studentService.update((Student) principal.getStoredUser(), studentDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }

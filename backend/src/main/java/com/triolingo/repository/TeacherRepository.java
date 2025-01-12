@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.triolingo.entity.user.Teacher;
 
 @Repository
-public interface TeacherRepository extends JpaRepository<Teacher, Long> {
+public interface TeacherRepository extends JpaRepository<Teacher, Long>, TeacherRepositoryCustom {
     Optional<Teacher> findByEmail(String email);
 
     boolean existsByEmail(String email);
