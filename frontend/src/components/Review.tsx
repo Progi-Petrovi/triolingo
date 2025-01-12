@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 interface ReviewProps {
     review: {
         id: string;
@@ -9,17 +11,22 @@ interface ReviewProps {
 }
 
 const StarRating = ({ rating }: { rating: number }) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-        stars.push(
-            <span
-                key={i}
-                className={i <= rating ? "text-yellow-500" : "text-gray-300"}
-            >
-                ★
-            </span>
-        );
-    }
+    const stars = useMemo(() => {
+        const starsArray = [];
+        for (let i = 1; i <= 5; i++) {
+            starsArray.push(
+                <span
+                    key={i}
+                    className={
+                        i <= rating ? "text-yellow-500" : "text-gray-300"
+                    }
+                >
+                    ★
+                </span>
+            );
+        }
+        return starsArray;
+    }, [rating]);
     return <div className="flex">{stars}</div>;
 };
 
