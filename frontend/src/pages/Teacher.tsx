@@ -109,7 +109,7 @@ export default function Teacher() {
         // fetch(`teacher/reviews/${id}`).then((res) => {
         //     setReviews(res.body as Review[]);
         // });
-    }, [fetch, id]);
+    }, [id]);
 
     if (!teacher) {
         return <div>Loading...</div>;
