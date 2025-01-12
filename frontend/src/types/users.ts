@@ -7,6 +7,10 @@ export enum Role {
     ROLE_ADMIN = "ROLE_ADMIN",
 }
 
+export enum UserStorage {
+    TRIOLINGO_USER = "triolingo_user",
+}
+
 export type User = {
     id: number;
     email: string;

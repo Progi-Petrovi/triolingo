@@ -1,10 +1,11 @@
-import { useContext } from "react";
+import { Dispatch, SetStateAction, useContext } from "react";
 import UserContext from "./UserContext";
-import { Student, Teacher, User } from "@/types/users";
+import { Student, Teacher, User, UserStorage } from "@/types/users";
 import { UserNotLoadedError } from "./user-not-loaded";
 
 export type UserContextType = {
     user: User | Teacher | Student | null;
+    setUser: Dispatch<SetStateAction<User | Teacher | Student | null>>;
     fetchUser: () => void;
     logoutUser: () => void;
 };
@@ -22,10 +23,17 @@ export default function useUserContext(): UserContextType {
 export function useUser(): User {
     const userContext = useUserContext();
 
-    const { user } = userContext;
+    const { user, setUser } = userContext;
 
     if (!user) {
-        throw new UserNotLoadedError();
+        const userFromStorage = sessionStorage.getItem(
+            UserStorage.TRIOLINGO_USER
+        );
+        if (!userFromStorage) {
+            throw new UserNotLoadedError();
+        }
+        setUser(JSON.parse(userFromStorage) as User);
+        return JSON.parse(userFromStorage) as User;
     }
 
     return user;
