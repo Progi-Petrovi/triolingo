@@ -2,7 +2,7 @@ package com.triolingo.dto.lesson;
 
 import java.time.Instant;
 
-public record LessonAvailabilityIntervalDTO(
+public record LessonAvailabilityIntervalCreateDTO(
         Instant startInstant, Instant endInstant) {
 
 }

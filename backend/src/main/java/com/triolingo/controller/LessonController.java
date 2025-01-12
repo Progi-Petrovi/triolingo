@@ -1,7 +1,8 @@
 package com.triolingo.controller;
 
 import com.dtoMapper.DtoMapper;
-import com.triolingo.dto.lesson.LessonAvailabilityIntervalDTO;
+import com.triolingo.dto.lesson.LessonAvailabilityIntervalCreateDTO;
+import com.triolingo.dto.lesson.LessonAvailabilityIntervalGetDTO;
 import com.triolingo.entity.user.Teacher;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.LessonService;
@@ -46,7 +47,7 @@ public class LessonController {
     })
     @Transactional
     public ResponseEntity<?> createAvailability(@AuthenticationPrincipal DatabaseUser principal,
-            @NotNull @RequestBody LessonAvailabilityIntervalDTO dto) throws MessagingException {
+            @NotNull @RequestBody LessonAvailabilityIntervalCreateDTO dto) throws MessagingException {
         lessonService.createAvailabiltyInterval((Teacher) principal.getStoredUser(), dto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -57,9 +58,10 @@ public class LessonController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200")
     })
-    public List<LessonAvailabilityIntervalDTO> getAllAvailabilities(@AuthenticationPrincipal DatabaseUser principal) {
+    public List<LessonAvailabilityIntervalGetDTO> getAllAvailabilities(
+            @AuthenticationPrincipal DatabaseUser principal) {
         return lessonService.findAllByTeacher((Teacher) principal.getStoredUser()).stream()
-                .map((teacher) -> dtoMapper.createDto(teacher, LessonAvailabilityIntervalDTO.class))
+                .map((teacher) -> dtoMapper.createDto(teacher, LessonAvailabilityIntervalGetDTO.class))
                 .toList();
     }
 
@@ -70,9 +72,9 @@ public class LessonController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Failed to find teacher with specified id", content = @Content(schema = @Schema()))
     })
-    public List<LessonAvailabilityIntervalDTO> getAllAvailabilities(@PathVariable("id") Long id) {
+    public List<LessonAvailabilityIntervalGetDTO> getAllAvailabilities(@PathVariable("id") Long id) {
         return lessonService.findAllByTeacher(teacherService.fetch(id)).stream()
-                .map((teacher) -> dtoMapper.createDto(teacher, LessonAvailabilityIntervalDTO.class))
+                .map((teacher) -> dtoMapper.createDto(teacher, LessonAvailabilityIntervalGetDTO.class))
                 .toList();
     }
 }
