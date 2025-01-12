@@ -8,6 +8,7 @@ import { LessonType as LessonEvent } from "@/types/lesson-event";
 
 import "@/calendar.css";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const localizer = momentLocalizer(moment);
 
@@ -35,7 +36,7 @@ export default function Calendar() {
         return (
             <span>
                 <strong>{event.title}</strong> <br />
-                <a href={event.teacherProfileUrl}>{event.teacher}</a>
+                <Link to={event.teacherProfileUrl}>{event.teacher}</Link>
             </span>
         );
     }

@@ -10,6 +10,7 @@ import {
 import { useFetch } from "@/hooks/use-fetch";
 import { TeacherTableRow } from "@/types/teacher-table-row";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Home() {
     const fetch = useFetch();
@@ -40,7 +41,9 @@ export default function Home() {
                     {teachers.map((teacher) => (
                         <TableRow key={teacher.id}>
                             <TableCell className="font-medium">
-                                {teacher.fullName}
+                                <Link to={`/teacher/${teacher.id}`}>
+                                    {teacher.fullName}
+                                </Link>
                             </TableCell>
                             <TableCell>
                                 {teacher.languages.join(", ")}

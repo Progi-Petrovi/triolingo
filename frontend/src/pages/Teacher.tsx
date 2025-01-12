@@ -7,27 +7,84 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Teacher as TeacherType } from "@/types/users";
+import { Student, Teacher as TeacherType } from "@/types/users";
 import { Button } from "@/components/ui/button";
 import { useParams } from "react-router-dom";
 import { useFetch } from "@/hooks/use-fetch";
 import { useEffect, useState } from "react";
 import { initials } from "@/utils/main";
+import { Review } from "@/components/Review";
+import moment from "moment";
+import AddReviewDialog from "@/components/AddReviewDialog";
+import { useUser } from "@/context/use-user-context";
+
+type Review = {
+    id: string;
+    teacherId: string;
+    user: string;
+    rating: number;
+    comment: string;
+    date: Date;
+};
 
 export default function Teacher() {
+    const user = useUser() as Student;
+
     const fetch = useFetch();
     const { id } = useParams();
     const [teacher, setTeacher] = useState<TeacherType>();
+    const reviews: Review[] = [
+        {
+            id: "1",
+            teacherId: "1",
+            user: "John Doe",
+            rating: 5,
+            comment: "Great teacher, very patient and knowledgeable.",
+            date: moment().subtract(1, "day").toDate(),
+        },
+        {
+            id: "2",
+            teacherId: "1",
+            user: "Jane Doe",
+            rating: 4,
+            comment: "Good teacher, but could be more patient.",
+            date: moment().subtract(2, "days").toDate(),
+        },
+    ];
+    // const [reviews, setReviews] = useState<Review[]>([]);
 
     useEffect(() => {
         fetch(`teacher/${id}`).then((res) => {
             setTeacher(res.body as TeacherType);
         });
+        // TODO: Uncomment this when the endpoint is ready
+        // fetch(`teacher/reviews/${id}`).then((res) => {
+        //     setReviews(res.body as Review[]);
+        // });
     }, [fetch, id]);
 
     if (!teacher) {
         return <div>Loading...</div>;
     }
+
+    let canAddAReview = false;
+    let avgRating = NaN;
+    let lastFewReviews: Review[] = [];
+    const maxRatings = 5;
+
+    if (reviews && reviews.length) {
+        canAddAReview = reviews.every(
+            (review) => review.user !== user.fullName
+        );
+        avgRating =
+            reviews.reduce((acc, review) => acc + review.rating, 0) /
+            reviews.length;
+        lastFewReviews = reviews.slice(0, maxRatings);
+    }
+
+    const averageRating = isNaN(avgRating)
+        ? "No reviews"
+        : avgRating.toFixed(1);
 
     return (
         <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row">
@@ -68,6 +125,15 @@ export default function Teacher() {
                             : "No languages"}
                     </CardContent>
                 </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Lessons</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-2">
+                        <Button>See previous lessons</Button>
+                        <Button>Book a lesson</Button>
+                    </CardContent>
+                </Card>
             </div>
 
             <div className="flex flex-col gap-4 justify-center w-full md:w-96">
@@ -91,9 +157,35 @@ export default function Teacher() {
                         {teacher.qualifications || "No qualifications"}
                     </CardContent>
                 </Card>
-                <div className="flex justify-center items-center">
-                    <Button>Rate teacher</Button>
-                </div>
+                <Card className="md:w-96">
+                    <CardHeader>
+                        <CardTitle>Reviews</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-4">
+                        <div className="flex justify-between items-center gap-2">
+                            <div className="font-bold text-xl">
+                                Average rating: {averageRating}
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-4">
+                            {lastFewReviews.map((review) => (
+                                <Review review={review} />
+                            ))}
+                        </div>
+
+                        {reviews && reviews.length > maxRatings && (
+                            <Button>See all reviews</Button>
+                        )}
+
+                        {canAddAReview && (
+                            <AddReviewDialog
+                                teacherId={teacher.id}
+                                studentId={user.id}
+                            />
+                        )}
+                    </CardContent>
+                </Card>
             </div>
         </div>
     );
