@@ -67,7 +67,7 @@ public class LessonController {
 
     @GetMapping("/availability/{id}")
     @Secured("ROLE_USER")
-    @Operation(description = "Retrieves all the availability intervals associated with the currently logged in teacher.")
+    @Operation(description = "Retrieves all the availability intervals associated with the specified teacher.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Failed to find teacher with specified id", content = @Content(schema = @Schema()))
