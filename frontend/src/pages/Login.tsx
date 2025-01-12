@@ -13,16 +13,18 @@ import PathConstants from "@/routes/pathConstants";
 import { FormEvent } from "react";
 import { useFetch } from "@/hooks/use-fetch";
 import { useToast } from "@/hooks/use-toast";
+import useUserContext from "@/context/use-user-context";
 
 const LoginErrors: Record<string, string> = {
-    "?badCredentials=": "Invalid credentials.",
-    "?oAuth2Failed=": "OAuth2 failed.",
-    "?internalError=": "Internal server error",
+    "/login?badCredentials=": "Invalid credentials.",
+    "/login?oAuth2Failed=": "OAuth2 failed.",
+    "/login?internalError=": "Internal server error",
 };
 
 export default function Login() {
     const fetch = useFetch();
     const { toast } = useToast();
+    const { fetchUser } = useUserContext();
 
     async function submitLogin(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -30,20 +32,20 @@ export default function Login() {
         await fetch("login", {
             method: "POST",
             body,
-            redirect: "follow",
+        }).then((res) => {
+            if (res.status === 401) {
+                const error = res.body.redirectUrl;
+                if (error in LoginErrors) {
+                    toast({
+                        title: "Failed to login",
+                        description: LoginErrors[error],
+                        variant: "destructive",
+                    });
+                }
+            } else {
+                fetchUser();
+            }
         });
-
-        checkForFailure();
-    }
-
-    function checkForFailure() {
-        const error = window.location.search;
-        if (error in LoginErrors) {
-            toast({
-                title: "Failed to login",
-                description: LoginErrors[error],
-            });
-        }
     }
 
     return (

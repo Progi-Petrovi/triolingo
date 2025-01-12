@@ -24,6 +24,8 @@ import BasicInfo from "./components/BasicInfo";
 import TeachingStyleFormField from "./components/TeachingStyleFormField";
 import KnowledgeSelect from "./components/KnowledgeSelect";
 import { useFetch } from "@/hooks/use-fetch";
+import { useNavigate } from "react-router-dom";
+import PathConstants from "@/routes/pathConstants";
 
 const formSchema = z
     .object({
@@ -50,6 +52,7 @@ const formSchema = z
 export default function StudentRegister() {
     const { toast } = useToast();
     const fetch = useFetch();
+    const navigate = useNavigate();
 
     const [allLanguages, setAllLanguages] = useState<string[]>([]);
     const [learningLanguages, setLearningLanguages] = useState<LanguageLevel[]>(
@@ -61,6 +64,24 @@ export default function StudentRegister() {
             setAllLanguages(res.body);
         });
     }, []);
+
+    async function submitRegister(registrationData: StudentRegistration) {
+        fetch("student/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(registrationData),
+        }).then((res) => {
+            if (res.status == 201) navigate(PathConstants.HOME);
+            else
+                toast({
+                    title: "Registration failed...",
+                    description: "Please, try again.",
+                    variant: "destructive",
+                });
+        });
+    }
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -113,7 +134,7 @@ export default function StudentRegister() {
             languages: learningLanguages,
         };
 
-        console.log(totalValues);
+        submitRegister(totalValues);
     }
 
     function onError() {

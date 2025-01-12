@@ -7,7 +7,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Teacher as TeacherType } from "@/types/teacher";
+import { Teacher as TeacherType } from "@/types/users";
 import { Button } from "@/components/ui/button";
 import { useParams } from "react-router-dom";
 import { useFetch } from "@/hooks/use-fetch";

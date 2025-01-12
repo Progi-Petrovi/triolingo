@@ -3,6 +3,7 @@ package com.triolingo.controller;
 import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.teacher.*;
 import com.triolingo.entity.user.Teacher;
+import com.triolingo.repository.TeacherRepository;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.TeacherService;
 
@@ -66,7 +67,7 @@ public class TeacherController {
         return dtoMapper.createDto(teacherService.fetch(id), TeacherViewDTO.class);
     }
 
-    @GetMapping("/")
+    @GetMapping
     @Secured("ROLE_TEACHER")
     @Operation(description = "Returns information regarding teacher the current principal is logged in as.")
     @ApiResponses(value = {
@@ -74,7 +75,8 @@ public class TeacherController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public TeacherFullDTO getTeacher(@AuthenticationPrincipal DatabaseUser principal) {
-        return dtoMapper.createDto(principal.getStoredUser(), TeacherFullDTO.class);
+        Teacher teacher = teacherService.fetch(principal.getStoredUser().getId());
+        return dtoMapper.createDto(teacher, TeacherFullDTO.class);
     }
 
     @PostMapping("/create")
@@ -151,13 +153,13 @@ public class TeacherController {
             @ApiResponse(responseCode = "400", description = "Image is of the incorrect type.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateProfileImage(@RequestParam(value = "file") MultipartFile file,
-            @AuthenticationPrincipal DatabaseUser principal)
-            throws ServletException, NoSuchAlgorithmException, IOException {
+                                                @AuthenticationPrincipal DatabaseUser principal)
+            throws NoSuchAlgorithmException, IOException {
         String fileName;
         try {
             fileName = teacherService.uploadProfileImage(file, (Teacher) principal.getStoredUser());
         } catch (IllegalArgumentException e) {
-            System.err.println(e);
+            System.err.println(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(fileName, HttpStatus.CREATED);

@@ -1,10 +1,11 @@
 import * as React from "react";
 import { Link, LinkProps, redirect } from "react-router-dom";
 
-import { navConfig } from "@/config/header-nav";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { guestNavConfig, userNavConfig } from "@/config/header-nav";
+import useUserContext from "@/context/use-user-context";
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
@@ -14,6 +15,10 @@ export function MobileNav() {
   };
 
   const pathname = location.pathname;
+
+  const { user } = useUserContext();
+  
+  const navConfig = user ? userNavConfig : guestNavConfig;
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>

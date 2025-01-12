@@ -1,7 +1,13 @@
-//import StudentProfile from "./StudentProfile";
+import StudentProfile from "./StudentProfile";
+import { useUser } from "@/context/use-user-context";
 import TeacherProfile from "./TeacherProfile";
 
 export default function Profile() {
-    //TODO: get authenticated user from context and based on the role go to either TeacherProfile or StudentProfile
-    return <TeacherProfile />;
+    const user = useUser();
+
+    return user.role === "ROLE_TEACHER" ? (
+        <TeacherProfile />
+    ) : (
+        <StudentProfile />
+    );
 }

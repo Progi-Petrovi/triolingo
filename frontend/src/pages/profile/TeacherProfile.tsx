@@ -11,9 +11,12 @@ import { Badge } from "@/components/ui/badge";
 import { TeachingStyle } from "@/types/teaching-style";
 import { Button } from "@/components/ui/button";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
+import { useUser } from "@/context/use-user-context";
+import { initials } from "@/utils/main";
+import { Teacher } from "@/types/users";
 
 export default function TeacherProfile() {
-    const allLanguages = ["Croatian", "Spanish", "English", "French"];
+    const teacher = useUser() as Teacher;
 
     return (
         <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row">
@@ -24,17 +27,17 @@ export default function TeacherProfile() {
                             <Avatar className="w-32 h-32 cursor-pointer">
                                 <AvatarImage src="TODO:get_from_backend" />
                                 <AvatarFallback className="text-2xl md:text-4xl">
-                                    SB
+                                    {initials(teacher.fullName)}
                                 </AvatarFallback>
                             </Avatar>
                         </CardTitle>
                         <CardDescription className="text-center">
-                            Stjepan Bonić
+                            {teacher.fullName}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="flex gap-2">
                         <img src={emailIcon} alt="mail" />
-                        <p>profile@gmail.com</p>
+                        <p>{teacher.email}</p>
                     </CardContent>
                     <CardContent>Teacher</CardContent>
                     <CardContent>
@@ -45,14 +48,14 @@ export default function TeacherProfile() {
                     <CardHeader>
                         <CardTitle>Hourly Rate</CardTitle>
                     </CardHeader>
-                    <CardContent>€5</CardContent>
+                    <CardContent>€{teacher.hourlyRate}</CardContent>
                 </Card>
                 <Card className="max-h-50 overflow-scroll">
                     <CardHeader>
                         <CardTitle>Languages</CardTitle>
                     </CardHeader>
                     <CardContent className="flex gap-2 flex-wrap">
-                        {allLanguages.map((lang) => (
+                        {teacher.languages.map((lang) => (
                             <Badge key={lang}>{lang}</Badge>
                         ))}
                     </CardContent>
@@ -64,23 +67,24 @@ export default function TeacherProfile() {
                     <CardHeader>
                         <CardTitle>Years of experience</CardTitle>
                     </CardHeader>
-                    <CardContent>10</CardContent>
+                    <CardContent>{teacher.yearsOfExperience}</CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
                         <CardTitle>Teaching style</CardTitle>
                     </CardHeader>
-                    <CardContent>{TeachingStyle.FLEXIBLE}</CardContent>
+                    <CardContent>
+                        {teacher.teachingStyle as TeachingStyle}
+                    </CardContent>
                 </Card>
                 <Card className="md:w-96 max-h-60 overflow-scroll">
                     <CardHeader>
                         <CardTitle>Qualifications</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        Lorem, ipsum dolor sit amet consectetur adipisicing
-                        elit. Commodi nam placeat, repellendus exercitationem
-                        sit assumenda impedit esse illum itaque quam, magni,
-                        voluptates delectus ipsam nemo?
+                        {teacher.qualifications
+                            ? teacher.qualifications
+                            : "No qualifications."}
                     </CardContent>
                 </Card>
                 <div className="flex justify-center items-center">

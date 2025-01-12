@@ -3,6 +3,7 @@ const PathConstants = {
     LOGIN: "/login",
     STUDENT_REGISTER: "/student/register",
     TEACHER_REGISTER: "/teacher/register",
+    VERIFY_REQUEST: "/verify",
     VERIFY_SUCCESS: "/verify/success",
     PROFILE: "/profile",
     CALENDAR: "/calendar",

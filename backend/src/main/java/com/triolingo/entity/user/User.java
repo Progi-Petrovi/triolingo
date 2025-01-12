@@ -27,6 +27,7 @@ public abstract class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
     @NotNull
+    @Column(unique = true)
     @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", flags = Pattern.Flag.CASE_INSENSITIVE)
     private String email;
     @NotNull
