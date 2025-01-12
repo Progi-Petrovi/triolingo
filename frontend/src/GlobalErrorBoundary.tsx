@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Component, ErrorInfo } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { UserNotLoadedError } from "./context/user-not-loaded";
@@ -40,6 +41,7 @@ class GlobalErrorBoundary extends Component<
             this.props.navigate("/login");
             this.props.toast({
                 title: "Please login before accessing that page.",
+                variant: "destructive",
             });
         }
         return this.props.children;

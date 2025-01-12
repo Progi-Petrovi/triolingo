@@ -18,7 +18,7 @@ export default function useUserContext(): UserContextType {
     return userContext;
 }
 
-export function useUser(): User | null {
+export function useUser(): User {
     const userContext = useUserContext();
 
     const { user } = userContext;

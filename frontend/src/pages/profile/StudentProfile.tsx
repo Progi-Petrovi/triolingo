@@ -49,7 +49,7 @@ export default function StudentProfile() {
                         <CardTitle>Languages</CardTitle>
                     </CardHeader>
                     <CardContent className="flex gap-2 flex-wrap">
-                        {student.learningLanguages.map(
+                        {student.learningLanguages?.map(
                             ({ language, level }) => (
                                 <Badge key={language}>
                                     {language} | {level}

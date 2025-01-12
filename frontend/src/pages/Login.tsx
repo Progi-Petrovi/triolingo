@@ -39,6 +39,7 @@ export default function Login() {
                     toast({
                         title: "Failed to login",
                         description: LoginErrors[error],
+                        variant: "destructive",
                     });
                 }
             } else {
