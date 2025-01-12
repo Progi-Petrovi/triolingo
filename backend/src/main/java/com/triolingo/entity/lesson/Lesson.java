@@ -20,7 +20,7 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
-    private Instant startTimestamp, endTimestamp;
+    private Instant startInstant, endInstant;
     @NotNull
     private LessonStatus status;
     @ManyToOne
