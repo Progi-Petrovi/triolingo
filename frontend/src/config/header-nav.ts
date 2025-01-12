@@ -1,8 +1,7 @@
 import PathConstants from "@/routes/pathConstants";
 import { MainNavItem } from "@/types/nav";
 
-//TODO: based on a token from backend, use React's Context to hide Login, Register and Become a teacher if user is logged in
-const nav = [
+const guestNav = [
     {
         title: "Login",
         href: PathConstants.LOGIN,
@@ -15,6 +14,9 @@ const nav = [
         title: "Become a teacher",
         href: PathConstants.TEACHER_REGISTER,
     },
+];
+
+const userNav = [
     {
         title: "Profile",
         href: PathConstants.PROFILE,
@@ -30,13 +32,24 @@ export interface NavConfig {
     mainNavMobile: MainNavItem[];
 }
 
-export const navConfig: NavConfig = {
-    mainNav: nav,
+export const guestNavConfig: NavConfig = {
+    mainNav: guestNav,
     mainNavMobile: [
         {
             title: "Home",
             href: PathConstants.HOME,
         },
-        ...nav,
+        ...guestNav,
+    ],
+};
+
+export const userNavConfig: NavConfig = {
+    mainNav: userNav,
+    mainNavMobile: [
+        {
+            title: "Home",
+            href: PathConstants.HOME,
+        },
+        ...userNav,
     ],
 };
