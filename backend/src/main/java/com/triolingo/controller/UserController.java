@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -48,6 +51,19 @@ public class UserController {
             @AuthenticationPrincipal DatabaseUser principal) {
         User user = principal.getStoredUser();
         return ResponseEntity.ok(user.getAuthorities());
+    }
+
+    @GetMapping("/logout")
+    @Secured("ROLE_USER")
+    @Operation(description = "Logs out current user the principal is logged in as.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
+    })
+    public ResponseEntity<?> logoutUser(
+            HttpServletRequest request) throws ServletException {
+        request.logout();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

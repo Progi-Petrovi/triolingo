@@ -94,16 +94,14 @@ public class TeacherController {
     @PostMapping("/register")
     @Operation(description = "Creates a new teacher and logs the current principal in as that student.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400", description = "Teacher with that email already exists.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> registerTeacher(@RequestBody TeacherCreateDTO teacherDto, HttpServletRequest request)
             throws ServletException {
         teacherService.create(teacherDto);
         request.login(teacherDto.email(), teacherDto.password());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/member/uploadImage");
-        return new ResponseEntity<String>(headers, HttpStatus.FOUND);
+        return new ResponseEntity<String>(HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
