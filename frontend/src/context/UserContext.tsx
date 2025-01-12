@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useState, ReactNode } from "react";
 import { useFetch } from "../hooks/use-fetch";
 import { Teacher, Role, User, Student, UserStorage } from "@/types/users";
 import { UserContextType } from "./use-user-context";
