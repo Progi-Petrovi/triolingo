@@ -1,7 +1,7 @@
 import { createContext, useState, ReactNode } from "react";
 import { useFetch } from "../hooks/use-fetch";
 import { Teacher, Role, User, Student } from "@/types/users";
-import { UserContextType } from "./useUserContext";
+import { UserContextType } from "./use-user-context";
 import { useNavigate } from "react-router-dom";
 
 const fetchBasedOnRoles: Record<string, string> = {

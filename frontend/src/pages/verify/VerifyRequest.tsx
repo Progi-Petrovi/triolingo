@@ -4,7 +4,7 @@ import {
     CardTitle,
     CardDescription,
 } from "@/components/ui/card";
-import { useUser } from "@/context/useUserContext";
+import { useUser } from "@/context/use-user-context";
 import { useFetch } from "@/hooks/use-fetch";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";

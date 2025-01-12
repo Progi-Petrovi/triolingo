@@ -1,6 +1,7 @@
 import { useContext } from "react";
-import UserContext from "./userContext";
+import UserContext from "./UserContext";
 import { Student, Teacher, User } from "@/types/users";
+import { UserNotLoadedError } from "./user-not-loaded";
 
 export type UserContextType = {
     user: User | Teacher | Student | null;
@@ -17,13 +18,13 @@ export default function useUserContext(): UserContextType {
     return userContext;
 }
 
-export function useUser(): User {
+export function useUser(): User | null {
     const userContext = useUserContext();
 
     const { user } = userContext;
 
     if (!user) {
-        throw new Error("User is not available yet.");
+        throw new UserNotLoadedError();
     }
 
     return user;

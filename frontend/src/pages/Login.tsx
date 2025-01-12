@@ -13,7 +13,7 @@ import PathConstants from "@/routes/pathConstants";
 import { FormEvent } from "react";
 import { useFetch } from "@/hooks/use-fetch";
 import { useToast } from "@/hooks/use-toast";
-import useUserContext from "@/context/useUserContext";
+import useUserContext from "@/context/use-user-context";
 
 const LoginErrors: Record<string, string> = {
     "/login?badCredentials=": "Invalid credentials.",

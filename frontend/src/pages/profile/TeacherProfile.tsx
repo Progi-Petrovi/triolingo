@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { TeachingStyle } from "@/types/teaching-style";
 import { Button } from "@/components/ui/button";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
-import { useUser } from "@/context/useUserContext";
+import { useUser } from "@/context/use-user-context";
 import { initials } from "@/utils/main";
 import { Teacher } from "@/types/users";
 

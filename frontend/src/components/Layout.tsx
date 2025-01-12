@@ -3,24 +3,27 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { Suspense } from "react";
 import { Toaster } from "./ui/toaster";
-import { UserProvider } from "@/context/userContext";
+import { UserProvider } from "@/context/UserContext";
+import { GlobalErrorBoundaryWrapper } from "@/GlobalErrorBoundary";
 
 export default function Layout() {
     return (
-        <UserProvider>
-            <div
-                id={location.pathname}
-                className="min-h-screen w-screen flex flex-col"
-            >
-                <Header />
-                <main className="flex-1 overflow-auto flex justify-center items-center pt-6">
-                    <Suspense fallback={<div>Loading...</div>}>
-                        <Outlet />
-                    </Suspense>
-                    <Toaster />
-                </main>
-                <Footer />
-            </div>
-        </UserProvider>
+        <GlobalErrorBoundaryWrapper>
+            <UserProvider>
+                <div
+                    id={location.pathname}
+                    className="min-h-screen w-screen flex flex-col"
+                >
+                    <Header />
+                    <main className="flex-1 overflow-auto flex justify-center items-center pt-6">
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <Outlet />
+                        </Suspense>
+                        <Toaster />
+                    </main>
+                    <Footer />
+                </div>
+            </UserProvider>
+        </GlobalErrorBoundaryWrapper>
     );
 }
