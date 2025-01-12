@@ -5,6 +5,7 @@ import com.triolingo.dto.teacher.TeacherCreateDTO;
 import com.triolingo.entity.user.Teacher;
 import com.triolingo.repository.TeacherRepository;
 
+import com.triolingo.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.env.Environment;
@@ -20,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -35,13 +35,15 @@ public class TeacherService {
     private final PasswordEncoder passwordEncoder;
     private final DtoMapper dtoMapper;
     private final Environment env;
+    private final UserRepository userRepository;
 
     public TeacherService(TeacherRepository teacherRepository, PasswordEncoder passwordEncoder, DtoMapper dtoMapper,
-            Environment env) {
+                          Environment env, UserRepository userRepository) {
         this.teacherRepository = teacherRepository;
         this.passwordEncoder = passwordEncoder;
         this.dtoMapper = dtoMapper;
         this.env = env;
+        this.userRepository = userRepository;
     }
 
     public List<Teacher> listAll() {
@@ -50,28 +52,27 @@ public class TeacherService {
 
     public Teacher fetch(Long id) {
         try {
-            Teacher teacher = teacherRepository.findById(id).get();
-            return teacher;
+            return teacherRepository.findById(id).get();
         } catch (NoSuchElementException e) {
             throw new EntityNotFoundException("Teacher with that id does not exist");
         }
     }
 
     public Teacher create(TeacherCreateDTO teacherDto) {
-        if (teacherRepository.existsByEmail(teacherDto.email()))
-            throw new EntityExistsException("Teacher with that email already exists");
+        if (userRepository.existsByEmail(teacherDto.email()))
+            throw new EntityExistsException("User with that email already exists");
 
         Teacher teacher = dtoMapper.createEntity(teacherDto, Teacher.class);
         teacher.setPassword(passwordEncoder.encode(teacher.getPassword()));
         return teacherRepository.save(teacher);
     }
 
-    public Teacher update(@NotNull Teacher teacher, @NotNull TeacherCreateDTO teacherDto) {
+    public void update(@NotNull Teacher teacher, @NotNull TeacherCreateDTO teacherDto) {
         dtoMapper.updateEntity(teacher, teacherDto);
         if (teacherDto.password() != null)
             teacher.setPassword(passwordEncoder.encode(teacher.getPassword()));
 
-        return teacherRepository.save(teacher);
+        teacherRepository.save(teacher);
     }
 
     public void delete(Teacher teacher) {
@@ -79,7 +80,7 @@ public class TeacherService {
     }
 
     public String uploadProfileImage(@NotNull MultipartFile file, Teacher teacher)
-            throws NoSuchAlgorithmException, IOException {
+            throws IOException {
         String contentType = file.getContentType();
         if (contentType == null)
             throw new IllegalArgumentException(
@@ -102,7 +103,7 @@ public class TeacherService {
         graphics.drawImage(image, 0, 0, null);
         graphics.dispose();
 
-        String fileName = UUID.randomUUID().toString() + ".jpg";
+        String fileName = UUID.randomUUID() + ".jpg";
 
         File imageSaveFile = Path.of(env.getProperty("fileSystem.publicPath"),
                 env.getProperty("fileSystem.profileImagePath"),

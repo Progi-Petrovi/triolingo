@@ -4,6 +4,7 @@ import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.student.StudentCreateDTO;
 import com.triolingo.entity.user.Student;
 
+import com.triolingo.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +23,13 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
     private final DtoMapper dtoMapper;
+    private final UserRepository userRepository;
 
-    public StudentService(StudentRepository studentRepository, PasswordEncoder passwordEncoder, DtoMapper dtoMapper) {
+    public StudentService(StudentRepository studentRepository, PasswordEncoder passwordEncoder, DtoMapper dtoMapper, UserRepository userRepository) {
         this.studentRepository = studentRepository;
         this.passwordEncoder = passwordEncoder;
         this.dtoMapper = dtoMapper;
+        this.userRepository = userRepository;
     }
 
     public List<Student> listAll() {
@@ -42,8 +45,8 @@ public class StudentService {
     }
 
     public Student create(StudentCreateDTO studentDto) {
-        if (studentRepository.existsByEmail(studentDto.email()))
-            throw new EntityExistsException("Student with that email already exists");
+        if (userRepository.existsByEmail(studentDto.email()))
+            throw new EntityExistsException("User with that email already exists");
 
         Student student = dtoMapper.createEntity(studentDto, Student.class);
         student.setPassword(passwordEncoder.encode(student.getPassword()));
