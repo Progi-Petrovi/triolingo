@@ -1,6 +1,6 @@
 package com.triolingo.service;
 
-import com.triolingo.dto.lesson.LessonAvailabilityIntervalCreateDTO;
+import com.triolingo.dto.lesson.LessonAvailabilityIntervalDTO;
 import com.triolingo.entity.lesson.Lesson;
 import com.triolingo.entity.lesson.LessonAvailabilityInterval;
 import com.triolingo.entity.user.Student;
@@ -52,7 +52,7 @@ public class LessonService {
     }
 
     public LessonAvailabilityInterval createAvailabiltyInterval(@NotNull Teacher teacher,
-            @NotNull LessonAvailabilityIntervalCreateDTO dto) {
+            @NotNull LessonAvailabilityIntervalDTO dto) {
 
         var startOverlap = availabilityRepository.findByInstantWithinInterval(dto.startInstant()).orElse(null);
         var endOverlap = availabilityRepository.findByInstantWithinInterval(dto.endInstant()).orElse(null);
@@ -91,7 +91,7 @@ public class LessonService {
         return newAvailabilityInterval;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void clearOldAvailabilityIntervals() {
         availabilityRepository.deleteAllByEndInstantGreaterThan(Instant.now());
     }
