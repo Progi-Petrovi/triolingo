@@ -1,11 +1,8 @@
 package com.triolingo.controller;
 
-import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.user.UserChangePasswordDTO;
 import com.triolingo.entity.user.User;
-import com.triolingo.repository.UserRepository;
 import com.triolingo.security.DatabaseUser;
-import com.triolingo.service.TeacherService;
 import com.triolingo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -42,7 +39,7 @@ public class UserController {
 
     @GetMapping("/role")
     @Secured("ROLE_USER")
-    @Operation(description = "Gets current user the principal is logged in as.")
+    @Operation(description = "Gets current user roles the principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))

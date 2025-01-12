@@ -1,7 +1,13 @@
 import { useContext } from "react";
 import UserContext from "./userContext";
+import { Student, Teacher, User } from "@/types/users";
 
-export default function useUserContext() {
+export type UserContextType = {
+    user: User | Teacher | Student | null;
+    fetchUser: () => void;
+};
+
+export default function useUserContext(): UserContextType {
     const userContext = useContext(UserContext);
 
     if (!userContext) {
@@ -9,4 +15,16 @@ export default function useUserContext() {
     }
 
     return userContext;
+}
+
+export function useUser(): User {
+    const userContext = useUserContext();
+
+    const { user } = userContext;
+
+    if (!user) {
+        throw new Error("User is not available yet.");
+    }
+
+    return user;
 }

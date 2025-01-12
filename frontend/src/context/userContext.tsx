@@ -1,12 +1,7 @@
-import {
-    createContext,
-    useState,
-    ReactNode,
-    Dispatch,
-    SetStateAction,
-} from "react";
+import { createContext, useState, ReactNode } from "react";
 import { useFetch } from "../hooks/use-fetch";
-import { Teacher, Role } from "@/types/user-types";
+import { Teacher, Role, User, Student } from "@/types/users";
+import { UserContextType } from "./useUserContext";
 
 const fetchBasedOnRoles: Record<string, string> = {
     ROLE_TEACHER: "/teacher",
@@ -14,23 +9,15 @@ const fetchBasedOnRoles: Record<string, string> = {
     ROLE_ADMIN: "/admin",
 };
 
-type User = null | { [key: string]: any };
-
-interface UserContextType {
-    user: User;
-    setUser: Dispatch<SetStateAction<User>>;
-    fetchUser: () => void;
-}
-
-const UserContext = createContext<UserContextType | null>(null);
-
 interface UserProviderProps {
     children: ReactNode;
 }
 
+const UserContext = createContext<UserContextType | null>(null);
+
 export function UserProvider({ children }: UserProviderProps) {
     const fetch = useFetch();
-    const [user, setUser] = useState<User>(null);
+    const [user, setUser] = useState<User | Teacher | Student | null>(null);
 
     async function fetchUser() {
         const role = await fetch("/user/role").then(
@@ -39,13 +26,17 @@ export function UserProvider({ children }: UserProviderProps) {
 
         await fetch(fetchBasedOnRoles[role]).then((res) => {
             if (role === Role.ROLE_TEACHER) {
-                setUser({ ...(res.body as Teacher), role });
+                setUser({ ...(res.body as Teacher), role } as Teacher);
+            } else if (role === Role.ROLE_STUDENT) {
+                setUser({ ...(res.body as Student), role } as Student);
+            } else if (role === Role.ROLE_ADMIN) {
+                setUser({ ...(res.body as User), role } as User);
             }
         });
     }
 
     return (
-        <UserContext.Provider value={{ user, setUser, fetchUser }}>
+        <UserContext.Provider value={{ user, fetchUser }}>
             {children}
         </UserContext.Provider>
     );
