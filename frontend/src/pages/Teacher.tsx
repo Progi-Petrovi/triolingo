@@ -215,8 +215,7 @@ export default function Teacher() {
 
                         {canAddAReview && (
                             <AddReviewDialog
-                                teacherId={teacher.id}
-                                studentId={user.id}
+                                teacher={teacher.id}
                                 updateReviews={updateReviews}
                             />
                         )}
