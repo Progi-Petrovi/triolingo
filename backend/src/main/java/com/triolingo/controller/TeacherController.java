@@ -2,6 +2,7 @@ package com.triolingo.controller;
 
 import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.teacher.*;
+import com.triolingo.entity.lesson.Lesson;
 import com.triolingo.entity.lesson.LessonRequest;
 import com.triolingo.entity.user.Student;
 import com.triolingo.entity.user.Teacher;
@@ -85,6 +86,28 @@ public class TeacherController {
     public TeacherFullDTO getTeacher(@AuthenticationPrincipal DatabaseUser principal) {
         Teacher teacher = teacherService.fetch(principal.getStoredUser().getId());
         return dtoMapper.createDto(teacher, TeacherFullDTO.class);
+    }
+
+    @GetMapping("/{id}/studentNumber")
+    @Operation(description = "Returns how many students the teacher has completed lessons with.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
+    })
+    public Integer getStudentNumber(@PathVariable("id") Long id) {
+        Teacher teacher = teacherService.fetch(id);
+        return teacherService.getStudentNumber(teacher);
+    }
+
+    @GetMapping("/{id}/lessonNumber")
+    @Operation(description = "Returns how many lessons the teacher has completed lessons.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
+    })
+    public Integer getLessonNumber(@PathVariable("id") Long id) {
+        Teacher teacher = teacherService.fetch(id);
+        return lessonService.findAllByTeacherAndStatus(teacher, Lesson.Status.COMPLETE).size();
     }
 
     @PostMapping("/create")

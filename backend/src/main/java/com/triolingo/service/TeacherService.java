@@ -38,7 +38,7 @@ public class TeacherService {
     private final UserRepository userRepository;
 
     public TeacherService(TeacherRepository teacherRepository, PasswordEncoder passwordEncoder, DtoMapper dtoMapper,
-                          Environment env, UserRepository userRepository) {
+            Environment env, UserRepository userRepository) {
         this.teacherRepository = teacherRepository;
         this.passwordEncoder = passwordEncoder;
         this.dtoMapper = dtoMapper;
@@ -62,6 +62,10 @@ public class TeacherService {
         } catch (NoSuchElementException e) {
             throw new EntityNotFoundException("Teacher with that id does not exist");
         }
+    }
+
+    public Integer getStudentNumber(Teacher teacher) {
+        return teacherRepository.countUniqueStudentsWithLessonsWithTeacher(teacher);
     }
 
     public Teacher create(TeacherCreateDTO teacherDto) {

@@ -58,6 +58,10 @@ public class LessonService {
         return lessonRepository.findAllByTeacher(teacher);
     }
 
+    public List<Lesson> findAllByTeacherAndStatus(@NotNull Teacher teacher, @NotNull Lesson.Status status) {
+        return lessonRepository.findAllByTeacherAndStatus(teacher, status);
+    }
+
     public List<LessonRequest> findAllRequestsByTeacher(@NotNull Teacher teacher) {
         return lessonRequestRepository.findAllByTeacher(teacher);
     }
@@ -143,14 +147,21 @@ public class LessonService {
         return request;
     }
 
-    // Completes lessons with and end instant that has passed
+    // Completes or cancels (based on if there are accepted students) lessons with
+    // end instant that has passed
     @Scheduled(cron = "0 */5 * * * *")
     public void cleanLessons() {
         for (Lesson lesson : lessonRepository.findAllByStatusAndEndInstantLessThan(
                 Lesson.Status.CLOSED, Instant.now()))
-            setStatus(lesson, Lesson.Status.COMPLETE);
+            if (lessonRequestRepository.existsByLessonAndStatus(lesson, LessonRequest.Status.ACCEPTED))
+                setStatus(lesson, Lesson.Status.COMPLETE);
+            else
+                setStatus(lesson, Lesson.Status.CANCELED);
         for (Lesson lesson : lessonRepository.findAllByStatusAndEndInstantLessThan(
                 Lesson.Status.OPEN, Instant.now()))
-            setStatus(lesson, Lesson.Status.COMPLETE);
+            if (lessonRequestRepository.existsByLessonAndStatus(lesson, LessonRequest.Status.ACCEPTED))
+                setStatus(lesson, Lesson.Status.COMPLETE);
+            else
+                setStatus(lesson, Lesson.Status.CANCELED);
     }
 }

@@ -17,4 +17,6 @@ public interface LessonRequestRepository extends JpaRepository<LessonRequest, Lo
     List<LessonRequest> findAllByLessonAndStatus(Lesson lesson, LessonRequest.Status status);
 
     boolean existsByStudentAndLessonAndStatus(Student student, Lesson lesson, LessonRequest.Status status);
+
+    boolean existsByLessonAndStatus(Lesson lesson, LessonRequest.Status status);
 }

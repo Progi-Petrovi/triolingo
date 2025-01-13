@@ -13,4 +13,6 @@ public interface TeacherRepositoryCustom {
     public List<Teacher> listAll(List<String> languages, Integer minYearsOfExperience, Integer maxYearsOfExperience,
             List<TeachingStyle> teachingStyles, Double minHourlyRate, Double maxHourlyRate,
             TeacherFilterDTO.Order order);
+
+    public int countUniqueStudentsWithLessonsWithTeacher(Teacher teacher);
 }

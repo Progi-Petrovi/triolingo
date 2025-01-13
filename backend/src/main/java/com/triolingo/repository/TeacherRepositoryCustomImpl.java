@@ -5,6 +5,8 @@ import java.util.List;
 import com.triolingo.dto.teacher.TeacherFilterDTO;
 import com.triolingo.entity.TeachingStyle;
 import com.triolingo.entity.language.Language;
+import com.triolingo.entity.lesson.Lesson;
+import com.triolingo.entity.lesson.LessonRequest;
 import com.triolingo.entity.user.Teacher;
 import com.triolingo.entity.user.User;
 
@@ -95,5 +97,24 @@ public class TeacherRepositoryCustomImpl implements TeacherRepositoryCustom {
             }
 
         return entityManager.createQuery(query.orderBy(queryOrder)).getResultList();
+    }
+
+    @Override
+    public int countUniqueStudentsWithLessonsWithTeacher(Teacher teacher) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<LessonRequest> query = builder.createQuery(LessonRequest.class);
+
+        Root<LessonRequest> requestRoot = query.from(LessonRequest.class);
+        Join<LessonRequest, Lesson> lessonJoin = requestRoot.join(LessonRequest.Fields.lesson);
+
+        Predicate predicate = builder.and(
+                builder.equal(lessonJoin.get(Lesson.Fields.teacher), teacher),
+                builder.equal(requestRoot.get(LessonRequest.Fields.status), LessonRequest.Status.ACCEPTED),
+                builder.equal(lessonJoin.get(Lesson.Fields.status), Lesson.Status.COMPLETE));
+
+        query = query
+                .where(predicate)
+                .groupBy(requestRoot.get(LessonRequest.Fields.student));
+        return entityManager.createQuery(query).getResultList().size();
     }
 }
