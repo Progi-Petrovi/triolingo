@@ -4,8 +4,7 @@ import { useFetch } from "@/hooks/use-fetch";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Review as ReviewType } from "@/types/review";
-import { Student, Teacher as TeacherType } from "@/types/users";
-import { useUser } from "@/context/use-user-context";
+import { Teacher as TeacherType } from "@/types/users";
 
 export default function TeacherReviews() {
     const fetch = useFetch();
@@ -37,14 +36,27 @@ export default function TeacherReviews() {
     };
 
     useEffect(() => {
-        fetch(`teacher/${id}`).then((res) => {
-            setTeacher(res.body as TeacherType);
-        });
-        fetch(`review/teacher/${id}`).then((res) => {
-            setReviews(res.body as ReviewType[]);
-            setLastReviews(res.body as ReviewType[]);
-            setAvgRating(res.body as ReviewType[]);
-        });
+        fetch(`teacher/${id}`)
+            .then((res) => {
+                if (res.status === 404) {
+                    console.error("Teacher not found");
+                    return;
+                }
+                setTeacher(res.body as TeacherType);
+            })
+            .catch((error) => console.error("Error fetching teacher:", error));
+
+        fetch(`review/teacher/${id}`)
+            .then((res) => {
+                if (res.status === 404) {
+                    console.error("Reviews not found");
+                    return;
+                }
+                setReviews(res.body as ReviewType[]);
+                setLastReviews(res.body as ReviewType[]);
+                setAvgRating(res.body as ReviewType[]);
+            })
+            .catch((error) => console.error("Error fetching reviews:", error));
     }, [id]);
 
     return (

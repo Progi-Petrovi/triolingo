@@ -61,20 +61,36 @@ export default function Teacher() {
     };
 
     const updateReviews = () => {
-        fetch(`review/teacher/${id}`).then((res) => {
-            setReviews(res.body as ReviewType[]);
-            setLastReviews(res.body as ReviewType[]);
-            setAvgRating(res.body as ReviewType[]);
-            setCanAdd(res.body as ReviewType[]);
-        });
+        fetch(`review/teacher/${id}`)
+            .then((res) => {
+                if (res.status === 404) {
+                    console.error("Reviews not found");
+                    return;
+                }
+                setReviews(res.body as ReviewType[]);
+                setLastReviews(res.body as ReviewType[]);
+                setAvgRating(res.body as ReviewType[]);
+                setCanAdd(res.body as ReviewType[]);
+            })
+            .catch((error) => console.error("Error fetching reviews:", error));
     };
 
     useEffect(() => {
-        fetch(`teacher/${id}`).then((res) => {
-            setTeacher(res.body as TeacherType);
-        });
+        fetch(`teacher/${id}`)
+            .then((res) => {
+                if (res.status === 404) {
+                    console.error("Teacher not found");
+                    return;
+                }
+                setTeacher(res.body as TeacherType);
+            })
+            .catch((error) => console.error("Error fetching teacher:", error));
         updateReviews();
     }, [id]);
+
+    if (teacher === undefined) {
+        return <div>Teacher not found</div>;
+    }
 
     if (!teacher) {
         return <div>Loading...</div>;
