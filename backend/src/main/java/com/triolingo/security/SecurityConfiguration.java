@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.*;
 
 import com.triolingo.entity.user.*;
@@ -26,6 +27,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
+@EnableTransactionManagement
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
@@ -81,7 +83,7 @@ public class SecurityConfiguration {
     }
 
     private void authenticationSuccessHandler(HttpServletRequest request, HttpServletResponse response,
-                                              Authentication authentication) throws IOException {
+            Authentication authentication) throws IOException {
         User user = ((DatabaseUser) authentication.getPrincipal()).getStoredUser();
         String redirectUrl;
 
@@ -102,7 +104,7 @@ public class SecurityConfiguration {
     }
 
     private void authenticationFailureHandler(HttpServletRequest request, HttpServletResponse response,
-                                              RuntimeException exception) throws IOException {
+            RuntimeException exception) throws IOException {
         exception.printStackTrace(System.err);
         String redirectUrl;
 
@@ -110,7 +112,8 @@ public class SecurityConfiguration {
             redirectUrl = env.getProperty("path.frontend.login") + "?badCredentials=";
         else if (exception instanceof OAuth2PrincipalAuthenticationException ex
                 && exception.getCause() instanceof UsernameNotFoundException) {
-            redirectUrl = env.getProperty("path.frontend.student.register") + "?oAuth2Failed=&email=" + ex.getPrincipalName();
+            redirectUrl = env.getProperty("path.frontend.student.register") + "?oAuth2Failed=&email="
+                    + ex.getPrincipalName();
         } else if (exception instanceof OAuth2AuthenticationException)
             redirectUrl = env.getProperty("path.frontend.login") + "?oAuth2Failed=";
         else

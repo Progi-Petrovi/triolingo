@@ -3,7 +3,6 @@ package com.triolingo.controller;
 import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.teacher.*;
 import com.triolingo.entity.user.Teacher;
-import com.triolingo.repository.TeacherRepository;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.TeacherService;
 
@@ -153,7 +152,7 @@ public class TeacherController {
             @ApiResponse(responseCode = "400", description = "Image is of the incorrect type.", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateProfileImage(@RequestParam(value = "file") MultipartFile file,
-                                                @AuthenticationPrincipal DatabaseUser principal)
+            @AuthenticationPrincipal DatabaseUser principal)
             throws NoSuchAlgorithmException, IOException {
         String fileName;
         try {
