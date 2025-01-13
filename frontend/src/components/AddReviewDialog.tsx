@@ -79,8 +79,8 @@ export default function AddReviewDialog({
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         const review = {
-            teacher: teacherId,
-            student: studentId,
+            teacherId,
+            studentId,
             ...values,
         };
 
