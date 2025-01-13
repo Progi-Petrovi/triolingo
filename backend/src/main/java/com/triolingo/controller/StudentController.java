@@ -2,9 +2,13 @@ package com.triolingo.controller;
 
 import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.student.*;
+import com.triolingo.entity.lesson.LessonRequest;
 import com.triolingo.entity.user.Student;
+import com.triolingo.entity.user.Teacher;
 import com.triolingo.security.DatabaseUser;
+import com.triolingo.service.LessonService;
 import com.triolingo.service.StudentService;
+import com.triolingo.service.TeacherService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,10 +32,15 @@ import java.util.List;
 public class StudentController {
 
     private final StudentService studentService;
+    private final TeacherService teacherService;
+    private final LessonService lessonService;
     private final DtoMapper dtoMapper;
 
-    public StudentController(StudentService studentService, DtoMapper dtoMapper) {
+    public StudentController(StudentService studentService, TeacherService teacherService, LessonService lessonService,
+            DtoMapper dtoMapper) {
         this.studentService = studentService;
+        this.teacherService = teacherService;
+        this.lessonService = lessonService;
         this.dtoMapper = dtoMapper;
     }
 
@@ -126,6 +135,23 @@ public class StudentController {
         Student student = studentService.fetch(id);
         studentService.delete(student);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/email")
+    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @Operation(description = "Returns student email if the logged in teacher has an approved lesson request with the student")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
+    })
+    public String getTeacherEmail(@AuthenticationPrincipal DatabaseUser principal,
+            @PathVariable("id") Long id) {
+        Student student = studentService.fetch(id);
+        Teacher teacher = teacherService.fetch(principal.getStoredUser().getId());
+        if (!lessonService.requestExistsByTeacherAndStudentAndStatus(teacher, student, LessonRequest.Status.ACCEPTED))
+            throw new IllegalArgumentException("You don't have an accepted request with that teacher");
+        return student.getEmail();
     }
 
 }

@@ -70,6 +70,11 @@ public class LessonService {
         return lessonRequestRepository.findAllByStudent(student);
     }
 
+    public boolean requestExistsByTeacherAndStudentAndStatus(@NotNull Teacher teacher, @NotNull Student student,
+            @NotNull LessonRequest.Status status) {
+        return lessonRequestRepository.existsByTeacherAndStudentAndStatus(teacher, student, status);
+    }
+
     public Lesson create(@NotNull Teacher teacher, @NotNull LessonCreateDTO dto) {
         Lesson lesson = dtoMapper.createEntity(dto, Lesson.class);
         if (!lesson.getStartInstant().isBefore(lesson.getEndInstant()))
