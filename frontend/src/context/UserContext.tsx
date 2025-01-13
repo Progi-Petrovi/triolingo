@@ -4,6 +4,7 @@ import { Teacher, Role, User, Student, UserStorage } from "@/types/users";
 import { UserContextType } from "./use-user-context";
 import { useNavigate } from "react-router-dom";
 import PathConstants from "@/routes/pathConstants";
+import { languageMapToArray } from "@/types/language-level";
 
 const fetchBasedOnRoles: Record<string, string> = {
     ROLE_TEACHER: "/teacher",
@@ -31,7 +32,15 @@ export function UserProvider({ children }: UserProviderProps) {
             if (role === Role.ROLE_TEACHER) {
                 setUser({ ...(res.body as Teacher), role } as Teacher);
             } else if (role === Role.ROLE_STUDENT) {
-                setUser({ ...(res.body as Student), role } as Student);
+                const learningLanguages = languageMapToArray(
+                    res.body.learningLanguages
+                );
+
+                setUser({
+                    ...(res.body as Student),
+                    role,
+                    learningLanguages,
+                } as Student);
             } else if (role === Role.ROLE_ADMIN) {
                 setUser({ ...(res.body as User), role } as User);
             }

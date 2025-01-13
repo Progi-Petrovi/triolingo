@@ -3,10 +3,7 @@ package com.triolingo.entity.user;
 import com.triolingo.entity.TeachingStyle;
 import com.triolingo.entity.language.LearningLanguage;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotEmpty;
@@ -16,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -27,8 +25,9 @@ import java.util.List;
 public class Student extends User {
     @NotEmpty
     @ManyToMany
+    @Builder.Default
     @JoinTable(name = "student_learning_language", joinColumns = @JoinColumn(name = "student_id"), inverseJoinColumns = @JoinColumn(name = "learning_language_id"))
-    private List<LearningLanguage> learningLanguages;
+    private List<LearningLanguage> learningLanguages = new LinkedList<>();
     @NotNull
     private TeachingStyle preferredTeachingStyle;
     @Column(columnDefinition = "TEXT")

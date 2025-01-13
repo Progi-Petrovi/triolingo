@@ -29,7 +29,7 @@ public class Teacher extends User {
     @ManyToMany
     @Builder.Default
     @JoinTable(name = "teacher_language", joinColumns = @JoinColumn(name = "teacher_id"), inverseJoinColumns = @JoinColumn(name = "language_id"))
-    private List<Language> languages = new LinkedList();
+    private List<Language> languages = new LinkedList<>();
 
     @NotNull
     private Integer yearsOfExperience;

@@ -16,4 +16,9 @@ public class LearningLanguage {
     @ManyToOne
     private Language language;
     private KnowledgeLevel knowledgeLevel;
+
+    public LearningLanguage(Language language, KnowledgeLevel knowledgeLevel) {
+        this.language = language;
+        this.knowledgeLevel = knowledgeLevel;
+    }
 }
