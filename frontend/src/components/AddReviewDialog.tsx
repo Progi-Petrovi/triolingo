@@ -83,7 +83,6 @@ export function submitReview(
                 title: "Session expired. Please log in again.",
                 variant: "destructive",
             });
-            window.location.reload();
             console.warn("Session expired. Please log in again.");
             return;
         }

@@ -55,7 +55,7 @@ export const Review = ({ review }: ReviewProps) => {
                                 </span>
                             </div>
                         </div>
-                        <div className={"p-3"}>
+                        <div className="p-3 break-words">
                             <p>{review.content}</p>
                         </div>
                     </div>

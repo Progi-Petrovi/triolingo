@@ -7,7 +7,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Role, Teacher as TeacherType, User } from "@/types/users";
+import { Role, Student, Teacher as TeacherType, User } from "@/types/users";
 import { Button } from "@/components/ui/button";
 import { Link, useParams } from "react-router-dom";
 import { useFetch } from "@/hooks/use-fetch";
@@ -19,6 +19,8 @@ import { useUser } from "@/context/use-user-context";
 import { Review as ReviewType } from "@/types/review";
 
 export default function Teacher() {
+    const DEV = true;
+
     const user = useUser() as User;
 
     if (user.role === Role.ROLE_TEACHER) {
@@ -60,7 +62,8 @@ export default function Teacher() {
     const setCanAdd = (reviews: ReviewType[]) => {
         if (!reviews || !reviews.length) setCanAddAReview(true);
         setCanAddAReview(
-            !reviews.every((review) => review.studentName !== user.fullName)
+            DEV ||
+                reviews.every((review) => review.studentName !== user.fullName)
         );
     };
 
@@ -162,7 +165,7 @@ export default function Teacher() {
                         <CardTitle>Reviews</CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-4">
-                        {reviews && reviews.length && (
+                        {reviews && reviews.length > 0 ? (
                             <>
                                 <div className="flex justify-between items-center gap-2">
                                     <div className="font-bold text-xl">
@@ -178,6 +181,8 @@ export default function Teacher() {
                                     ))}
                                 </Card>
                             </>
+                        ) : (
+                            <div>No reviews</div>
                         )}
                         {reviews.length > maxReviews && (
                             <Button className="p-0 flex justify-center items-center">

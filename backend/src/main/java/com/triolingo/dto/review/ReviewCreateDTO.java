@@ -3,8 +3,8 @@ package com.triolingo.dto.review;
 import java.time.Instant;
 
 public record ReviewCreateDTO(
-        Long teacher,
-        Long student,
+        Long teacherId,
+        Long studentId,
         Integer rating,
         String content,
         Instant date) {
