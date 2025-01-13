@@ -37,12 +37,12 @@ function StarRating({
     field: ControllerRenderProps<any, "rating">;
 }) {
     return (
-        <div className="flex items-center">
+        <div className="flex items-center justify-around">
             {[1, 2, 3, 4, 5].map((star) => (
                 <button
                     type="button"
                     key={star}
-                    className={`text-2xl bg-transparent
+                    className={`lg:text-3xl bg-transparent md:text-2xl text-lg p-0
                                                         border-none hover:border-none focus:border-none
                                                         outline-none hover:outline-none focus:outline-none
                                                          ${
@@ -154,7 +154,7 @@ export default function AddReviewDialog({
             >
                 Add a review
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="md:max-w-[90vw] max-w-[95vw]">
                 <DialogHeader>
                     <DialogTitle>Add a review</DialogTitle>
                 </DialogHeader>
@@ -183,7 +183,10 @@ export default function AddReviewDialog({
                                 <FormItem className="flex-1">
                                     <FormLabel>Comment</FormLabel>
                                     <FormControl>
-                                        <Textarea {...field} />
+                                        <Textarea
+                                            {...field}
+                                            // className="w-[90%]"
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
