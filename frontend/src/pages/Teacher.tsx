@@ -124,8 +124,10 @@ export default function Teacher() {
                         <CardTitle>Lessons</CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-2">
-                        <Button>See previous lessons</Button>
-                        <Button>Book a lesson</Button>
+                        <Button className="font-base">
+                            See previous lessons
+                        </Button>
+                        <Button className="font-base">Book a lesson</Button>
                     </CardContent>
                 </Card>
             </div>
@@ -178,7 +180,7 @@ export default function Teacher() {
                                 <Link
                                     to={`/teacher/reviews/${id}`}
                                     className="text-inherit focus:text-inherit hover:text-inherit w-full h-full
-                                    flex justify-center items-center"
+                                    flex justify-center items-center text-base"
                                 >
                                     See all reviews
                                 </Link>
