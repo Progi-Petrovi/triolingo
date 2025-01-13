@@ -4,8 +4,8 @@ import java.time.Instant;
 
 public record ReviewSendDTO(
         Long id,
-        Long teacherId,
-        String studentName,
+        Long teacher,
+        String student,
         Integer rating,
         String content,
         Instant date) {

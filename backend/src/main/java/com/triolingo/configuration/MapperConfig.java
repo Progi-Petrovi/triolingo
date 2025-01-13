@@ -1,7 +1,6 @@
 package com.triolingo.configuration;
 
 import java.util.Collection;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -85,6 +84,15 @@ public class MapperConfig {
                         new TypeGetter<Long>() {
                         }.getType()));
 
+        dtoMapper.addTypeMapping(
+                new TypeMapping<Student, String>(
+                        this::studentToName,
+                        this::nameToStudent,
+                        new TypeGetter<Student>() {
+                        }.getType(),
+                        new TypeGetter<String>() {
+                        }.getType()));
+
         return dtoMapper;
     }
 
@@ -130,6 +138,14 @@ public class MapperConfig {
 
     private Lesson longToLesson(Long id) {
         return lessonRepository.findById(id).get();
+    }
+
+    private String studentToName(Student student) {
+        return student.getFullName();
+    }
+
+    private Student nameToStudent(String name) {
+        throw new UnsupportedOperationException("Field mapping not supported.");
     }
 
 }
