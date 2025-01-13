@@ -35,7 +35,6 @@ public class StudentController {
     private final TeacherService teacherService;
     private final LessonService lessonService;
     private final DtoMapper dtoMapper;
-    private final StudentRepository studentRepository;
 
     public StudentController(StudentService studentService, TeacherService teacherService, LessonService lessonService,
             DtoMapper dtoMapper) {
@@ -43,7 +42,6 @@ public class StudentController {
         this.teacherService = teacherService;
         this.lessonService = lessonService;
         this.dtoMapper = dtoMapper;
-        this.studentRepository = studentRepository;
     }
 
     @GetMapping("/all")
@@ -71,7 +69,7 @@ public class StudentController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public StudentFullDTO getStudent(@AuthenticationPrincipal DatabaseUser principal) {
-        Student student = studentRepository.getReferenceById(principal.getStoredUser().getId());
+        Student student = studentService.fetch(principal.getStoredUser().getId());
         return dtoMapper.createDto(student, StudentFullDTO.class);
     }
 
