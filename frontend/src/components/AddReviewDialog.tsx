@@ -25,7 +25,7 @@ import { Star } from "lucide-react";
 
 const formSchema = z.object({
     rating: z.number().int().min(1).max(5),
-    content: z.string().max(250),
+    content: z.string().min(10).max(250),
 });
 
 import { ControllerRenderProps } from "react-hook-form";
@@ -85,7 +85,7 @@ export default function AddReviewDialog({
         };
 
         console.log(values);
-        fetch("review/", {
+        fetch("review/create", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

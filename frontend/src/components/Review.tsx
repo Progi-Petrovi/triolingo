@@ -50,9 +50,7 @@ export const Review = ({ review }: ReviewProps) => {
                                     {review.user}
                                 </span>
                                 <StarRating rating={review.rating} />
-                                <span className={"text-xs"}>
-                                    {review.date.toLocaleDateString()}
-                                </span>
+                                <span className={"text-xs"}>{}</span>
                             </div>
                         </div>
                         <div className={"p-3"}>

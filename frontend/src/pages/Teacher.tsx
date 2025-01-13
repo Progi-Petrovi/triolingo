@@ -33,82 +33,84 @@ export default function Teacher() {
     const fetch = useFetch();
     const { id } = useParams();
     const [teacher, setTeacher] = useState<TeacherType>();
-    const reviews: Review[] = [
-        {
-            id: "1",
-            teacherId: "1",
-            user: "John Doe",
-            rating: 5,
-            comment: "Great teacher, very patient and knowledgeable.",
-            date: moment().subtract(1, "day").toDate(),
-        },
-        {
-            id: "2",
-            teacherId: "1",
-            user: "Jane Doe",
-            rating: 4,
-            comment: "Good teacher, but could be more patient.",
-            date: moment().subtract(2, "days").toDate(),
-        },
-        {
-            id: "3",
-            teacherId: "1",
-            user: "John Smith",
-            rating: 3,
-            comment: "Okay teacher, but not very patient.",
-            date: moment().subtract(3, "days").toDate(),
-        },
-        {
-            id: "4",
-            teacherId: "1",
-            user: "Alice Johnson",
-            rating: 5,
-            comment: "Excellent teacher, highly recommend.",
-            date: moment().subtract(4, "days").toDate(),
-        },
-        {
-            id: "5",
-            teacherId: "1",
-            user: "Bob Brown",
-            rating: 4,
-            comment: "Very good teacher, but sometimes hard to understand.",
-            date: moment().subtract(5, "days").toDate(),
-        },
-        {
-            id: "6",
-            teacherId: "1",
-            user: "Charlie Davis",
-            rating: 3,
-            comment: "Average teacher, could improve.",
-            date: moment().subtract(6, "days").toDate(),
-        },
-        {
-            id: "7",
-            teacherId: "1",
-            user: "Diana Evans",
-            rating: 5,
-            comment: "Fantastic teacher, very engaging.",
-            date: moment().subtract(7, "days").toDate(),
-        },
-        {
-            id: "8",
-            teacherId: "1",
-            user: "Evan Foster",
-            rating: 4,
-            comment: "Good teacher, but sometimes too fast.",
-            date: moment().subtract(8, "days").toDate(),
-        },
-    ];
-    // const [reviews, setReviews] = useState<Review[]>([]);
+    // const reviews: Review[] = [
+    //     {
+    //         id: "1",
+    //         teacherId: "1",
+    //         user: "John Doe",
+    //         rating: 5,
+    //         comment: "Great teacher, very patient and knowledgeable.",
+    //         date: moment().subtract(1, "day").toDate(),
+    //     },
+    //     {
+    //         id: "2",
+    //         teacherId: "1",
+    //         user: "Jane Doe",
+    //         rating: 4,
+    //         comment: "Good teacher, but could be more patient.",
+    //         date: moment().subtract(2, "days").toDate(),
+    //     },
+    //     {
+    //         id: "3",
+    //         teacherId: "1",
+    //         user: "John Smith",
+    //         rating: 3,
+    //         comment: "Okay teacher, but not very patient.",
+    //         date: moment().subtract(3, "days").toDate(),
+    //     },
+    //     {
+    //         id: "4",
+    //         teacherId: "1",
+    //         user: "Alice Johnson",
+    //         rating: 5,
+    //         comment: "Excellent teacher, highly recommend.",
+    //         date: moment().subtract(4, "days").toDate(),
+    //     },
+    //     {
+    //         id: "5",
+    //         teacherId: "1",
+    //         user: "Bob Brown",
+    //         rating: 4,
+    //         comment: "Very good teacher, but sometimes hard to understand.",
+    //         date: moment().subtract(5, "days").toDate(),
+    //     },
+    //     {
+    //         id: "6",
+    //         teacherId: "1",
+    //         user: "Charlie Davis",
+    //         rating: 3,
+    //         comment: "Average teacher, could improve.",
+    //         date: moment().subtract(6, "days").toDate(),
+    //     },
+    //     {
+    //         id: "7",
+    //         teacherId: "1",
+    //         user: "Diana Evans",
+    //         rating: 5,
+    //         comment: "Fantastic teacher, very engaging.",
+    //         date: moment().subtract(7, "days").toDate(),
+    //     },
+    //     {
+    //         id: "8",
+    //         teacherId: "1",
+    //         user: "Evan Foster",
+    //         rating: 4,
+    //         comment: "Good teacher, but sometimes too fast.",
+    //         date: moment().subtract(8, "days").toDate(),
+    //     },
+    // ];
+
+    const [reviews, setReviews] = useState<Review[]>([]);
 
     useEffect(() => {
         fetch(`teacher/${id}`).then((res) => {
             setTeacher(res.body as TeacherType);
         });
         // TODO: Uncomment this when the endpoint is ready
-        // fetch(`teacher/reviews/${id}`).then((res) => {
-        //     setReviews(res.body as Review[]);
-        // });
+        fetch(`review/teacher/${id}`).then((res) => {
+            setReviews(res.body as Review[]);
+            console.log(res.body);
+        });
     }, [id]);
 
     if (!teacher) {
@@ -128,7 +130,7 @@ export default function Teacher() {
             reviews.reduce((acc, review) => acc + review.rating, 0) /
             reviews.length;
         lastFewReviews = reviews.slice(0, maxRatings);
-    }
+    } else canAddAReview = true;
 
     const averageRating = isNaN(avgRating)
         ? "No reviews"
@@ -218,7 +220,7 @@ export default function Teacher() {
 
                         <Card className="flex flex-col gap-4 max-h-60 overflow-scroll p-2">
                             {lastFewReviews.map((review) => (
-                                <Review review={review} />
+                                <Review review={review} key={review.id} />
                             ))}
                         </Card>
 
