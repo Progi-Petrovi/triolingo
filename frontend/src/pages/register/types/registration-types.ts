@@ -1,22 +1,23 @@
 import { TeachingStyle } from "@/types/teaching-style";
-import { LanguageLevel } from "@/types/language-level";
+import { KnowledgeLevel } from "@/types/language-level";
 
 type UserRegistration = {
-  fullName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  teachingStyle: TeachingStyle;
+    fullName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
 };
 
 export type StudentRegistration = UserRegistration & {
-  goals: string;
-  languages: LanguageLevel[];
+    learningGoals: string;
+    learningLanguages: Record<string, KnowledgeLevel>;
+    preferredTeachingStyle: TeachingStyle;
 };
 
 export type TeacherRegistration = UserRegistration & {
-  yearsOfExperience: number;
-  hourlyRate: number;
-  qualifications: string;
-  languages: string[];
+    teachingStyle: TeachingStyle;
+    yearsOfExperience: number;
+    hourlyRate: number;
+    qualifications: string;
+    languages: string[];
 };

@@ -100,7 +100,7 @@ public class MapperConfig {
                 new TypeMapping<>(
                         this::learningLanguageToMap,
                         this::mapToLearningLanguage,
-                        new TypeGetter<LearningLanguage>() {
+                        new TypeGetter<Collection<LearningLanguage>>() {
                         }.getType(),
                         new TypeGetter<Map<String, KnowledgeLevel>>() {
                         }.getType()));

@@ -14,7 +14,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import LanguageDialog from "./components/LanguageDialog";
-import { LanguageLevel, KnowledgeLevel } from "@/types/language-level";
+import {
+    LanguageLevel,
+    KnowledgeLevel,
+    languageToKnowledgeMap,
+} from "@/types/language-level";
 import { Textarea } from "@/components/ui/textarea";
 import { StudentRegistration } from "@/pages/register/types/registration-types";
 import { useToast } from "@/hooks/use-toast";
@@ -33,7 +37,7 @@ const formSchema = z
         password: z.string().min(8).max(250),
         confirmPassword: z.string().min(8).max(250),
         teachingStyle: z.nativeEnum(TeachingStyle),
-        goals: z.string().min(0).max(250, {
+        learningGoals: z.string().min(0).max(250, {
             message: "Can't be over 250 characters, keep it nice and short :)",
         }),
         isVerified: z.boolean().optional(),
@@ -81,6 +85,8 @@ export default function StudentRegister() {
                     variant: "destructive",
                 });
         });
+
+        console.log(registrationData);
     }
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -90,7 +96,7 @@ export default function StudentRegister() {
             email: "",
             password: "",
             confirmPassword: "",
-            goals: "",
+            learningGoals: "",
             teachingStyle: TeachingStyle.FLEXIBLE,
         },
     });
@@ -129,9 +135,12 @@ export default function StudentRegister() {
             return;
         }
 
+        const learningLanguagesMap = languageToKnowledgeMap(learningLanguages);
+
         const totalValues: StudentRegistration = {
             ...values,
-            languages: learningLanguages,
+            preferredTeachingStyle: values.teachingStyle,
+            learningLanguages: learningLanguagesMap,
         };
 
         submitRegister(totalValues);
@@ -238,7 +247,7 @@ export default function StudentRegister() {
                             <TeachingStyleFormField form={form} />
                             <FormField
                                 control={form.control}
-                                name="goals"
+                                name="learningGoals"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Goals</FormLabel>
