@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Student, Teacher as TeacherType } from "@/types/users";
 import { Button } from "@/components/ui/button";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useFetch } from "@/hooks/use-fetch";
 import { useEffect, useState } from "react";
 import { initials } from "@/utils/main";
@@ -17,15 +17,6 @@ import { Review } from "@/components/Review";
 import AddReviewDialog from "@/components/AddReviewDialog";
 import { useUser } from "@/context/use-user-context";
 import { Review as ReviewType } from "@/types/review";
-
-type Review = {
-    id: string;
-    teacherId: string;
-    user: string;
-    rating: number;
-    comment: string;
-    date: Date;
-};
 
 export default function Teacher() {
     const user = useUser() as Student;
@@ -94,6 +85,18 @@ export default function Teacher() {
                 setTeacher(res.body as TeacherType);
             })
             .catch((error) => console.error("Error fetching teacher:", error));
+        fetch(`review/teacher/${id}`).then((res) => {
+            setReviews(res.body as ReviewType[]);
+            setLastReviews(res.body as ReviewType[]);
+            setAvgRating(res.body as ReviewType[]);
+            setCanAdd(res.body as ReviewType[]);
+        });
+    };
+
+    useEffect(() => {
+        fetch(`teacher/${id}`).then((res) => {
+            setTeacher(res.body as TeacherType);
+        });
         updateReviews();
     }, [id]);
 
@@ -149,8 +152,10 @@ export default function Teacher() {
                         <CardTitle>Lessons</CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-2">
-                        <Button>See previous lessons</Button>
-                        <Button>Book a lesson</Button>
+                        <Button className="font-base">
+                            See previous lessons
+                        </Button>
+                        <Button className="font-base">Book a lesson</Button>
                     </CardContent>
                 </Card>
             </div>
@@ -181,26 +186,40 @@ export default function Teacher() {
                         <CardTitle>Reviews</CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-4">
-                        <div className="flex justify-between items-center gap-2">
-                            <div className="font-bold text-xl">
-                                Average rating: {averageRating}
-                            </div>
-                        </div>
-
-                        <Card className="flex flex-col gap-4 max-h-60 overflow-scroll p-2">
-                            {lastFewReviews.map((review) => (
-                                <Review review={review} />
-                            ))}
-                        </Card>
-
-                        {reviews && reviews.length > maxRatings && (
-                            <Button>See all reviews</Button>
+                        {reviews && reviews.length && (
+                            <>
+                                <div className="flex justify-between items-center gap-2">
+                                    <div className="font-bold text-xl">
+                                        Average rating: {averageRating}
+                                    </div>
+                                </div>
+                                <Card className="flex flex-col gap-4 max-h-60 overflow-scroll p-2">
+                                    {lastFewReviews.map((review) => (
+                                        <Review
+                                            review={review}
+                                            key={review.id}
+                                        />
+                                    ))}
+                                </Card>
+                            </>
+                        )}
+                        {reviews.length > maxReviews && (
+                            <Button className="p-0 flex justify-center items-center">
+                                <Link
+                                    to={`/teacher/reviews/${id}`}
+                                    className="text-inherit focus:text-inherit hover:text-inherit w-full h-full
+                                    flex justify-center items-center text-base"
+                                >
+                                    See all reviews
+                                </Link>
+                            </Button>
                         )}
 
                         {canAddAReview && (
                             <AddReviewDialog
                                 teacherId={teacher.id}
                                 studentId={user.id}
+                                updateReviews={updateReviews}
                             />
                         )}
                     </CardContent>

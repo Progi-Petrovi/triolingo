@@ -6,7 +6,6 @@ import { Link, useParams } from "react-router-dom";
 import { Review as ReviewType } from "@/types/review";
 import { Student, Teacher as TeacherType } from "@/types/users";
 import { useUser } from "@/context/use-user-context";
-import { set } from "react-hook-form";
 
 export default function TeacherReviews() {
     const fetch = useFetch();
@@ -59,6 +58,14 @@ export default function TeacherReviews() {
                 setAvgRating(res.body as ReviewType[]);
             })
             .catch((error) => console.error("Error fetching reviews:", error));
+        fetch(`teacher/${id}`).then((res) => {
+            setTeacher(res.body as TeacherType);
+        });
+        fetch(`review/teacher/${id}`).then((res) => {
+            setReviews(res.body as ReviewType[]);
+            setLastReviews(res.body as ReviewType[]);
+            setAvgRating(res.body as ReviewType[]);
+        });
     }, [id]);
 
     return (
