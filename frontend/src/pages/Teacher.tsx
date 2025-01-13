@@ -91,7 +91,7 @@ export default function Teacher() {
             setAvgRating(res.body as ReviewType[]);
             setCanAdd(res.body as ReviewType[]);
         });
-    };
+    }, [id]);
 
     useEffect(() => {
         fetch(`teacher/${id}`).then((res) => {
