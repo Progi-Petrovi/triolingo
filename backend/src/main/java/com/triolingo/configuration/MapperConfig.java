@@ -161,7 +161,6 @@ public class MapperConfig {
     }
 
     private Collection<LearningLanguage> mapToLearningLanguage(Map<String, KnowledgeLevel> language) {
-        System.out.println("LOG" + language);
         return language.entrySet().stream().map(lang -> {
             Language language1 = stringToLanguage(lang.getKey());
             return learningLanguageRepository.findByLanguageAndKnowledgeLevel(language1, lang.getValue()).orElse(
@@ -171,7 +170,6 @@ public class MapperConfig {
     }
 
     private Map<String, KnowledgeLevel> learningLanguageToMap(Collection<LearningLanguage> learningLanguages) {
-        System.out.println("LOG" + learningLanguages);
         return
                 learningLanguages.stream().collect(Collectors.toMap((learningLanguage -> learningLanguage.getLanguage().getName()), LearningLanguage::getKnowledgeLevel));
     }
