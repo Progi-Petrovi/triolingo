@@ -4,8 +4,7 @@ import { useFetch } from "@/hooks/use-fetch";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Review as ReviewType } from "@/types/review";
-import { Student, Teacher as TeacherType } from "@/types/users";
-import { useUser } from "@/context/use-user-context";
+import { Teacher as TeacherType } from "@/types/users";
 
 export default function TeacherReviews() {
     const fetch = useFetch();
@@ -14,7 +13,7 @@ export default function TeacherReviews() {
     const [reviews, setReviews] = useState<ReviewType[]>([]);
     const [sortedReviews, setSortedReviews] = useState<ReviewType[]>([]);
     const [averageRating, setAverageRating] = useState<number | string>(
-        "No rewiews"
+        "No reviews"
     );
 
     const setLastReviews = (reviews: ReviewType[]) => {
