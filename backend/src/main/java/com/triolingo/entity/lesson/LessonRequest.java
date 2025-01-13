@@ -1,10 +1,8 @@
 package com.triolingo.entity.lesson;
 
-import java.time.Instant;
 import javax.validation.constraints.*;
 
-import com.triolingo.entity.user.Teacher;
-import com.triolingo.entity.language.Language;
+import com.triolingo.entity.user.Student;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
@@ -13,29 +11,29 @@ import lombok.experimental.FieldNameConstants;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "student_id", "lesson_id" }))
+
 @Data
-public class Lesson {
+public class LessonRequest {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
-    private Instant startInstant, endInstant;
-    @NotNull
     private Status status;
     @ManyToOne
     @NotNull
-    private Teacher teacher;
+    @JoinColumn(name = "student_id")
+    private Student student;
     @ManyToOne
     @NotNull
-    private Language language;
-    @NotNull
-    private Double teacherPayment;
+    @JoinColumn(name = "lesson_id")
+    private Lesson lesson;
 
     public enum Status {
-        OPEN,
-        CLOSED,
-        CANCELED,
-        COMPLETE
+        PENDING,
+        ACCEPTED,
+        REJECTED
     }
+
 }
