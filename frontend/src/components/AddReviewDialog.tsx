@@ -22,7 +22,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Textarea } from "./ui/textarea";
 import { Star } from "lucide-react";
-import { Review as ReviewType } from "@/types/review";
 
 const formSchema = z.object({
     rating: z.number().int().min(1).max(5),
@@ -84,7 +83,6 @@ export function submitReview(
                 title: "Session expired. Please log in again.",
                 variant: "destructive",
             });
-            window.location.reload();
             console.warn("Session expired. Please log in again.");
             return;
         }

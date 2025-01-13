@@ -22,13 +22,13 @@ public class Review {
     private Long id;
     @NotNull
     @ManyToOne
-    private Teacher reviewedTeacher;
+    private Teacher teacher;
     @NotNull
     @ManyToOne
-    private Student studentReview;
+    private Student student;
     @NotNull
     private String content;
     @NotNull
     private Integer rating;
-    private Instant date = Instant.now();
+    private final Instant date = Instant.now();
 }

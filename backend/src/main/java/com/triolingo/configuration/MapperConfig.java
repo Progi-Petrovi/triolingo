@@ -1,7 +1,6 @@
 package com.triolingo.configuration;
 
 import java.util.Collection;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,9 +8,11 @@ import com.dtoMapper.DtoMapper;
 import com.dtoMapper.TypeGetter;
 import com.dtoMapper.TypeMapping;
 import com.triolingo.entity.language.Language;
+import com.triolingo.entity.lesson.Lesson;
 import com.triolingo.entity.user.Student;
 import com.triolingo.entity.user.Teacher;
 import com.triolingo.repository.LanguageRepository;
+import com.triolingo.repository.LessonRepository;
 import com.triolingo.repository.StudentRepository;
 import com.triolingo.repository.TeacherRepository;
 import com.triolingo.repository.UserRepository;
@@ -23,13 +24,15 @@ public class MapperConfig {
     public final TeacherRepository teacherRepository;
     public final StudentRepository studentRepository;
     public final UserRepository userRepository;
+    public final LessonRepository lessonRepository;
 
     public MapperConfig(LanguageRepository languageRepository, TeacherRepository teacherRepository,
-            StudentRepository studentRepository, UserRepository userRepository) {
+            StudentRepository studentRepository, UserRepository userRepository, LessonRepository lessonRepository) {
         this.languageRepository = languageRepository;
         this.teacherRepository = teacherRepository;
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
+        this.lessonRepository = lessonRepository;
     }
 
     @Bean
@@ -38,8 +41,8 @@ public class MapperConfig {
 
         dtoMapper.addTypeMapping(
                 new TypeMapping<Collection<Language>, Collection<String>>(
-                        this::languagesToString,
-                        this::stringToLanguages,
+                        this::languagesToStrings,
+                        this::stringsToLanguages,
                         new TypeGetter<Collection<Language>>() {
                         }.getType(),
                         new TypeGetter<Collection<String>>() {
@@ -49,33 +52,68 @@ public class MapperConfig {
                 new TypeMapping<Teacher, Long>(
                         this::teacherToLong,
                         this::longToTeacher,
-                        new TypeGetter<Collection<Teacher>>() {
+                        new TypeGetter<Teacher>() {
                         }.getType(),
-                        new TypeGetter<Collection<Long>>() {
+                        new TypeGetter<Long>() {
                         }.getType()));
 
         dtoMapper.addTypeMapping(
                 new TypeMapping<Student, Long>(
                         this::studentToLong,
                         this::longToStudent,
-                        new TypeGetter<Collection<Student>>() {
+                        new TypeGetter<Student>() {
                         }.getType(),
-                        new TypeGetter<Collection<Long>>() {
+                        new TypeGetter<Long>() {
+                        }.getType()));
+
+        dtoMapper.addTypeMapping(
+                new TypeMapping<Language, String>(
+                        this::languageToString,
+                        this::stringToLanguage,
+                        new TypeGetter<Language>() {
+                        }.getType(),
+                        new TypeGetter<String>() {
+                        }.getType()));
+
+        dtoMapper.addTypeMapping(
+                new TypeMapping<Lesson, Long>(
+                        this::lessonToLong,
+                        this::longToLesson,
+                        new TypeGetter<Lesson>() {
+                        }.getType(),
+                        new TypeGetter<Long>() {
+                        }.getType()));
+
+        dtoMapper.addTypeMapping(
+                new TypeMapping<Student, String>(
+                        this::studentToName,
+                        this::nameToStudent,
+                        new TypeGetter<Student>() {
+                        }.getType(),
+                        new TypeGetter<String>() {
                         }.getType()));
 
         return dtoMapper;
     }
 
-    private Collection<String> languagesToString(Collection<Language> languages) {
+    private Collection<String> languagesToStrings(Collection<Language> languages) {
         return languages.stream()
-                .map(language -> language.getName())
+                .map(language -> languageToString(language))
                 .toList();
     }
 
-    private Collection<Language> stringToLanguages(Collection<String> languages) {
+    private Collection<Language> stringsToLanguages(Collection<String> languages) {
         return languages.stream()
-                .map(languageName -> languageRepository.findByName(languageName).get())
+                .map(languageName -> stringToLanguage(languageName))
                 .toList();
+    }
+
+    private String languageToString(Language language) {
+        return language.getName();
+    }
+
+    private Language stringToLanguage(String language) {
+        return languageRepository.findByName(language).get();
     }
 
     private Long teacherToLong(Teacher teacher) {
@@ -92,6 +130,22 @@ public class MapperConfig {
 
     private Student longToStudent(Long id) {
         return studentRepository.findById(id).get();
+    }
+
+    private Long lessonToLong(Lesson lesson) {
+        return lesson.getId();
+    }
+
+    private Lesson longToLesson(Long id) {
+        return lessonRepository.findById(id).get();
+    }
+
+    private String studentToName(Student student) {
+        return student.getFullName();
+    }
+
+    private Student nameToStudent(String name) {
+        throw new UnsupportedOperationException("Field mapping not supported.");
     }
 
 }

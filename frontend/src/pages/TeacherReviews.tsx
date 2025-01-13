@@ -13,7 +13,7 @@ export default function TeacherReviews() {
     const [reviews, setReviews] = useState<ReviewType[]>([]);
     const [sortedReviews, setSortedReviews] = useState<ReviewType[]>([]);
     const [averageRating, setAverageRating] = useState<number | string>(
-        "No rewiews"
+        "No reviews"
     );
 
     const setLastReviews = (reviews: ReviewType[]) => {

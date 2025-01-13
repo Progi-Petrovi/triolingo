@@ -5,10 +5,12 @@ import com.triolingo.dto.review.ReviewCreateDTO;
 import com.triolingo.entity.Review;
 import com.triolingo.entity.user.Student;
 import com.triolingo.entity.user.Teacher;
+import com.triolingo.repository.LessonRepository;
 import com.triolingo.repository.ReviewRepository;
 import com.triolingo.repository.StudentRepository;
 import com.triolingo.repository.TeacherRepository;
 import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,35 +20,35 @@ import java.util.NoSuchElementException;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final LessonRepository lessonRepository;
     private final TeacherRepository teacherRepository;
     private final StudentRepository studentRepository;
     private final DtoMapper dtoMapper;
 
-    public ReviewService(ReviewRepository reviewRepository, TeacherRepository teacherRepository, StudentRepository studentRepository, DtoMapper dtoMapper) {
+    public ReviewService(ReviewRepository reviewRepository, LessonRepository lessonRepository, TeacherRepository teacherRepository,
+                         StudentRepository studentRepository, DtoMapper dtoMapper) {
         this.reviewRepository = reviewRepository;
+        this.lessonRepository = lessonRepository;
         this.teacherRepository = teacherRepository;
         this.studentRepository = studentRepository;
         this.dtoMapper = dtoMapper;
     }
 
-    public List<Review> listTeacherReviews(Long teacherId) {
-        Teacher teacher = teacherRepository.findById(teacherId)
-                .orElseThrow(() -> new EntityNotFoundException("Teacher not found."));
-        return reviewRepository.findByReviewedTeacher(teacher);
+    public List<Review> findAllByTeacher(Teacher teacher) {
+        return reviewRepository.findAllByTeacher(teacher);
     }
 
     public Review createReview(ReviewCreateDTO reviewDto) {
-        Teacher teacher = teacherRepository.findById(reviewDto.teacherId())
-                .orElseThrow(() -> new EntityNotFoundException("Teacher not found."));
-        Student student = studentRepository.findById(reviewDto.studentId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found."));
-
+        Teacher teacher = teacherRepository.findById(reviewDto.teacherId()).get();
+        Student student = studentRepository.findById(reviewDto.studentId()).get();
         Review review = new Review();
-        review.setReviewedTeacher(teacher);
-        review.setStudentReview(student);
-        review.setRating(reviewDto.rating());
+        review.setTeacher(teacher);
+        review.setStudent(student);
         review.setContent(reviewDto.content());
-
+        review.setRating(reviewDto.rating());
+        if (!lessonRepository.existsByTeacherAndAcceptedStudentAndComplete(review.getTeacher(), review.getStudent()))
+            throw new IllegalArgumentException(
+                    "Reviews are only allowed to be posted by students who have been accepted to at least one lesson by the teacher.");
         return reviewRepository.save(review);
     }
 
