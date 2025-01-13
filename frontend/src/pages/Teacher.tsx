@@ -85,18 +85,6 @@ export default function Teacher() {
                 setTeacher(res.body as TeacherType);
             })
             .catch((error) => console.error("Error fetching teacher:", error));
-        fetch(`review/teacher/${id}`).then((res) => {
-            setReviews(res.body as ReviewType[]);
-            setLastReviews(res.body as ReviewType[]);
-            setAvgRating(res.body as ReviewType[]);
-            setCanAdd(res.body as ReviewType[]);
-        });
-    }, [id]);
-
-    useEffect(() => {
-        fetch(`teacher/${id}`).then((res) => {
-            setTeacher(res.body as TeacherType);
-        });
         updateReviews();
     }, [id]);
 

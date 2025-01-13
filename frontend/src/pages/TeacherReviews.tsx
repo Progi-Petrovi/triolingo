@@ -57,14 +57,6 @@ export default function TeacherReviews() {
                 setAvgRating(res.body as ReviewType[]);
             })
             .catch((error) => console.error("Error fetching reviews:", error));
-        fetch(`teacher/${id}`).then((res) => {
-            setTeacher(res.body as TeacherType);
-        });
-        fetch(`review/teacher/${id}`).then((res) => {
-            setReviews(res.body as ReviewType[]);
-            setLastReviews(res.body as ReviewType[]);
-            setAvgRating(res.body as ReviewType[]);
-        });
     }, [id]);
 
     return (
