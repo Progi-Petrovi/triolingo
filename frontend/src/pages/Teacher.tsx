@@ -14,9 +14,9 @@ import { useFetch } from "@/hooks/use-fetch";
 import { useEffect, useState } from "react";
 import { initials } from "@/utils/main";
 import { Review } from "@/components/Review";
-import moment from "moment";
 import AddReviewDialog from "@/components/AddReviewDialog";
 import { useUser } from "@/context/use-user-context";
+import { Review as ReviewType } from "@/types/review";
 
 type Review = {
     id: string;
@@ -33,106 +33,77 @@ export default function Teacher() {
     const fetch = useFetch();
     const { id } = useParams();
     const [teacher, setTeacher] = useState<TeacherType>();
-    const reviews: Review[] = [
-        {
-            id: "1",
-            teacherId: "1",
-            user: "John Doe",
-            rating: 5,
-            comment: "Great teacher, very patient and knowledgeable.",
-            date: moment().subtract(1, "day").toDate(),
-        },
-        {
-            id: "2",
-            teacherId: "1",
-            user: "Jane Doe",
-            rating: 4,
-            comment: "Good teacher, but could be more patient.",
-            date: moment().subtract(2, "days").toDate(),
-        },
-        {
-            id: "3",
-            teacherId: "1",
-            user: "John Smith",
-            rating: 3,
-            comment: "Okay teacher, but not very patient.",
-            date: moment().subtract(3, "days").toDate(),
-        },
-        {
-            id: "4",
-            teacherId: "1",
-            user: "Alice Johnson",
-            rating: 5,
-            comment: "Excellent teacher, highly recommend.",
-            date: moment().subtract(4, "days").toDate(),
-        },
-        {
-            id: "5",
-            teacherId: "1",
-            user: "Bob Brown",
-            rating: 4,
-            comment: "Very good teacher, but sometimes hard to understand.",
-            date: moment().subtract(5, "days").toDate(),
-        },
-        {
-            id: "6",
-            teacherId: "1",
-            user: "Charlie Davis",
-            rating: 3,
-            comment: "Average teacher, could improve.",
-            date: moment().subtract(6, "days").toDate(),
-        },
-        {
-            id: "7",
-            teacherId: "1",
-            user: "Diana Evans",
-            rating: 5,
-            comment: "Fantastic teacher, very engaging.",
-            date: moment().subtract(7, "days").toDate(),
-        },
-        {
-            id: "8",
-            teacherId: "1",
-            user: "Evan Foster",
-            rating: 4,
-            comment: "Good teacher, but sometimes too fast.",
-            date: moment().subtract(8, "days").toDate(),
-        },
-    ];
-    // const [reviews, setReviews] = useState<Review[]>([]);
+    const [reviews, setReviews] = useState<ReviewType[]>([]);
+    const maxReviews = 5;
+    const [lastFewReviews, setLastFewReviews] = useState<ReviewType[]>([]);
+    const [averageRating, setAverageRating] = useState<number | string>(
+        "No rewiews"
+    );
+    const [canAddAReview, setCanAddAReview] = useState<boolean>(false);
+
+    const setLastReviews = (reviews: ReviewType[]) => {
+        if (!reviews || !reviews.length) return;
+        setLastFewReviews(
+            reviews
+                .sort((a, b) =>
+                    Date.parse(a.date) < Date.parse(b.date) ? 1 : -1
+                )
+                .slice(0, maxReviews)
+        );
+    };
+
+    const setAvgRating = (reviews: ReviewType[]) => {
+        if (!reviews || !reviews.length) setAverageRating("No reviews");
+        setAverageRating(
+            (
+                reviews.reduce((acc, review) => acc + review.rating, 0) /
+                reviews.length
+            ).toFixed(1)
+        );
+    };
+
+    const setCanAdd = (reviews: ReviewType[]) => {
+        if (!reviews || !reviews.length) setCanAddAReview(true);
+        setCanAddAReview(
+            !reviews.every((review) => review.studentName !== user.fullName)
+        );
+    };
+
+    const updateReviews = () => {
+        fetch(`review/teacher/${id}`)
+            .then((res) => {
+                if (res.status === 404) {
+                    console.error("Reviews not found");
+                    return;
+                }
+                setReviews(res.body as ReviewType[]);
+                setLastReviews(res.body as ReviewType[]);
+                setAvgRating(res.body as ReviewType[]);
+                setCanAdd(res.body as ReviewType[]);
+            })
+            .catch((error) => console.error("Error fetching reviews:", error));
+    };
 
     useEffect(() => {
-        fetch(`teacher/${id}`).then((res) => {
-            setTeacher(res.body as TeacherType);
-        });
-        // TODO: Uncomment this when the endpoint is ready
-        // fetch(`teacher/reviews/${id}`).then((res) => {
-        //     setReviews(res.body as Review[]);
-        // });
+        fetch(`teacher/${id}`)
+            .then((res) => {
+                if (res.status === 404) {
+                    console.error("Teacher not found");
+                    return;
+                }
+                setTeacher(res.body as TeacherType);
+            })
+            .catch((error) => console.error("Error fetching teacher:", error));
+        updateReviews();
     }, [id]);
+
+    if (teacher === undefined) {
+        return <div>Teacher not found</div>;
+    }
 
     if (!teacher) {
         return <div>Loading...</div>;
     }
-
-    let canAddAReview = false;
-    let avgRating = NaN;
-    let lastFewReviews: Review[] = [];
-    const maxRatings = 5;
-
-    if (reviews && reviews.length) {
-        canAddAReview = reviews.every(
-            (review) => review.user !== user.fullName
-        );
-        avgRating =
-            reviews.reduce((acc, review) => acc + review.rating, 0) /
-            reviews.length;
-        lastFewReviews = reviews.slice(0, maxRatings);
-    }
-
-    const averageRating = isNaN(avgRating)
-        ? "No reviews"
-        : avgRating.toFixed(1);
 
     return (
         <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row">
