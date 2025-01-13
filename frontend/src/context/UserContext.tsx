@@ -30,24 +30,38 @@ export function UserProvider({ children }: UserProviderProps) {
 
         await fetch(fetchBasedOnRoles[role]).then((res) => {
             if (role === Role.ROLE_TEACHER) {
-                setUser({ ...(res.body as Teacher), role } as Teacher);
+                const teacher = { ...(res.body as Teacher), role } as Teacher;
+
+                setUser(teacher);
+                sessionStorage.setItem(
+                    UserStorage.TRIOLINGO_USER,
+                    JSON.stringify(teacher)
+                );
             } else if (role === Role.ROLE_STUDENT) {
                 const learningLanguages = languageMapToArray(
                     res.body.learningLanguages
                 );
 
-                setUser({
+                const student = {
                     ...(res.body as Student),
                     role,
                     learningLanguages,
-                } as Student);
+                } as Student;
+
+                setUser(student);
+                sessionStorage.setItem(
+                    UserStorage.TRIOLINGO_USER,
+                    JSON.stringify(student)
+                );
             } else if (role === Role.ROLE_ADMIN) {
-                setUser({ ...(res.body as User), role } as User);
+                const admin = { ...(res.body as User), role } as User;
+
+                setUser(admin);
+                sessionStorage.setItem(
+                    UserStorage.TRIOLINGO_USER,
+                    JSON.stringify(admin)
+                );
             }
-            sessionStorage.setItem(
-                UserStorage.TRIOLINGO_USER,
-                JSON.stringify({ ...res.body, role })
-            );
         });
 
         if (user?.verified) {
