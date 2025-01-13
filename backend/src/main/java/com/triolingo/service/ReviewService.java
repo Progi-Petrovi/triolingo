@@ -46,10 +46,9 @@ public class ReviewService {
         review.setStudent(student);
         review.setContent(reviewDto.content());
         review.setRating(reviewDto.rating());
-        /*if (!lessonRepository.existsByTeacherAndAcceptedStudentAndComplete(review.getTeacher(), review.getStudent()))
+        if (!lessonRepository.existsByTeacherAndAcceptedStudentAndComplete(review.getTeacher(), review.getStudent()))
             throw new IllegalArgumentException(
                     "Reviews are only allowed to be posted by students who have been accepted to at least one lesson by the teacher.");
-        */
         return reviewRepository.save(review);
     }
 
