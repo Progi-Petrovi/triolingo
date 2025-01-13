@@ -1,13 +1,8 @@
 import { useMemo } from "react";
+import { Review as ReviewType } from "@/types/review";
 
 interface ReviewProps {
-    review: {
-        id: string;
-        user: string;
-        rating: number;
-        comment: string;
-        date: Date;
-    };
+    review: ReviewType;
 }
 
 const StarRating = ({ rating }: { rating: number }) => {
@@ -47,14 +42,21 @@ export const Review = ({ review }: ReviewProps) => {
                         >
                             <div className={"flex items-center px-3 gap-1"}>
                                 <span className={"font-semibold"}>
-                                    {review.user}
+                                    {review.studentName}
                                 </span>
                                 <StarRating rating={review.rating} />
-                                <span className={"text-xs"}>{}</span>
+                                <span className={"text-xs"}>
+                                    {new Date(review.date).toLocaleDateString()}
+                                </span>
+                                <span className={"text-xs"}>
+                                    {new Date(review.date)
+                                        .toLocaleTimeString()
+                                        .slice(0, 5)}
+                                </span>
                             </div>
                         </div>
                         <div className={"p-3"}>
-                            <p>{review.comment}</p>
+                            <p>{review.content}</p>
                         </div>
                     </div>
                 </div>

@@ -45,7 +45,7 @@ public class ReviewService {
         review.setReviewedTeacher(teacher);
         review.setStudentReview(student);
         review.setRating(reviewDto.rating());
-        review.setContent(reviewDto.comment());
+        review.setContent(reviewDto.content());
 
         return reviewRepository.save(review);
     }

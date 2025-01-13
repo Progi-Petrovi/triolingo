@@ -22,6 +22,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Textarea } from "./ui/textarea";
 import { Star } from "lucide-react";
+import { Review as ReviewType } from "@/types/review";
 
 const formSchema = z.object({
     rating: z.number().int().min(1).max(5),
@@ -58,14 +59,63 @@ function StarRating({
     );
 }
 
+export function submitReview(
+    review: {
+        teacherId: number;
+        studentId: number;
+        rating: number;
+        content: string;
+    },
+    toast: ReturnType<typeof useToast>["toast"],
+    resetForm: ReturnType<typeof useForm>["reset"],
+    updateReviews: () => void
+) {
+    const fetch = useFetch();
+
+    fetch("review/create", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(review),
+    }).then(async (res) => {
+        if (res.status === 403) {
+            toast({
+                title: "Session expired. Please log in again.",
+                variant: "destructive",
+            });
+            window.location.reload();
+            console.warn("Session expired. Please log in again.");
+            return;
+        }
+        const responseBody = await res.body;
+        console.log(responseBody);
+        if (res.status === 200) {
+            toast({
+                title: "Review added successfully",
+                description: `${responseBody.content}`,
+            });
+            updateReviews();
+            resetForm();
+        } else {
+            toast({
+                title: "Adding review failed",
+                description: `${responseBody}`,
+                variant: "destructive",
+            });
+        }
+    });
+}
+
 export default function AddReviewDialog({
     teacherId,
     studentId,
+    updateReviews,
 }: {
     teacherId: number;
     studentId: number;
+    updateReviews: () => void;
 }) {
-    const fetch = useFetch();
     const { toast } = useToast();
     const [open, setOpen] = useState(false);
 
@@ -84,33 +134,7 @@ export default function AddReviewDialog({
             ...values,
         };
 
-        console.log(values);
-        fetch("review/create", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(review),
-        }).then((res) => {
-            if (res.status === 200) {
-                toast({
-                    title: "Review added successfully",
-                    description: `${res.body}`,
-                });
-                resetForm();
-            } else if (res.status === 400) {
-                toast({
-                    title: "Adding review failed",
-                    description: `${res.body}`,
-                    variant: "destructive",
-                });
-            } else {
-                toast({
-                    title: "Adding review failed",
-                    variant: "destructive",
-                });
-            }
-        });
+        submitReview(review, toast, resetForm, updateReviews);
     }
 
     function resetForm() {

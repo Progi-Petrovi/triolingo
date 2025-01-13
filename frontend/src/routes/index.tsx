@@ -19,6 +19,8 @@ const Calendar = React.lazy(() => import("../pages/Calendar"));
 
 const Teacher = React.lazy(() => import("../pages/Teacher"));
 
+const TeacherReviews = React.lazy(() => import("../pages/TeacherReviews"));
+
 const routes = [
     { path: PathConstants.HOME, element: <Home /> },
     { path: PathConstants.LOGIN, element: <Login /> },
@@ -29,7 +31,8 @@ const routes = [
     { path: PathConstants.VERIFY_REQUEST, element: <VerifyRequest /> },
     { path: PathConstants.PROFILE, element: <Profile /> },
     { path: PathConstants.CALENDAR, element: <Calendar /> },
-    { path: PathConstants.TEACHERPROFILE, element: <Teacher /> },
+    { path: PathConstants.TEACHER_PROFILE, element: <Teacher /> },
+    { path: PathConstants.TEACHER_REVIEWS, element: <TeacherReviews /> },
 ];
 
 export default routes;

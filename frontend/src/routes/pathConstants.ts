@@ -8,7 +8,8 @@ const PathConstants = {
     VERIFY_SUCCESS: "/verify/success",
     PROFILE: "/profile",
     CALENDAR: "/calendar",
-    TEACHERPROFILE: "/teacher/:id",
+    TEACHER_PROFILE: "/teacher/:id",
+    TEACHER_REVIEWS: "/teacher/reviews/:id",
     API_URL: import.meta.env.VITE_API_URL ?? "http://localhost:5000",
 };
 

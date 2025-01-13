@@ -6,6 +6,6 @@ public record ReviewCreateDTO (
     Long teacherId,
     Long studentId,
     Integer rating,
-    String comment,
+    String content,
     Instant date) {
 }
