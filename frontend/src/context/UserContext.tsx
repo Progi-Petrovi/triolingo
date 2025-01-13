@@ -32,11 +32,7 @@ export function UserProvider({ children }: UserProviderProps) {
             if (role === Role.ROLE_TEACHER) {
                 const teacher = { ...(res.body as Teacher), role } as Teacher;
 
-                setUser(teacher);
-                sessionStorage.setItem(
-                    UserStorage.TRIOLINGO_USER,
-                    JSON.stringify(teacher)
-                );
+                setUserAndStorage(teacher);
             } else if (role === Role.ROLE_STUDENT) {
                 const learningLanguages = languageMapToArray(
                     res.body.learningLanguages
@@ -48,19 +44,11 @@ export function UserProvider({ children }: UserProviderProps) {
                     learningLanguages,
                 } as Student;
 
-                setUser(student);
-                sessionStorage.setItem(
-                    UserStorage.TRIOLINGO_USER,
-                    JSON.stringify(student)
-                );
+                setUserAndStorage(student);
             } else if (role === Role.ROLE_ADMIN) {
                 const admin = { ...(res.body as User), role } as User;
 
-                setUser(admin);
-                sessionStorage.setItem(
-                    UserStorage.TRIOLINGO_USER,
-                    JSON.stringify(admin)
-                );
+                setUserAndStorage(admin);
             }
         });
 
@@ -69,6 +57,14 @@ export function UserProvider({ children }: UserProviderProps) {
         } else {
             navigate(PathConstants.VERIFY_REQUEST);
         }
+    }
+
+    function setUserAndStorage(user: User | Teacher | Student) {
+        setUser(user);
+        sessionStorage.setItem(
+            UserStorage.TRIOLINGO_USER,
+            JSON.stringify(user)
+        );
     }
 
     async function logoutUser() {
