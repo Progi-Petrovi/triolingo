@@ -85,8 +85,6 @@ export default function StudentRegister() {
                     variant: "destructive",
                 });
         });
-
-        console.log(registrationData);
     }
 
     const form = useForm<z.infer<typeof formSchema>>({

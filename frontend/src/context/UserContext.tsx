@@ -32,7 +32,6 @@ export function UserProvider({ children }: UserProviderProps) {
             if (role === Role.ROLE_TEACHER) {
                 setUser({ ...(res.body as Teacher), role } as Teacher);
             } else if (role === Role.ROLE_STUDENT) {
-                console.log(res.body);
                 const learningLanguages = languageMapToArray(
                     res.body.learningLanguages
                 );

@@ -17,7 +17,6 @@ import { initials } from "@/utils/main";
 
 export default function StudentProfile() {
     const student = useUser() as Student;
-    console.log(student);
 
     return (
         <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row md:px-0">
