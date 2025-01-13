@@ -7,7 +7,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Student, Teacher as TeacherType } from "@/types/users";
+import { Role, Teacher as TeacherType, User } from "@/types/users";
 import { Button } from "@/components/ui/button";
 import { Link, useParams } from "react-router-dom";
 import { useFetch } from "@/hooks/use-fetch";
@@ -19,7 +19,11 @@ import { useUser } from "@/context/use-user-context";
 import { Review as ReviewType } from "@/types/review";
 
 export default function Teacher() {
-    const user = useUser() as Student;
+    const user = useUser() as User;
+
+    if (user.role === Role.ROLE_TEACHER) {
+        return <h1>Only students and admins can view teachers</h1>;
+    }
 
     const fetch = useFetch();
     const { id } = useParams();
