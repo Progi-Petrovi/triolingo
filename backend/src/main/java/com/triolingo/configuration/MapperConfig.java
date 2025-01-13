@@ -29,7 +29,8 @@ public class MapperConfig {
     private final LearningLanguageRepository learningLanguageRepository;
 
     public MapperConfig(LanguageRepository languageRepository, TeacherRepository teacherRepository,
-                        StudentRepository studentRepository, UserRepository userRepository, LessonRepository lessonRepository, LearningLanguageRepository learningLanguageRepository) {
+            StudentRepository studentRepository, UserRepository userRepository, LessonRepository lessonRepository,
+            LearningLanguageRepository learningLanguageRepository) {
         this.languageRepository = languageRepository;
         this.teacherRepository = teacherRepository;
         this.studentRepository = studentRepository;
@@ -164,14 +165,13 @@ public class MapperConfig {
         return language.entrySet().stream().map(lang -> {
             Language language1 = stringToLanguage(lang.getKey());
             return learningLanguageRepository.findByLanguageAndKnowledgeLevel(language1, lang.getValue()).orElse(
-                    learningLanguageRepository.save(new LearningLanguage(language1, lang.getValue()))
-            );
+                    learningLanguageRepository.save(new LearningLanguage(language1, lang.getValue())));
         }).toList();
     }
 
     private Map<String, KnowledgeLevel> learningLanguageToMap(Collection<LearningLanguage> learningLanguages) {
-        return
-                learningLanguages.stream().collect(Collectors.toMap((learningLanguage -> learningLanguage.getLanguage().getName()), LearningLanguage::getKnowledgeLevel));
+        return learningLanguages.stream().collect(Collectors.toMap(
+                (learningLanguage -> learningLanguage.getLanguage().getName()), LearningLanguage::getKnowledgeLevel));
     }
 
 }

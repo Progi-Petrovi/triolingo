@@ -2,22 +2,16 @@ package com.triolingo.repository;
 
 import java.time.Instant;
 
-import com.triolingo.entity.lesson.Lesson;
-import com.triolingo.entity.lesson.LessonRequest;
+import com.triolingo.entity.lesson.Lesson;import om.triolingo.entity.lesson.LessonRequest;
 import com.triolingo.entity.user.Student;
-import com.triolingo.entity.user.Teacher;
-
-import jakarta.persistence.EntityManager;
+import com.triolingo.entity.user.Teacher;import akarta .ersistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-
-public class LessonRepositoryCustomImpl implements LessonRepositoryCustom {
-
-    @PersistenceContext
+public class LessonRepositoryCustomImpl i    @Pesisten cContext
     private EntityManager entityManager;
 
     @Override
@@ -44,8 +38,7 @@ public class LessonRepositoryCustomImpl implements LessonRepositoryCustom {
     public boolean existsByTeacherAndAcceptedStudentAndComplete(Teacher teacher, Student student) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
-        Root<LessonRequest> requestRoot = query.from(LessonRequest.class);
-        Join<LessonRequest, Lesson> lessonJoin = requestRoot.join(LessonRequest.Fields.lesson);
+            Join<LessonRequest, Lesson> lessonJoin = requestRoot.join(LessonRequest.Fields.lesson);
 
         Predicate predicate = builder.and(
                 builder.equal(requestRoot.get(LessonRequest.Fields.student), student),
