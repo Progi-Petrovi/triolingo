@@ -3,6 +3,7 @@ package com.triolingo.controller;
 import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.student.*;
 import com.triolingo.entity.user.Student;
+import com.triolingo.repository.StudentRepository;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.StudentService;
 
@@ -29,10 +30,12 @@ public class StudentController {
 
     private final StudentService studentService;
     private final DtoMapper dtoMapper;
+    private final StudentRepository studentRepository;
 
-    public StudentController(StudentService studentService, DtoMapper dtoMapper) {
+    public StudentController(StudentService studentService, DtoMapper dtoMapper, StudentRepository studentRepository) {
         this.studentService = studentService;
         this.dtoMapper = dtoMapper;
+        this.studentRepository = studentRepository;
     }
 
     @GetMapping("/all")
@@ -60,7 +63,8 @@ public class StudentController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public StudentFullDTO getStudent(@AuthenticationPrincipal DatabaseUser principal) {
-        return dtoMapper.createDto(principal.getStoredUser(), StudentFullDTO.class);
+        Student student = studentRepository.getReferenceById(principal.getStoredUser().getId());
+        return dtoMapper.createDto(student, StudentFullDTO.class);
     }
 
     @PostMapping("/create")

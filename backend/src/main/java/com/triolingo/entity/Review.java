@@ -27,7 +27,7 @@ public class Review {
     @ManyToOne
     private Student student;
     @NotNull
-    private String content;
+    private String content = "";
     @NotNull
     private Integer rating;
     private final Instant date = Instant.now();

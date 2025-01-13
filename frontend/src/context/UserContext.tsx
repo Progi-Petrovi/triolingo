@@ -30,24 +30,26 @@ export function UserProvider({ children }: UserProviderProps) {
 
         await fetch(fetchBasedOnRoles[role]).then((res) => {
             if (role === Role.ROLE_TEACHER) {
-                setUser({ ...(res.body as Teacher), role } as Teacher);
+                const teacher = { ...(res.body as Teacher), role } as Teacher;
+
+                setUserAndStorage(teacher);
             } else if (role === Role.ROLE_STUDENT) {
                 const learningLanguages = languageMapToArray(
                     res.body.learningLanguages
                 );
 
-                setUser({
+                const student = {
                     ...(res.body as Student),
                     role,
                     learningLanguages,
-                } as Student);
+                } as Student;
+
+                setUserAndStorage(student);
             } else if (role === Role.ROLE_ADMIN) {
-                setUser({ ...(res.body as User), role } as User);
+                const admin = { ...(res.body as User), role } as User;
+
+                setUserAndStorage(admin);
             }
-            sessionStorage.setItem(
-                UserStorage.TRIOLINGO_USER,
-                JSON.stringify({ ...res.body, role })
-            );
         });
 
         if (user?.verified) {
@@ -55,6 +57,14 @@ export function UserProvider({ children }: UserProviderProps) {
         } else {
             navigate(PathConstants.VERIFY_REQUEST);
         }
+    }
+
+    function setUserAndStorage(user: User | Teacher | Student) {
+        setUser(user);
+        sessionStorage.setItem(
+            UserStorage.TRIOLINGO_USER,
+            JSON.stringify(user)
+        );
     }
 
     async function logoutUser() {
