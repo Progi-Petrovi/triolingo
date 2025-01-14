@@ -8,6 +8,7 @@ import java.util.Map;
 public record StudentViewDTO(
         Long id,
         String fullName,
+        String email,
         Map<String, KnowledgeLevel> learningLanguages,
         TeachingStyle preferredTeachingStyle,
         String learningGoals) {
