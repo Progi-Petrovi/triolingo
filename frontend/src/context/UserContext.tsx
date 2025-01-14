@@ -1,6 +1,6 @@
-import { createContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useState, ReactNode } from "react";
 import { useFetch } from "../hooks/use-fetch";
-import { Teacher, Role, User, Student, UserStorage } from "@/types/users";
+import { Teacher, Role, User, Student } from "@/types/users";
 import { UserContextType } from "./use-user-context";
 import { useNavigate } from "react-router-dom";
 import PathConstants from "@/routes/pathConstants";
@@ -25,14 +25,14 @@ export function UserProvider({ children }: UserProviderProps) {
     const { toast } = useToast();
     const [user, setUser] = useState<User | Teacher | Student | null>(null);
 
-    useEffect(() => {
-        fetchUser(true);
-    }, []);
-
     async function fetchUser(isInitialFetch?: boolean) {
         const role = await fetch("/user/role")
             .then((res) => res.body[0].authority)
-            .catch(() => onFetchUserError());
+            .catch(() => {
+                if (!isInitialFetch) {
+                    onFetchUserError();
+                }
+            });
 
         await fetch(fetchBasedOnRoles[role])
             .then((res) => {
@@ -72,7 +72,6 @@ export function UserProvider({ children }: UserProviderProps) {
         await fetch("/user/logout").then((res) => {
             if (res.status === 200 || res.status === 403) {
                 setUser(null);
-                sessionStorage.removeItem(UserStorage.TRIOLINGO_USER);
                 navigate(PathConstants.HOME);
             }
         });

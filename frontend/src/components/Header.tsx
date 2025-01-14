@@ -9,7 +9,7 @@ export function Header() {
 
     useEffect(() => {
         if (!user) {
-            fetchUser();
+            fetchUser(true);
         }
     }, []);
 
