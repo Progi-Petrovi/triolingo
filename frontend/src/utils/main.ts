@@ -3,6 +3,8 @@ import {
     guestNavConfig,
     NavConfig,
     adminNavConfig,
+    studentNavConfig,
+    teacherNavConfig,
 } from "@/config/header-nav";
 import { Role, User } from "@/types/users";
 
@@ -20,5 +22,9 @@ export function renderHeader(user: User | null): NavConfig {
     if (user.role === Role.ROLE_ADMIN) {
         return adminNavConfig;
     }
-    return userNavConfig;
+    if (user.role === Role.ROLE_STUDENT) {
+        return studentNavConfig;
+    }
+
+    return teacherNavConfig;
 }
