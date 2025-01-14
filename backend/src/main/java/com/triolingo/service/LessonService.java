@@ -58,6 +58,10 @@ public class LessonService {
         return lessonRepository.findAllByTeacher(teacher);
     }
 
+    public List<Lesson> findAllByStudent(@NotNull Student student) {
+        return lessonRepository.findAllByStudent(student);
+    }
+
     public List<LessonRequest> findAllRequestsByTeacher(@NotNull Teacher teacher) {
         return lessonRequestRepository.findAllByTeacher(teacher);
     }
