@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React from "react";
 import PathConstants from "./pathConstants";
+import path from "path";
 
 const Home = React.lazy(() => import("../pages/Home"));
 const Login = React.lazy(() => import("../pages/Login"));
@@ -21,6 +22,12 @@ const Teacher = React.lazy(() => import("../pages/Teacher"));
 
 const TeacherReviews = React.lazy(() => import("../pages/TeacherReviews"));
 
+const BookLessonStudent = React.lazy(
+    () => import("../pages/BookLessonStudent")
+);
+
+const LessonRequests = React.lazy(() => import("../pages/LessonRequests"));
+
 const routes = [
     { path: PathConstants.HOME, element: <Home /> },
     { path: PathConstants.LOGIN, element: <Login /> },
@@ -33,6 +40,8 @@ const routes = [
     { path: PathConstants.CALENDAR, element: <Calendar /> },
     { path: PathConstants.TEACHER_PROFILE, element: <Teacher /> },
     { path: PathConstants.TEACHER_REVIEWS, element: <TeacherReviews /> },
+    { path: PathConstants.BOOK_LESSON_STUDENT, element: <BookLessonStudent /> },
+    { path: PathConstants.LESSON_REQUESTS, element: <LessonRequests /> },
 ];
 
 export default routes;

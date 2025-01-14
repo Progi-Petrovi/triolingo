@@ -1,38 +1,84 @@
-import {
-    Calendar as ReactBigCalendar,
-    View,
-    momentLocalizer,
-} from "react-big-calendar";
-import moment from "moment";
-import { LessonType as LessonEvent } from "@/types/lesson-event";
+import ReactBigCalendar from "@/components/ReactBigCalendar";
+import { LessonType as LessonEvent, LessonDTO } from "@/types/lesson";
 
 import "@/calendar.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
-const localizer = momentLocalizer(moment);
+import useUserContext from "@/context/use-user-context";
+import AddLessonTeacherForm from "@/components/AddLessonTeacherForm";
+import { useFetch } from "@/hooks/use-fetch";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { View } from "react-big-calendar";
 
 export default function Calendar() {
-    /* TODO: Fetch lessons from the server */
+    const { user, fetchUser } = useUserContext();
 
-    const lessons = [
-        {
-            start: moment("2025-01-10T09:45:00").toDate(),
-            end: moment("2025-01-10T10:45:00").toDate(),
-            title: "English Lesson #1",
-            teacher: "Leonardo Šimunović",
-            teacherProfileUrl: "/teacher/1",
-        },
-        {
-            start: moment("2025-01-11T09:45:00").toDate(),
-            end: moment("2025-01-11T20:45:00").toDate(),
-            title: "German Lesson #1",
-            teacher: "Stjepan Bonić",
-            teacherProfileUrl: "/teacher/2",
-        },
-    ];
+    useEffect(() => {
+        if (!user) {
+            fetchUser();
+        }
+    }, []);
 
-    function Lesson({ event }: { event: LessonEvent }) {
+    const fetch = useFetch();
+
+    const [lessons, setLessons] = useState<any>([]);
+
+    if (!user) {
+        return <div>Loading...</div>;
+    }
+
+    const loadTeacherLessons = () => {
+        fetch(`lesson/teacher/${user.id}`)
+            .then((res) => {
+                console.log("FETCHED LESSONS", res);
+                if (res.status === 404) {
+                    console.error("Lessons not found");
+                    return;
+                }
+                console.log("Lessons: ", res.body);
+                setLessons(
+                    res.body.map((lesson: LessonDTO) => ({
+                        start: new Date(lesson.startInstant),
+                        end: new Date(lesson.endInstant),
+                        title: lesson.language + " lesson " + lesson.id,
+                        teacher: lesson.teacher,
+                        teacherProfileUrl: `/teacher/${lesson.teacher}`,
+                        status: lesson.status,
+                    }))
+                );
+            })
+            .catch((error) => console.error("Error fetching lessons:", error));
+    };
+
+    const loadStudentLessons = () => {
+        fetch(`lesson/student/${user.id}`)
+            .then((res) => {
+                if (res.status === 404) {
+                    console.error("Lessons not found");
+                    return;
+                }
+                console.log("Lessons: ", res.body);
+                setLessons(
+                    res.body.map((lesson: LessonDTO) => ({
+                        id: lesson.id,
+                        start: new Date(lesson.startInstant),
+                        end: new Date(lesson.endInstant),
+                        title: lesson.language + " lesson " + lesson.id,
+                        teacher: lesson.teacher,
+                        teacherProfileUrl: `/teacher/${lesson.teacher}`,
+                        status: lesson.status,
+                    }))
+                );
+            })
+            .catch((error) => console.error("Error fetching lessons:", error));
+    };
+
+    useEffect(() => {
+        if (user.role === "ROLE_TEACHER") loadTeacherLessons();
+        else if (user.role === "ROLE_STUDENT") loadStudentLessons();
+    }, [user.id]);
+
+    function StudentLesson({ event }: { event: LessonEvent }) {
         return (
             <span>
                 <strong>{event.title}</strong> <br />
@@ -41,29 +87,43 @@ export default function Calendar() {
         );
     }
 
-    const [view, setView] = useState("month");
+    function TeacherLesson({ event }: { event: LessonEvent }) {
+        return (
+            <span>
+                <strong>{event.title}</strong>
+            </span>
+        );
+    }
 
-    const handleViewChange = (newView: View) => {
-        setView(newView);
-    };
+    const [view, setView] = useState<View>("month");
+
+    let eventComponent = StudentLesson;
+
+    if (user.role === "ROLE_TEACHER") {
+        eventComponent = TeacherLesson;
+    }
 
     return (
         <div
-            className={`App ${view === "week" ? "week-active" : ""} ${
-                view === "day" ? "day-active" : ""
-            }`}
+            className={`App ${
+                view + "-active"
+            } flex flex-col md:flex-row items-center gap-4 m-2 w-full`}
         >
             <ReactBigCalendar
-                localizer={localizer}
-                defaultDate={new Date()}
-                defaultView="month"
-                events={lessons}
-                style={{ height: "70vh" }}
-                components={{
-                    event: Lesson,
-                }}
-                onView={(newView) => handleViewChange(newView)}
+                lessons={lessons}
+                eventComponent={eventComponent}
+                setView={setView}
             />
+            {user.role === "ROLE_TEACHER" && (
+                <Card className="w-96 flex-1 max-w-[95vw]">
+                    <CardHeader>
+                        <CardTitle>Add Lesson Opening</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <AddLessonTeacherForm onSuccess={loadTeacherLessons} />
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 }

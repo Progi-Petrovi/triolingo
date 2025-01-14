@@ -23,6 +23,10 @@ import { z } from "zod";
 import { Textarea } from "./ui/textarea";
 import { Star } from "lucide-react";
 
+const NO_LESSON_ERROR_MESSAGE =
+    "Specified result type [com.triolingo.entity.lesson.Lesson] did not match Query selection type" +
+    " [com.triolingo.entity.lesson.LessonRequest] - multiple selections: use Tuple or array";
+
 const formSchema = z.object({
     rating: z.number().int().min(1).max(5),
     content: z.string().min(10).max(250),
@@ -94,6 +98,15 @@ export function submitReview(
             });
             updateReviews();
             resetForm();
+        } else if (
+            res.status === 500 &&
+            responseBody.message === NO_LESSON_ERROR_MESSAGE
+        ) {
+            toast({
+                title: "Adding review failed",
+                description: `You need to have a lesson to review a teacher`,
+                variant: "destructive",
+            });
         } else {
             toast({
                 title: "Adding review failed",

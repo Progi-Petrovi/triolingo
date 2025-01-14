@@ -1,5 +1,7 @@
 import { userNavConfig, guestNavConfig, NavConfig } from "@/config/header-nav";
+import { LessonRequestDTO } from "@/types/lesson";
 import { User } from "@/types/users";
+import moment from "moment";
 
 export function initials(fullName: string): string {
     return fullName
@@ -11,3 +13,31 @@ export function initials(fullName: string): string {
 export function renderHeader(user: User | null): NavConfig {
     return user ? userNavConfig : guestNavConfig;
 }
+
+export const formatLessonDate = (date: Date) => {
+    return moment(date).format("MMMM Do YYYY");
+};
+
+export const formatStartTime = (date: Date) => {
+    return moment(date).format("HH:mm");
+};
+
+export const formatEndTime = (date: Date) => {
+    return moment(date).format("HH:mm");
+};
+
+export const lessonRequestDTOtoLessonRequest = (
+        lessonRequestDTO: LessonRequestDTO
+    ) => {
+        return {
+            id: lessonRequestDTO.id,
+            start: new Date(lessonRequestDTO.startInstant),
+            end: new Date(lessonRequestDTO.endInstant),
+            title: lessonRequestDTO.language + " lesson " + lessonRequestDTO.id,
+            teacher: lessonRequestDTO.teacherFullName,
+            teacherProfileUrl: "",
+            student: lessonRequestDTO.studentFullName,
+            status: lessonRequestDTO.status,
+            lessonId: lessonRequestDTO.lessonId,
+        };
+    };
