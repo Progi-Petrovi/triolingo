@@ -43,7 +43,7 @@ public class LessonRepositoryCustomImpl implements LessonRepositoryCustom {
     @Override
     public boolean existsByTeacherAndAcceptedStudentAndComplete(Teacher teacher, Student student) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
+        CriteriaQuery<LessonRequest> query = builder.createQuery(LessonRequest.class);
         Root<LessonRequest> requestRoot = query.from(LessonRequest.class);
 
         Join<LessonRequest, Lesson> lessonJoin = requestRoot.join(LessonRequest.Fields.lesson);

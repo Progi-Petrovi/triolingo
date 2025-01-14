@@ -8,6 +8,7 @@ import com.triolingo.entity.user.Teacher;
 import com.triolingo.repository.LessonRepository;
 import com.triolingo.repository.ReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Service;
 
@@ -27,11 +28,11 @@ public class ReviewService {
         this.dtoMapper = dtoMapper;
     }
 
-    public List<Review> findAllByTeacher(Teacher teacher) {
+    public List<Review> findAllByTeacher(@NotNull Teacher teacher) {
         return reviewRepository.findAllByTeacher(teacher);
     }
 
-    public Review createReview(ReviewCreateDTO reviewDto, Student student) {
+    public Review createReview(@NotNull ReviewCreateDTO reviewDto, @NotNull Student student) {
         Review review = dtoMapper.createEntity(reviewDto, Review.class);
         review.setStudent(student);
         if (!lessonRepository.existsByTeacherAndAcceptedStudentAndComplete(review.getTeacher(), review.getStudent()))
@@ -40,7 +41,7 @@ public class ReviewService {
         return reviewRepository.save(review);
     }
 
-    public Review fetch(Long id) {
+    public Review fetch(@NotNull Long id) {
         try {
             return reviewRepository.findById(id).get();
         } catch (NoSuchElementException e) {
@@ -48,7 +49,7 @@ public class ReviewService {
         }
     }
 
-    public void delete(Long id) {
+    public void delete(@NotNull Long id) {
         reviewRepository.deleteById(id);
     }
 }
