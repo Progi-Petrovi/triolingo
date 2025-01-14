@@ -20,6 +20,6 @@ export default function Profile() {
     return user.role === Role.ROLE_TEACHER ? (
         <TeacherProfile user={user} profileOwner={true} />
     ) : (
-        <StudentProfile user={user} profileOwner={true} />
+        <StudentProfile userProfile={user} profileOwner={true} />
     );
 }

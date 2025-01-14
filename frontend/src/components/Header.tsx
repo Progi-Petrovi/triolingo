@@ -2,16 +2,9 @@ import { MainNav } from "@/components/MainNav";
 import { MobileNav } from "@/components/MobileNav";
 import useUserContext from "@/context/use-user-context";
 import { renderHeader } from "@/utils/main";
-import { useEffect } from "react";
 
 export function Header() {
-    const { user, fetchUser } = useUserContext();
-
-    useEffect(() => {
-        if (!user) {
-            fetchUser();
-        }
-    }, []);
+    const { user } = useUserContext();
 
     const navConfig = renderHeader(user);
 

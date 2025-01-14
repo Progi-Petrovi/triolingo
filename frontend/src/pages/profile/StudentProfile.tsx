@@ -11,19 +11,45 @@ import { Badge } from "@/components/ui/badge";
 import { TeachingStyle } from "@/types/teaching-style";
 import { Button } from "@/components/ui/button";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
-import { Student, Teacher, User } from "@/types/users";
+import { Role, Student, Teacher, User } from "@/types/users";
 import { initials } from "@/utils/main";
+import useUserContext from "@/context/use-user-context";
+import { useFetch } from "@/hooks/use-fetch";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import PathConstants from "@/routes/pathConstants";
 
 type StudentProfileType = {
-    user: User | Teacher | Student;
+    userProfile: User | Teacher | Student;
     profileOwner?: boolean;
 };
 
 export default function StudentProfile({
-    user,
+    userProfile,
     profileOwner,
 }: StudentProfileType) {
-    const student = user as Student;
+    const { user } = useUserContext();
+    const student = userProfile as Student;
+    const fetch = useFetch();
+    const navigate = useNavigate();
+    const { toast } = useToast();
+
+    function deleteProfile() {
+        fetch(`/user/${student.id}`, {
+            method: "DELETE",
+        }).then((res) => {
+            if (res.status === 200) {
+                toast({
+                    title: `Successfully deleted student with id: ${student.id}`,
+                });
+                navigate(PathConstants.HOME);
+            } else {
+                toast({
+                    title: `Failed to delete student with id: ${student.id}`,
+                });
+            }
+        });
+    }
 
     function renderChangePasswordDialog() {
         if (!profileOwner) {
@@ -35,6 +61,14 @@ export default function StudentProfile({
                 <ChangePasswordDialog />
             </CardContent>
         );
+    }
+
+    function renderDeleteProfileButton() {
+        if (!profileOwner && user?.role !== Role.ROLE_ADMIN) {
+            return null;
+        }
+
+        return <Button onClick={deleteProfile}>Delete profile</Button>;
     }
 
     return (
@@ -96,8 +130,9 @@ export default function StudentProfile({
                             : "No learning goals."}
                     </CardContent>
                 </Card>
-                <div className="flex justify-center items-center">
+                <div className="flex gap-5 justify-center items-center">
                     <Button>Edit profile</Button>
+                    {renderDeleteProfileButton()}
                 </div>
             </div>
         </div>

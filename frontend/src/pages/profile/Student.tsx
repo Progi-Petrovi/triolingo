@@ -30,5 +30,5 @@ export default function Student() {
         return <h1>Loading...</h1>;
     }
 
-    return <StudentProfile user={student} />;
+    return <StudentProfile userProfile={student} />;
 }
