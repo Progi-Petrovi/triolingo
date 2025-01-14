@@ -1,7 +1,9 @@
 package com.triolingo.controller;
 
 import com.triolingo.dto.user.UserChangePasswordDTO;
+import com.triolingo.entity.user.Student;
 import com.triolingo.entity.user.User;
+import com.triolingo.repository.UserRepository;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,9 +23,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final UserRepository userRepository;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @PutMapping("/change-password")
@@ -63,6 +67,19 @@ public class UserController {
     public ResponseEntity<?> logoutUser(
             HttpServletRequest request) throws ServletException {
         request.logout();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    @Secured("ROLE_ADMIN")
+    @Operation(description = "Deletes the user with {id}.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
+    })
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
+        User user = userService.fetch(id);
+        userRepository.delete(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

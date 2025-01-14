@@ -124,19 +124,6 @@ public class StudentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    @Secured("ROLE_ADMIN")
-    @Operation(description = "Deletes the student with {id}.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
-    })
-    public ResponseEntity<?> deleteStudent(@PathVariable("id") Long id) {
-        Student student = studentService.fetch(id);
-        studentService.delete(student);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
     @GetMapping("/{id}/email")
     @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
     @Operation(description = "Returns student email if the logged in teacher has an approved lesson request with the student")
