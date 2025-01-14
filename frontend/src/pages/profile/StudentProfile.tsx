@@ -63,12 +63,17 @@ export default function StudentProfile({
         );
     }
 
-    function renderDeleteProfileButton() {
-        if (!profileOwner && user?.role !== Role.ROLE_ADMIN) {
+    function renderEditDeleteProfileButtons() {
+        if (user?.role !== Role.ROLE_ADMIN) {
             return null;
         }
 
-        return <Button onClick={deleteProfile}>Delete profile</Button>;
+        return (
+            <div className="flex gap-5 justify-center items-center">
+                <Button>Edit profile</Button>
+                <Button onClick={deleteProfile}>Delete profile</Button>
+            </div>
+        );
     }
 
     return (
@@ -130,10 +135,7 @@ export default function StudentProfile({
                             : "No learning goals."}
                     </CardContent>
                 </Card>
-                <div className="flex gap-5 justify-center items-center">
-                    <Button>Edit profile</Button>
-                    {renderDeleteProfileButton()}
-                </div>
+                {renderEditDeleteProfileButtons()}
             </div>
         </div>
     );

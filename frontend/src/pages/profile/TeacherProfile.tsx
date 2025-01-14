@@ -15,15 +15,15 @@ import { initials } from "@/utils/main";
 import { Student, Teacher, User } from "@/types/users";
 
 export type TeacherProfileType = {
-    user: User | Teacher | Student;
+    userProfile: User | Teacher | Student;
     profileOwner?: boolean;
 };
 
 export default function TeacherProfile({
-    user,
+    userProfile,
     profileOwner,
 }: TeacherProfileType) {
-    const teacher = user as Teacher;
+    const teacher = userProfile as Teacher;
 
     function renderChangePasswordDialog() {
         if (!profileOwner) {
