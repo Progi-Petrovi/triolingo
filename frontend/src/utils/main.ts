@@ -1,6 +1,13 @@
-import { userNavConfig, guestNavConfig, NavConfig } from "@/config/header-nav";
+import {
+    userNavConfig,
+    guestNavConfig,
+    NavConfig,
+    adminNavConfig,
+    studentNavConfig,
+    teacherNavConfig,
+} from "@/config/header-nav";
 import { LessonRequestDTO } from "@/types/lesson";
-import { User } from "@/types/users";
+import { Role, User } from "@/types/users";
 import moment from "moment";
 
 export function initials(fullName: string): string {
@@ -11,7 +18,17 @@ export function initials(fullName: string): string {
 }
 
 export function renderHeader(user: User | null): NavConfig {
-    return user ? userNavConfig : guestNavConfig;
+    if (!user) {
+        return guestNavConfig;
+    }
+    if (user.role === Role.ROLE_ADMIN) {
+        return adminNavConfig;
+    }
+    if (user.role === Role.ROLE_STUDENT) {
+        return studentNavConfig;
+    }
+
+    return teacherNavConfig;
 }
 
 export const formatLessonDate = (date: Date) => {

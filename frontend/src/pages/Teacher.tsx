@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Role, Teacher as TeacherType } from "@/types/users";
 import { Button } from "@/components/ui/button";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useFetch } from "@/hooks/use-fetch";
 import { useEffect, useState } from "react";
 import { initials } from "@/utils/main";
@@ -17,6 +17,8 @@ import { Review } from "@/components/Review";
 import AddReviewDialog from "@/components/AddReviewDialog";
 import useUserContext from "@/context/use-user-context";
 import { Review as ReviewType } from "@/types/review";
+import { useToast } from "@/hooks/use-toast";
+import PathConstants from "@/routes/pathConstants";
 
 export default function Teacher() {
     /* TODO: remove */
@@ -38,12 +40,31 @@ export default function Teacher() {
     const { id } = useParams();
     const [teacher, setTeacher] = useState<TeacherType>();
     const [reviews, setReviews] = useState<ReviewType[]>([]);
+    const { toast } = useToast();
+    const navigate = useNavigate();
     const maxReviews = 5;
     const [lastFewReviews, setLastFewReviews] = useState<ReviewType[]>([]);
     const [averageRating, setAverageRating] = useState<number | string>(
         "No rewiews"
     );
     const [canAddAReview, setCanAddAReview] = useState<boolean>(false);
+
+    function deleteProfile() {
+        fetch(`/user/${teacher?.id}`, {
+            method: "DELETE",
+        }).then((res) => {
+            if (res.status === 200) {
+                toast({
+                    title: `Successfully deleted teacher with id: ${teacher?.id}`,
+                });
+                navigate(PathConstants.HOME);
+            } else {
+                toast({
+                    title: `Failed to delete teacher with id: ${teacher?.id}`,
+                });
+            }
+        });
+    }
 
     const setLastReviews = (reviews: ReviewType[]) => {
         if (!reviews || !reviews.length) return;
@@ -101,6 +122,19 @@ export default function Teacher() {
             .catch((error) => console.error("Error fetching teacher:", error));
         updateReviews();
     }, [id]);
+
+    function renderEditDeleteProfileButtons() {
+        if (user?.role !== Role.ROLE_ADMIN) {
+            return null;
+        }
+
+        return (
+            <div className="flex gap-5 justify-center items-center">
+                <Button>Edit profile</Button>
+                <Button onClick={deleteProfile}>Delete profile</Button>
+            </div>
+        );
+    }
 
     if (!user || !teacher) {
         return <h1>Loading...</h1>;
@@ -239,6 +273,7 @@ export default function Teacher() {
                         )}
                     </CardContent>
                 </Card>
+                {renderEditDeleteProfileButtons()}
             </div>
         </div>
     );

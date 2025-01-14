@@ -15,11 +15,27 @@ import { initials } from "@/utils/main";
 import { Student, Teacher, User } from "@/types/users";
 
 export type TeacherProfileType = {
-    user: User | Teacher | Student;
+    userProfile: User | Teacher | Student;
+    profileOwner?: boolean;
 };
 
-export default function TeacherProfile({ user }: TeacherProfileType) {
-    const teacher = user as Teacher;
+export default function TeacherProfile({
+    userProfile,
+    profileOwner,
+}: TeacherProfileType) {
+    const teacher = userProfile as Teacher;
+
+    function renderChangePasswordDialog() {
+        if (!profileOwner) {
+            return null;
+        }
+
+        return (
+            <CardContent>
+                <ChangePasswordDialog />
+            </CardContent>
+        );
+    }
 
     return (
         <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row">
@@ -43,9 +59,7 @@ export default function TeacherProfile({ user }: TeacherProfileType) {
                         <p>{teacher.email}</p>
                     </CardContent>
                     <CardContent>Teacher</CardContent>
-                    <CardContent>
-                        <ChangePasswordDialog />
-                    </CardContent>
+                    {renderChangePasswordDialog()}
                 </Card>
                 <Card>
                     <CardHeader>

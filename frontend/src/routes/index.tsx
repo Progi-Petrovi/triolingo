@@ -3,7 +3,7 @@ import React from "react";
 import PathConstants from "./pathConstants";
 import path from "path";
 
-const Home = React.lazy(() => import("../pages/Home"));
+const Home = React.lazy(() => import("../pages/home/Home"));
 const Login = React.lazy(() => import("../pages/Login"));
 const Logout = React.lazy(() => import("../pages/Logout"));
 const StudentRegister = React.lazy(
@@ -28,6 +28,8 @@ const BookLessonStudent = React.lazy(
 
 const LessonRequests = React.lazy(() => import("../pages/LessonRequests"));
 
+const StudentProfile = React.lazy(() => import("../pages/profile/Student"));
+
 const routes = [
     { path: PathConstants.HOME, element: <Home /> },
     { path: PathConstants.LOGIN, element: <Login /> },
@@ -42,6 +44,7 @@ const routes = [
     { path: PathConstants.TEACHER_REVIEWS, element: <TeacherReviews /> },
     { path: PathConstants.BOOK_LESSON_STUDENT, element: <BookLessonStudent /> },
     { path: PathConstants.LESSON_REQUESTS, element: <LessonRequests /> },
+    { path: PathConstants.STUDENT_PROFILE, element: <StudentProfile /> },
 ];
 
 export default routes;

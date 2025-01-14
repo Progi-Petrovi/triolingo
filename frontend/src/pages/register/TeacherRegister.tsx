@@ -24,6 +24,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { TeacherRegistration } from "./types/registration-types";
 import { useFetch } from "@/hooks/use-fetch";
 import useUserContext from "@/context/use-user-context";
+import { useNavigate } from "react-router-dom";
+import PathConstants from "@/routes/pathConstants";
 
 const formSchema = z
     .object({
@@ -51,6 +53,7 @@ export default function TeacherRegister() {
     const { toast } = useToast();
     const fetch = useFetch();
     const { fetchUser } = useUserContext();
+    const navigate = useNavigate();
 
     const [teachingLanguages, setTeachingLanguages] = useState<string[]>([]);
     const [allLanguages, setAllLanguages] = useState<string[]>([]);
@@ -71,6 +74,7 @@ export default function TeacherRegister() {
         }).then((res) => {
             if (res.status == 201) {
                 fetchUser();
+                navigate(PathConstants.HOME);
             } else
                 toast({
                     title: "Registration failed.",
