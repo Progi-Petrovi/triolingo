@@ -1,5 +1,4 @@
 import {
-    userNavConfig,
     guestNavConfig,
     NavConfig,
     adminNavConfig,
