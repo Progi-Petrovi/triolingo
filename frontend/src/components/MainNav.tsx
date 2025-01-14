@@ -3,15 +3,15 @@ import { Link, useLocation } from "react-router-dom";
 import SiteConfig from "@/config/site";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
-import useUserContext from "@/context/use-user-context";
-import { renderHeader } from "@/utils/main";
+import { NavConfig } from "@/config/header-nav";
 
-export function MainNav() {
+type MainNavType = {
+    navConfig: NavConfig;
+};
+
+export function MainNav({ navConfig }: MainNavType) {
     const location = useLocation();
     const pathname = location.pathname;
-    const { user } = useUserContext();
-
-    const navConfig = renderHeader(user);
 
     return (
         <div className="mr-4 hidden md:flex">

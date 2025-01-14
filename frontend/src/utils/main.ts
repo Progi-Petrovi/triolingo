@@ -1,5 +1,5 @@
 import { userNavConfig, guestNavConfig, NavConfig } from "@/config/header-nav";
-import { User, UserStorage } from "@/types/users";
+import { User } from "@/types/users";
 
 export function initials(fullName: string): string {
     return fullName
@@ -8,8 +8,6 @@ export function initials(fullName: string): string {
         .join("");
 }
 
-export function renderHeader(user: User | null): NavConfig {
-    return user || sessionStorage.getItem(UserStorage.TRIOLINGO_USER)
-        ? userNavConfig
-        : guestNavConfig;
+export function renderHeader(user: User | null | undefined): NavConfig {
+    return user ? userNavConfig : guestNavConfig;
 }

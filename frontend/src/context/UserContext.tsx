@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode } from "react";
+import { createContext, useState, ReactNode, useEffect } from "react";
 import { useFetch } from "../hooks/use-fetch";
 import { Teacher, Role, User, Student, UserStorage } from "@/types/users";
 import { UserContextType } from "./use-user-context";
@@ -24,7 +24,11 @@ export function UserProvider({ children }: UserProviderProps) {
     const navigate = useNavigate();
     const [user, setUser] = useState<User | Teacher | Student | null>(null);
 
-    async function fetchUser() {
+    useEffect(() => {
+        fetchUser(true);
+    }, []);
+
+    async function fetchUser(isInitialFetch?: boolean) {
         const role = await fetch("/user/role").then(
             (res) => res.body[0].authority
         );
@@ -55,11 +59,11 @@ export function UserProvider({ children }: UserProviderProps) {
 
                     setUser(admin);
                 }
-
-                sessionStorage.setItem(UserStorage.TRIOLINGO_USER, "Logged in");
             })
             .catch(() => {
-                throw new UserNotLoadedError();
+                if (!isInitialFetch) {
+                    throw new UserNotLoadedError();
+                }
             });
     }
 
