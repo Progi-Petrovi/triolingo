@@ -32,7 +32,7 @@ export function UserProvider({ children }: UserProviderProps) {
     async function fetchUser(isInitialFetch?: boolean) {
         const role = await fetch("/user/role")
             .then((res) => res.body[0].authority)
-            .catch(() => onLoginError());
+            .catch(() => onFetchUserError());
 
         await fetch(fetchBasedOnRoles[role])
             .then((res) => {
@@ -63,7 +63,7 @@ export function UserProvider({ children }: UserProviderProps) {
             })
             .catch(() => {
                 if (!isInitialFetch) {
-                    onLoginError();
+                    onFetchUserError();
                 }
             });
     }
@@ -78,7 +78,7 @@ export function UserProvider({ children }: UserProviderProps) {
         });
     }
 
-    function onLoginError() {
+    function onFetchUserError() {
         navigate(PathConstants.LOGIN);
         toast({
             title: "Please login before accessing that page.",
