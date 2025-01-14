@@ -31,6 +31,13 @@ const userNav = [
     },
 ];
 
+const adminNav = [
+    {
+        title: "Log out",
+        href: PathConstants.LOG_OUT,
+    },
+];
+
 export interface NavConfig {
     mainNav: MainNavItem[];
     mainNavMobile: MainNavItem[];
@@ -55,5 +62,16 @@ export const userNavConfig: NavConfig = {
             href: PathConstants.HOME,
         },
         ...userNav,
+    ],
+};
+
+export const adminNavConfig: NavConfig = {
+    mainNav: adminNav,
+    mainNavMobile: [
+        {
+            title: "Home",
+            href: PathConstants.HOME,
+        },
+        ...adminNav,
     ],
 };
