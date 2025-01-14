@@ -60,8 +60,7 @@ function StarRating({
 
 export function submitReview(
     review: {
-        teacherId: number;
-        studentId: number;
+        teacher: number;
         rating: number;
         content: string;
     },
@@ -106,12 +105,10 @@ export function submitReview(
 }
 
 export default function AddReviewDialog({
-    teacherId,
-    studentId,
+    teacher,
     updateReviews,
 }: {
-    teacherId: number;
-    studentId: number;
+    teacher: number;
     updateReviews: () => void;
 }) {
     const { toast } = useToast();
@@ -127,8 +124,7 @@ export default function AddReviewDialog({
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         const review = {
-            teacherId,
-            studentId,
+            teacher,
             ...values,
         };
 
