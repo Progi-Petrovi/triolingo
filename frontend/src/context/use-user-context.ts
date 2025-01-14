@@ -5,7 +5,7 @@ import { Student, Teacher, User } from "@/types/users";
 export type UserContextType = {
     user: User | Teacher | Student | null;
     setUser: Dispatch<SetStateAction<User | Teacher | Student | null>>;
-    fetchUser: () => void;
+    fetchUser: (isInitalFetch?: boolean) => void;
     logoutUser: () => void;
 };
 
