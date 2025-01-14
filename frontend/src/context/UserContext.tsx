@@ -5,6 +5,7 @@ import { UserContextType } from "./use-user-context";
 import { useNavigate } from "react-router-dom";
 import PathConstants from "@/routes/pathConstants";
 import { languageMapToArray } from "@/types/language-level";
+import { UserNotLoadedError } from "./user-not-loaded";
 
 const fetchBasedOnRoles: Record<string, string> = {
     ROLE_TEACHER: "/teacher",
@@ -28,48 +29,43 @@ export function UserProvider({ children }: UserProviderProps) {
             (res) => res.body[0].authority
         );
 
-        await fetch(fetchBasedOnRoles[role]).then((res) => {
-            if (role === Role.ROLE_TEACHER) {
-                const teacher = { ...(res.body as Teacher), role } as Teacher;
+        await fetch(fetchBasedOnRoles[role])
+            .then((res) => {
+                if (role === Role.ROLE_TEACHER) {
+                    const teacher = {
+                        ...(res.body as Teacher),
+                        role,
+                    } as Teacher;
 
-                setUserAndStorage(teacher);
-            } else if (role === Role.ROLE_STUDENT) {
-                const learningLanguages = languageMapToArray(
-                    res.body.learningLanguages
-                );
+                    setUser(teacher);
+                } else if (role === Role.ROLE_STUDENT) {
+                    const learningLanguages = languageMapToArray(
+                        res.body.learningLanguages
+                    );
 
-                const student = {
-                    ...(res.body as Student),
-                    role,
-                    learningLanguages,
-                } as Student;
+                    const student = {
+                        ...(res.body as Student),
+                        role,
+                        learningLanguages,
+                    } as Student;
 
-                setUserAndStorage(student);
-            } else if (role === Role.ROLE_ADMIN) {
-                const admin = { ...(res.body as User), role } as User;
+                    setUser(student);
+                } else if (role === Role.ROLE_ADMIN) {
+                    const admin = { ...(res.body as User), role } as User;
 
-                setUserAndStorage(admin);
-            }
-        });
+                    setUser(admin);
+                }
 
-        if (user?.verified) {
-            navigate(PathConstants.HOME);
-        } else {
-            navigate(PathConstants.VERIFY_REQUEST);
-        }
-    }
-
-    function setUserAndStorage(user: User | Teacher | Student) {
-        setUser(user);
-        sessionStorage.setItem(
-            UserStorage.TRIOLINGO_USER,
-            JSON.stringify(user)
-        );
+                sessionStorage.setItem(UserStorage.TRIOLINGO_USER, "Logged in");
+            })
+            .catch(() => {
+                throw new UserNotLoadedError();
+            });
     }
 
     async function logoutUser() {
         await fetch("/user/logout").then((res) => {
-            if (res.status === 200) {
+            if (res.status === 200 || res.status === 403) {
                 setUser(null);
                 sessionStorage.removeItem(UserStorage.TRIOLINGO_USER);
                 navigate(PathConstants.HOME);

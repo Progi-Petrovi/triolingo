@@ -4,3 +4,5 @@ export class UserNotLoadedError extends Error {
         this.name = "UserNotLoadedError";
     }
 }
+
+// OVO OBRISAT

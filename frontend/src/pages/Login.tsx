@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -24,11 +24,13 @@ const LoginErrors: Record<string, string> = {
 export default function Login() {
     const fetch = useFetch();
     const { toast } = useToast();
-    const { fetchUser } = useUserContext();
+    const navigate = useNavigate();
+    const { user, fetchUser } = useUserContext();
 
     async function submitLogin(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const body = new FormData(event.currentTarget);
+
         await fetch("login", {
             method: "POST",
             body,
@@ -44,6 +46,11 @@ export default function Login() {
                 }
             } else {
                 fetchUser();
+                if (user?.verified) {
+                    navigate(PathConstants.HOME);
+                } else {
+                    navigate(PathConstants.VERIFY_REQUEST);
+                }
             }
         });
     }
