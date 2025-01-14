@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode } from "react";
+import { createContext, useState, ReactNode, useEffect } from "react";
 import { useFetch } from "../hooks/use-fetch";
 import { Teacher, Role, User, Student } from "@/types/users";
 import { UserContextType } from "./use-user-context";
@@ -24,6 +24,12 @@ export function UserProvider({ children }: UserProviderProps) {
     const navigate = useNavigate();
     const { toast } = useToast();
     const [user, setUser] = useState<User | Teacher | Student | null>(null);
+
+    useEffect(() => {
+        if (!user) {
+            fetchUser(true);
+        }
+    }, []);
 
     async function fetchUser(isInitialFetch?: boolean) {
         const role = await fetch("/user/role")
