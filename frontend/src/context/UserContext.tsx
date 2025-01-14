@@ -5,7 +5,7 @@ import { UserContextType } from "./use-user-context";
 import { useNavigate } from "react-router-dom";
 import PathConstants from "@/routes/pathConstants";
 import { languageMapToArray } from "@/types/language-level";
-import { UserNotLoadedError } from "./user-not-loaded";
+import { useToast } from "@/hooks/use-toast";
 
 const fetchBasedOnRoles: Record<string, string> = {
     ROLE_TEACHER: "/teacher",
@@ -22,6 +22,7 @@ const UserContext = createContext<UserContextType | null>(null);
 export function UserProvider({ children }: UserProviderProps) {
     const fetch = useFetch();
     const navigate = useNavigate();
+    const { toast } = useToast();
     const [user, setUser] = useState<User | Teacher | Student | null>(null);
 
     useEffect(() => {
@@ -29,9 +30,9 @@ export function UserProvider({ children }: UserProviderProps) {
     }, []);
 
     async function fetchUser(isInitialFetch?: boolean) {
-        const role = await fetch("/user/role").then(
-            (res) => res.body[0].authority
-        );
+        const role = await fetch("/user/role")
+            .then((res) => res.body[0].authority)
+            .catch(() => onLoginError());
 
         await fetch(fetchBasedOnRoles[role])
             .then((res) => {
@@ -62,7 +63,7 @@ export function UserProvider({ children }: UserProviderProps) {
             })
             .catch(() => {
                 if (!isInitialFetch) {
-                    throw new UserNotLoadedError();
+                    onLoginError();
                 }
             });
     }
@@ -74,6 +75,14 @@ export function UserProvider({ children }: UserProviderProps) {
                 sessionStorage.removeItem(UserStorage.TRIOLINGO_USER);
                 navigate(PathConstants.HOME);
             }
+        });
+    }
+
+    function onLoginError() {
+        navigate(PathConstants.LOGIN);
+        toast({
+            title: "Please login before accessing that page.",
+            variant: "destructive",
         });
     }
 
