@@ -1,7 +1,6 @@
 package com.triolingo.controller;
 
 import com.triolingo.dto.user.UserChangePasswordDTO;
-import com.triolingo.entity.user.Student;
 import com.triolingo.entity.user.User;
 import com.triolingo.repository.UserRepository;
 import com.triolingo.security.DatabaseUser;
@@ -31,14 +30,14 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    @Secured({"ROLE_USER", "ROLE_VERIFIED"})
+    @Secured({ "ROLE_USER", "ROLE_VERIFIED" })
     @Operation(description = "Changes password of the user the current principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> changePassword(@RequestBody UserChangePasswordDTO userChangePasswordDTO,
-                                            @AuthenticationPrincipal DatabaseUser principal) {
+            @AuthenticationPrincipal DatabaseUser principal) {
         User user = principal.getStoredUser();
         userService.changePassword(user, userChangePasswordDTO);
         return ResponseEntity.ok("Password changed successfully");
