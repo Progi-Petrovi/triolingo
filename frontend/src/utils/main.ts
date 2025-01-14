@@ -49,7 +49,7 @@ export const lessonRequestDTOtoLessonRequest = (
             id: lessonRequestDTO.id,
             start: new Date(lessonRequestDTO.startInstant),
             end: new Date(lessonRequestDTO.endInstant),
-            title: lessonRequestDTO.language + " lesson " + lessonRequestDTO.id,
+            title: lessonRequestDTO.language + " lesson " + lessonRequestDTO.lessonId,
             teacher: lessonRequestDTO.teacherFullName,
             teacherProfileUrl: "",
             student: lessonRequestDTO.studentFullName,

@@ -73,6 +73,7 @@ export default function Calendar() {
             .catch((error) => console.error("Error fetching lessons:", error));
     };
 
+    /* TODO: add lesson requests */
     useEffect(() => {
         if (user.role === "ROLE_TEACHER") loadTeacherLessons();
         else if (user.role === "ROLE_STUDENT") loadStudentLessons();

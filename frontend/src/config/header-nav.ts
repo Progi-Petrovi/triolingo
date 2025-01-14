@@ -26,6 +26,10 @@ const teacherNav = [
         href: PathConstants.CALENDAR,
     },
     {
+        title: "Lesson requests",
+        href: PathConstants.LESSON_REQUESTS,
+    },
+    {
         title: "Log out",
         href: PathConstants.LOG_OUT,
     },

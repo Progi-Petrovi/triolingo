@@ -7,7 +7,11 @@ import {
 } from "@/components/ui/card";
 import useUserContext from "@/context/use-user-context";
 import { useFetch } from "@/hooks/use-fetch";
-import { LessonRequest, LessonRequestDTO } from "@/types/lesson";
+import {
+    LessonRequest,
+    LessonRequestDTO,
+    LessonRequestStatus,
+} from "@/types/lesson";
 import {
     formatEndTime,
     formatLessonDate,
@@ -40,9 +44,17 @@ export default function LessonRequests() {
                 console.log("Lesson requests: ", lessonRequestsDto);
 
                 setLessonRequests(
-                    lessonRequestsDto.map((lessonRequest) => {
-                        return lessonRequestDTOtoLessonRequest(lessonRequest);
-                    })
+                    lessonRequestsDto
+                        .map((lessonRequest) => {
+                            return lessonRequestDTOtoLessonRequest(
+                                lessonRequest
+                            );
+                        })
+                        .filter(
+                            (lessonRequest) =>
+                                lessonRequest.status ===
+                                LessonRequestStatus.PENDING
+                        )
                 );
             })
             .catch((error) =>
@@ -60,54 +72,61 @@ export default function LessonRequests() {
 
     console.log("Requests: ", lessonRequests);
 
-    // const acceptLessonRequest = (id: number) => {
-    //     fetch(`lesson/request/${id}/accept`, {
-    //         method: "POST",
-    //     })
-    //         .then((res) => {
-    //             if (res.status === 200) {
-    //                 console.log("Lesson request accepted");
-    //                 setLessonRequests((prev) =>
-    //                     prev.filter((lessonRequest) => lessonRequest.id !== id)
-    //                 );
-    //             } else {
-    //                 console.error("Error accepting lesson request");
-    //             }
-    //         })
-    //         .catch((error) => console.error("Error accepting lesson request:", error));
-    // };
-
-    // const rejectLessonRequest = (id: number) => {
-    //     fetch(`lesson/request/${id}/reject`, {
-    //         method: "POST",
-    //     })
-    //         .then((res) => {
-    //             if (res.status === 200) {
-    //                 console.log("Lesson request rejected");
-    //                 setLessonRequests((prev) =>
-    //                     prev.filter((lessonRequest) => lessonRequest.id !== id)
-    //                 );
-    //             } else {
-    //                 console.error("Error rejecting lesson request");
-    //             }
-    //         })
-    //         .catch((error) => console.error("Error rejecting lesson request:", error));
-    // };
-
     const acceptLessonRequest = (id: number) => {
+        fetch(`lesson/request/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                status: LessonRequestStatus.ACCEPTED.toString(),
+            }),
+        })
+            .then((res) => {
+                if (res.status === 200) {
+                    console.log("Lesson request accepted");
+                    setLessonRequests((prev) =>
+                        prev.filter((lessonRequest) => lessonRequest.id !== id)
+                    );
+                } else {
+                    console.error("Error accepting lesson request");
+                }
+            })
+            .catch((error) =>
+                console.error("Error accepting lesson request:", error)
+            );
+        removeLessonRequest(id);
+    };
+
+    const rejectLessonRequest = (id: number) => {
+        fetch(`lesson/request/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: LessonRequestStatus.REJECTED }),
+        })
+            .then((res) => {
+                if (res.status === 200) {
+                    console.log("Lesson request rejected");
+                    setLessonRequests((prev) =>
+                        prev.filter((lessonRequest) => lessonRequest.id !== id)
+                    );
+                } else {
+                    console.error("Error rejecting lesson request");
+                }
+            })
+            .catch((error) =>
+                console.error("Error rejecting lesson request:", error)
+            );
+        removeLessonRequest(id);
+    };
+
+    const removeLessonRequest = (id: number) => {
+        setLessonRequests((prev) =>
+            prev.filter((lessonRequest) => lessonRequest.id !== id)
+        );
         const requestCard = document.getElementById(`request-${id}`);
         if (requestCard) {
             requestCard.style.display = "none";
         }
         console.log("Accepted lesson request: ", id);
-    };
-
-    const rejectLessonRequest = (id: number) => {
-        const requestCard = document.getElementById(`request-${id}`);
-        if (requestCard) {
-            requestCard.style.display = "none";
-        }
-        console.log("Rejected lesson request: ", id);
     };
 
     return (

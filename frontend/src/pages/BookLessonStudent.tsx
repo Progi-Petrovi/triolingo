@@ -21,7 +21,6 @@ import {
     formatStartTime,
     lessonRequestDTOtoLessonRequest,
 } from "@/utils/main";
-import { set } from "date-fns";
 
 export default function BookLessonStudent() {
     const { user, fetchUser } = useUserContext();
@@ -44,7 +43,6 @@ export default function BookLessonStudent() {
     const fetch = useFetch();
     const [lessonRequests, setLessonRequests] = useState<LessonRequest[]>([]);
     const [teacherLessons, setTeacherLessons] = useState<LessonEvent[]>([]);
-    const [teacher, setTeacher] = useState<Teacher>();
     const [view, setView] = useState<View>("month");
 
     const { toast } = useToast();
@@ -55,7 +53,6 @@ export default function BookLessonStudent() {
                 console.error("Teacher not found");
                 return;
             }
-            setTeacher(res.body);
         });
 
         fetch(`lesson/teacher/${id}`)
@@ -111,15 +108,17 @@ export default function BookLessonStudent() {
         );
     }
 
-    if (!teacher) {
+    if (!lessonRequests) {
         return <div>Loading...</div>;
     }
 
     const disableButton = (lessonId: number) => {
-        // remove the lessonRequest from the list
-        setLessonRequests((prev) =>
-            prev.filter((lessonRequest) => lessonRequest.id !== lessonId)
+        const button = document.getElementById(
+            "lesson-btn-" + lessonId.toString()
         );
+        if (button) {
+            button.setAttribute("disabled", "true");
+        }
     };
 
     const sendLessonRequest = (lesson: LessonEvent) => {
@@ -143,11 +142,24 @@ export default function BookLessonStudent() {
     };
 
     const isRequested = (lessonId: number) => {
-        return (
-            lessonRequests.find((request) => request.id === lessonId) !==
-            undefined
+        const lessonRequest = lessonRequests.find(
+            (request) => request.lessonId === lessonId
         );
+        const isRequested = lessonRequest === undefined ? false : true;
+        const isPending = lessonRequest?.status === "PENDING";
+        return isRequested && isPending;
     };
+
+    const isApproved = (lessonId: number) => {
+        const lessonRequest = lessonRequests.find(
+            (request) => request.lessonId === lessonId
+        );
+        const isRequested = lessonRequest === undefined ? false : true;
+        const isApproved = lessonRequest?.status === "ACCEPTED";
+        return isRequested && isApproved;
+    };
+
+    console.log("Lesson requests: ", lessonRequests);
 
     return (
         <div className="flex flex-col gap-4 justify-center items-center">
@@ -167,12 +179,18 @@ export default function BookLessonStudent() {
                 <Card className="pb-4">
                     <CardHeader className="flex items-center">
                         Avaliable lessons from{" "}
-                        <Link to={`/teacher/${id}`}> {teacher.fullName}</Link>
+                        <Link to={`/teacher/${id}`}>
+                            {" "}
+                            {lessonRequests &&
+                                lessonRequests.length > 0 &&
+                                lessonRequests[0].teacher}
+                        </Link>
                     </CardHeader>
 
                     <CardContent className="flex flex-col gap-4 max-h-[65vh] overflow-y-auto">
                         {teacherLessons
                             .filter((lesson) => lesson.status === "OPEN")
+                            .filter((lesson) => !isApproved(lesson.id))
                             .map((lesson) => (
                                 <Card key={lesson.title}>
                                     <CardHeader>

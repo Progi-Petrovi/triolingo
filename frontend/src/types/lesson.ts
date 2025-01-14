@@ -41,3 +41,16 @@ export interface LessonRequestDTO {
     status: string;
     teacherProfilePictureHash: string;
 };
+
+export enum LessonRequestStatus {
+    PENDING = "PENDING",
+    ACCEPTED = "ACCEPTED",
+    REJECTED = "REJECTED",
+}
+
+export enum LessonStatus {
+    OPEN = "OPEN",
+    CLOSED = "CLOSED",
+    CANCELLED = "CANCELLED",
+    COMPLETED = "COMPLETED",
+}

@@ -6,6 +6,7 @@ import com.triolingo.entity.lesson.Lesson;
 import com.triolingo.entity.lesson.LessonRequest;
 import com.triolingo.entity.user.Student;
 import com.triolingo.entity.user.Teacher;
+import com.triolingo.repository.LessonRequestRepository;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.LessonService;
 import com.triolingo.service.StudentService;
@@ -19,6 +20,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +36,15 @@ public class LessonController {
     private final TeacherService teacherService;
     private final StudentService studentService;
     private final DtoMapper dtoMapper;
+    private final LessonRequestRepository lessonRequestRepository;
 
     public LessonController(LessonService lessonService, TeacherService teacherService, StudentService studentService,
-            DtoMapper dtoMapper) {
+                            DtoMapper dtoMapper, LessonRequestRepository lessonRequestRepository) {
         this.lessonService = lessonService;
         this.teacherService = teacherService;
         this.studentService = studentService;
         this.dtoMapper = dtoMapper;
+        this.lessonRequestRepository = lessonRequestRepository;
     }
 
     @GetMapping("/{id}")
@@ -186,10 +191,16 @@ public class LessonController {
     })
     public ResponseEntity<?> updateRequest(@AuthenticationPrincipal DatabaseUser principal, @PathVariable("id") Long id,
             @RequestBody LessonRequestUpdateDTO dto) {
-        Lesson lesson = lessonService.fetch(id);
-        Student student = studentService.fetch(principal.getStoredUser().getId());
-        lessonService.createRequest(student, lesson);
-
+        LessonRequest lessonRequest = lessonRequestRepository.findById(id).get();
+        if (dto.status() == LessonRequest.Status.REJECTED) {
+            lessonRequestRepository.delete(lessonRequest);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        /*if (dto.status() == LessonRequest.Status.ACCEPTED) {
+            ;
+        }*/
+        lessonRequest.setStatus(dto.status());
+        lessonRequestRepository.save(lessonRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
