@@ -2,7 +2,7 @@
 import React from "react";
 import PathConstants from "./pathConstants";
 
-const Home = React.lazy(() => import("../pages/Home"));
+const Home = React.lazy(() => import("../pages/home/Home"));
 const Login = React.lazy(() => import("../pages/Login"));
 const Logout = React.lazy(() => import("../pages/Logout"));
 const StudentRegister = React.lazy(
@@ -21,6 +21,8 @@ const Teacher = React.lazy(() => import("../pages/Teacher"));
 
 const TeacherReviews = React.lazy(() => import("../pages/TeacherReviews"));
 
+const StudentProfile = React.lazy(() => import("../pages/profile/Student"));
+
 const routes = [
     { path: PathConstants.HOME, element: <Home /> },
     { path: PathConstants.LOGIN, element: <Login /> },
@@ -33,6 +35,7 @@ const routes = [
     { path: PathConstants.CALENDAR, element: <Calendar /> },
     { path: PathConstants.TEACHER_PROFILE, element: <Teacher /> },
     { path: PathConstants.TEACHER_REVIEWS, element: <TeacherReviews /> },
+    { path: PathConstants.STUDENT_PROFILE, element: <StudentProfile /> },
 ];
 
 export default routes;

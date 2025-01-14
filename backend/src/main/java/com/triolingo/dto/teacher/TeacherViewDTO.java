@@ -6,6 +6,7 @@ import com.triolingo.entity.TeachingStyle;
 public record TeacherViewDTO(
         Long id,
         String fullName,
+        String email,
         List<String> languages,
         Integer yearsOfExperience,
         String qualifications,

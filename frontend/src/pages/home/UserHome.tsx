@@ -8,11 +8,11 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { useFetch } from "@/hooks/use-fetch";
-import { TeacherTableRow } from "@/types/teacher-table-row";
+import { TeacherTableRow } from "@/types/user-table-row";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function Home() {
+export default function UserHome() {
     const fetch = useFetch();
     const [teachers, setTeachers] = useState<TeacherTableRow[]>([]);
 

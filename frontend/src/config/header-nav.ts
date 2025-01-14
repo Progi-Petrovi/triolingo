@@ -16,7 +16,7 @@ const guestNav = [
     },
 ];
 
-const userNav = [
+const teacherNav = [
     {
         title: "Profile",
         href: PathConstants.PROFILE,
@@ -25,6 +25,28 @@ const userNav = [
         title: "Calendar",
         href: PathConstants.CALENDAR,
     },
+    {
+        title: "Log out",
+        href: PathConstants.LOG_OUT,
+    },
+];
+
+const studentNav = [
+    {
+        title: "Profile",
+        href: PathConstants.PROFILE,
+    },
+    {
+        title: "Calendar",
+        href: PathConstants.CALENDAR,
+    },
+    {
+        title: "Log out",
+        href: PathConstants.LOG_OUT,
+    },
+];
+
+const adminNav = [
     {
         title: "Log out",
         href: PathConstants.LOG_OUT,
@@ -47,13 +69,35 @@ export const guestNavConfig: NavConfig = {
     ],
 };
 
-export const userNavConfig: NavConfig = {
-    mainNav: userNav,
+export const studentNavConfig: NavConfig = {
+    mainNav: studentNav,
     mainNavMobile: [
         {
             title: "Home",
             href: PathConstants.HOME,
         },
-        ...userNav,
+        ...studentNav,
+    ],
+};
+
+export const teacherNavConfig: NavConfig = {
+    mainNav: teacherNav,
+    mainNavMobile: [
+        {
+            title: "Home",
+            href: PathConstants.HOME,
+        },
+        ...teacherNav,
+    ],
+};
+
+export const adminNavConfig: NavConfig = {
+    mainNav: adminNav,
+    mainNavMobile: [
+        {
+            title: "Home",
+            href: PathConstants.HOME,
+        },
+        ...adminNav,
     ],
 };

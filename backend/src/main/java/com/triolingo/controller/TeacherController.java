@@ -137,19 +137,6 @@ public class TeacherController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    @Secured("ROLE_ADMIN")
-    @Operation(description = "Deletes the teacher with {id}.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
-    })
-    public ResponseEntity<?> deleteTeacher(@PathVariable("id") Long id) {
-        Teacher teacher = teacherService.fetch(id);
-        teacherService.delete(teacher);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
     @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
     @RequestMapping(path = "/update/profileImage", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(description = "Expects a 'multipart/form-data' with an image file. Assigns a hash to the file and saves it under that hash. The images are statically provided on images/profile/{image-hash}.jpg")
