@@ -51,12 +51,12 @@ export default function Teacher() {
         }).then((res) => {
             if (res.status === 200) {
                 toast({
-                    title: `Successfully deleted student with id: ${teacher?.id}`,
+                    title: `Successfully deleted teacher with id: ${teacher?.id}`,
                 });
                 navigate(PathConstants.HOME);
             } else {
                 toast({
-                    title: `Failed to delete student with id: ${teacher?.id}`,
+                    title: `Failed to delete teacher with id: ${teacher?.id}`,
                 });
             }
         });
