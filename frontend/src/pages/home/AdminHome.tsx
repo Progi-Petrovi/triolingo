@@ -33,8 +33,8 @@ export default function AdminHome() {
 
     return (
         <div className="flex flex-col justify-center items-center w-[70vw] gap-20">
-            <h1>Admin home</h1>
-            <div className="flex justify-around items-start w-[70vw]">
+            <h1 className="text-center">Admin home</h1>
+            <div className="flex flex-col md:flex-row md:justify-around md:items-start w-[70vw]">
                 <div className="max-w-fit">
                     <Table>
                         <TableCaption>Teachers</TableCaption>
