@@ -11,12 +11,15 @@ import { Badge } from "@/components/ui/badge";
 import { TeachingStyle } from "@/types/teaching-style";
 import { Button } from "@/components/ui/button";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
-import { useUser } from "@/context/use-user-context";
-import { Student } from "@/types/users";
+import { Student, Teacher, User } from "@/types/users";
 import { initials } from "@/utils/main";
 
-export default function StudentProfile() {
-    const student = useUser() as Student;
+type StudentProfileType = {
+    user: User | Teacher | Student;
+};
+
+export default function StudentProfile({ user }: StudentProfileType) {
+    const student = user as Student;
 
     return (
         <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row md:px-0">

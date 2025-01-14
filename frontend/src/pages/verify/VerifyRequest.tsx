@@ -4,7 +4,7 @@ import {
     CardTitle,
     CardDescription,
 } from "@/components/ui/card";
-import { useUser } from "@/context/use-user-context";
+import useUserContext from "@/context/use-user-context";
 import { useFetch } from "@/hooks/use-fetch";
 import PathConstants from "@/routes/pathConstants";
 import { useEffect } from "react";
@@ -13,7 +13,13 @@ import { useNavigate } from "react-router-dom";
 export default function VerifyRequest() {
     const fetch = useFetch();
     const navigate = useNavigate();
-    const user = useUser();
+    const { user, fetchUser } = useUserContext();
+
+    useEffect(() => {
+        if (!user) {
+            fetchUser();
+        }
+    }, []);
 
     useEffect(() => {
         fetch("verification/request", {
@@ -24,6 +30,10 @@ export default function VerifyRequest() {
             }
         });
     }, []);
+
+    if (!user) {
+        return <h1>Loading...</h1>;
+    }
 
     return (
         <Card>

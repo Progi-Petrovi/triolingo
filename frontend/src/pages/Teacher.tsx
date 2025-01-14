@@ -7,7 +7,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Role, Teacher as TeacherType, User } from "@/types/users";
+import { Role, Teacher as TeacherType } from "@/types/users";
 import { Button } from "@/components/ui/button";
 import { Link, useParams } from "react-router-dom";
 import { useFetch } from "@/hooks/use-fetch";
@@ -15,18 +15,20 @@ import { useEffect, useState } from "react";
 import { initials } from "@/utils/main";
 import { Review } from "@/components/Review";
 import AddReviewDialog from "@/components/AddReviewDialog";
-import { useUser } from "@/context/use-user-context";
+import useUserContext from "@/context/use-user-context";
 import { Review as ReviewType } from "@/types/review";
 
 export default function Teacher() {
     /* TODO: remove */
     const DEV = true;
 
-    const user = useUser() as User;
+    const { user, fetchUser } = useUserContext();
 
-    if (user.role === Role.ROLE_TEACHER) {
-        return <h1>Only students and admins can view teachers</h1>;
-    }
+    useEffect(() => {
+        if (!user) {
+            fetchUser();
+        }
+    }, []);
 
     const fetch = useFetch();
     const { id } = useParams();
@@ -96,12 +98,16 @@ export default function Teacher() {
         updateReviews();
     }, [id]);
 
-    if (teacher === undefined) {
-        return <div>Teacher not found</div>;
+    if (!user || !teacher) {
+        return <h1>Loading...</h1>;
     }
 
-    if (!teacher) {
-        return <div>Loading...</div>;
+    if (user.role === Role.ROLE_TEACHER) {
+        return <h1>Only students and admins can view teachers</h1>;
+    }
+
+    if (teacher === undefined) {
+        return <div>Teacher not found</div>;
     }
 
     return (

@@ -4,10 +4,13 @@ import { Link, LinkProps, redirect } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import useUserContext from "@/context/use-user-context";
-import { renderHeader } from "@/utils/main";
+import { NavConfig } from "@/config/header-nav";
 
-export function MobileNav() {
+type MobileNavType = {
+    navConfig: NavConfig;
+};
+
+export function MobileNav({ navConfig }: MobileNavType) {
     const [open, setOpen] = React.useState(false);
 
     const onOpenChange = (open: boolean) => {
@@ -15,10 +18,6 @@ export function MobileNav() {
     };
 
     const pathname = location.pathname;
-
-    const { user } = useUserContext();
-
-    const navConfig = renderHeader(user);
 
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
