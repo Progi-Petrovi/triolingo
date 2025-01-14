@@ -1,5 +1,10 @@
-import { userNavConfig, guestNavConfig, NavConfig } from "@/config/header-nav";
-import { User } from "@/types/users";
+import {
+    userNavConfig,
+    guestNavConfig,
+    NavConfig,
+    adminNavConfig,
+} from "@/config/header-nav";
+import { Role, User } from "@/types/users";
 
 export function initials(fullName: string): string {
     return fullName
@@ -9,5 +14,11 @@ export function initials(fullName: string): string {
 }
 
 export function renderHeader(user: User | null): NavConfig {
-    return user ? userNavConfig : guestNavConfig;
+    if (!user) {
+        return guestNavConfig;
+    }
+    if (user.role === Role.ROLE_ADMIN) {
+        return adminNavConfig;
+    }
+    return userNavConfig;
 }
