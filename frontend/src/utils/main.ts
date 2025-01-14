@@ -8,6 +8,6 @@ export function initials(fullName: string): string {
         .join("");
 }
 
-export function renderHeader(user: User | null | undefined): NavConfig {
+export function renderHeader(user: User | null): NavConfig {
     return user ? userNavConfig : guestNavConfig;
 }
