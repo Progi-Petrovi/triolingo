@@ -48,7 +48,7 @@ export const lessonRequestDTOtoLessonRequest = (lessonRequestDTO: LessonRequestD
     end: new Date(lessonRequestDTO.endInstant),
     title: lessonRequestDTO.language + " lesson " + lessonRequestDTO.lessonId,
     teacherFullName: lessonRequestDTO.teacherFullName,
-    teacher: lessonRequestDTO.teacherFullName,
+    teacher: lessonRequestDTO.teacherId.toString(),
     teacherProfileUrl: `/teacher/${lessonRequestDTO.teacherId}`,
     teacherProfileImageHash: lessonRequestDTO.teacherProfileImageHash,
     student: lessonRequestDTO.studentFullName,

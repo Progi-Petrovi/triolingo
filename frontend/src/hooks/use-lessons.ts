@@ -1,8 +1,7 @@
 import { LessonDTO, LessonRequest, LessonRequestDTO, LessonRequestStatus, LessonStatus, LessonType } from "@/types/lesson";
 import { lessonDTOsToLessons, lessonRequestDTOsToLessonRequests } from "@/utils/main";
 import { useFetch } from "./use-fetch";
-import { useEffect, useState } from "react";
-import { Client } from "@stomp/stompjs";
+import { useState } from "react";
 
 export function useLoadTeacherLessons(id?: string) {
     const fetch = useFetch();

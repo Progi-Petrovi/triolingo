@@ -45,6 +45,10 @@ const studentNav = [
         href: PathConstants.CALENDAR,
     },
     {
+        title: "Pending requests",
+        href: PathConstants.PENDING_REQUESTS,
+    },
+    {
         title: "Log out",
         href: PathConstants.LOG_OUT,
     },
