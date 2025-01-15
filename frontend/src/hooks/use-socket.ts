@@ -1,5 +1,6 @@
 import { Client } from "@stomp/stompjs";
 import { useToast } from "./use-toast";
+import PathConstants from "@/routes/pathConstants";
 
 type WebSocketProp = {
     socketUrl: string;
@@ -11,7 +12,7 @@ export default function useWebSocket  (props: WebSocketProp[] | WebSocketProp) {
         props = [props];
     }
     const client = new Client({
-        brokerURL: "ws://localhost:5000/ws",
+        brokerURL: PathConstants.API_URL + "/ws",
         connectHeaders: {
             // You may need to pass authentication headers if required
         },
