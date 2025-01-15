@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { TeachingStyle } from "@/types/teaching-style";
 import { Button } from "@/components/ui/button";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
+import ProfilePictureEditor from "./components/ProfilePictureEditor";
 import { initials } from "@/utils/main";
 import { Student, Teacher, User } from "@/types/users";
 
@@ -37,6 +38,18 @@ export default function TeacherProfile({
         );
     }
 
+    function renderProfilePictureEditor() {
+        if (!profileOwner) {
+            return null;
+        }
+
+        return (
+            <CardContent>
+                <ProfilePictureEditor />
+            </CardContent>
+        )
+    }
+
     return (
         <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row">
             <div className="flex flex-col gap-4 md:w-96">
@@ -44,7 +57,9 @@ export default function TeacherProfile({
                     <CardHeader>
                         <CardTitle>
                             <Avatar className="w-32 h-32 cursor-pointer">
-                                <AvatarImage src="TODO:get_from_backend" />
+                                <AvatarImage
+                                    src={`images/profile/${teacher.profileImageHash}`}
+                                />
                                 <AvatarFallback className="text-2xl md:text-4xl">
                                     {initials(teacher.fullName)}
                                 </AvatarFallback>
@@ -59,6 +74,7 @@ export default function TeacherProfile({
                         <p>{teacher.email}</p>
                     </CardContent>
                     <CardContent>Teacher</CardContent>
+                    {renderProfilePictureEditor()}
                     {renderChangePasswordDialog()}
                 </Card>
                 <Card>
