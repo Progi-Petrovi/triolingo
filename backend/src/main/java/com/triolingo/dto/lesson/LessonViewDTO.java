@@ -10,6 +10,6 @@ public record LessonViewDTO(
         Lesson.Status status,
         Instant startInstant, Instant endInstant,
         String language,
-        double teacherPayment) {
+        Double teacherPayment) {
 
 }
