@@ -63,3 +63,5 @@ secret.properties
 
 ### Saved profile images ###
 backend/public/images/profile
+
+!gitFollow
