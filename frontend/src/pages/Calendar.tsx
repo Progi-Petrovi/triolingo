@@ -10,9 +10,6 @@ import {
     useLoadStudentRequests as useLoadStudentRequests,
     useLoadTeacherLessons,
 } from "@/hooks/use-lessons";
-    useLoadStudentRequests as useLoadStudentRequests,
-    useLoadTeacherLessons,
-} from "@/hooks/use-lessons";
 
 export default function Calendar() {
     const { user, fetchUser } = useUserContext();
@@ -54,23 +51,8 @@ export default function Calendar() {
     return (
         <div
             className={`App flex flex-col md:flex-row items-center gap-4 m-2 w-full`}
-            className={`App flex flex-col md:flex-row items-center gap-4 m-2 w-full`}
         >
             <ReactBigCalendar
-                lessons={lessons}
-                lessonRequests={lessonRequests}
-                componentType={componentType}
-            />
-            {user.role === "ROLE_TEACHER" && (
-                <Card className="w-96 flex-1 max-w-[95vw]">
-                    <CardHeader>
-                        <CardTitle>Add Lesson Opening</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <AddLessonTeacherForm onSuccess={loadTeacherLessons} />
-                    </CardContent>
-                </Card>
-            )}
                 lessons={lessons}
                 lessonRequests={lessonRequests}
                 componentType={componentType}
