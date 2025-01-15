@@ -12,6 +12,7 @@ import { formatEndTime, formatLessonDate, formatStartTime } from "@/utils/main";
 import { useEffect } from "react";
 import { useLoadTeacherRequests } from "@/hooks/use-lessons";
 import { useWSTeacherRequests } from "@/hooks/use-socket";
+import { User } from "@/types/users";
 
 export default function LessonRequests() {
     const { user, fetchUser } = useUserContext();
@@ -20,18 +21,18 @@ export default function LessonRequests() {
 
     const fetch = useFetch();
 
-    const useClient = useWSTeacherRequests(() => {
-        getTeacherLessonRequests();
-    });
+    const useClient = useWSTeacherRequests(
+        user as User,
+        getTeacherLessonRequests
+    );
 
     useEffect(() => {
         if (!user) {
             fetchUser();
         } else {
             getTeacherLessonRequests();
+            useClient();
         }
-
-        useClient();
     }, []);
 
     if (!user) {
@@ -77,16 +78,25 @@ export default function LessonRequests() {
                             <Card key={lessonRequest.id}>
                                 <CardHeader>
                                     <span className="font-bold">
-                                        {lessonRequest.title}
+                                        {lessonRequest.lesson.language} lesson{" "}
+                                        {lessonRequest.lesson.id}
                                     </span>{" "}
-                                    @ {formatLessonDate(lessonRequest.start)}{" "}
-                                    {formatStartTime(lessonRequest.start)} -{" "}
-                                    {formatEndTime(lessonRequest.end)}
-                                    <br />
-                                    <span>€{lessonRequest.teacherPayment}</span>
+                                    @{" "}
+                                    {formatLessonDate(
+                                        lessonRequest.lesson.start
+                                    )}{" "}
+                                    {formatStartTime(
+                                        lessonRequest.lesson.start
+                                    )}{" "}
+                                    - {formatEndTime(lessonRequest.lesson.end)}
                                     <br />
                                     <span>
-                                        Requested by: {lessonRequest.student}
+                                        €{lessonRequest.lesson.teacherPayment}
+                                    </span>
+                                    <br />
+                                    <span>
+                                        Requested by:{" "}
+                                        {lessonRequest.student.fullName}
                                     </span>
                                 </CardHeader>
                                 <CardFooter className="flex gap-4">

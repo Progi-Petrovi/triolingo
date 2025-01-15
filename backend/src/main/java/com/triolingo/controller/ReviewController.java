@@ -43,8 +43,18 @@ public class ReviewController {
     // @Secured("ROLE_USER")
     public List<ReviewSendDTO> listTeacherReviews(@PathVariable Long id) {
         Teacher teacher = teacherService.fetch(id);
-        return reviewService.findAllByTeacher(teacher).stream()
-                .map(review -> dtoMapper.createDto(review, ReviewSendDTO.class)).toList();
+//        return reviewService.findAllByTeacher(teacher).stream()
+//                .map(review -> dtoMapper.createDto(review, ReviewSendDTO.class)).toList();
+        List<Review> teacherReviews = reviewService.findAllByTeacher(teacher);
+        return teacherReviews.stream()
+                .map(review -> new ReviewSendDTO(
+                        review.getId(),
+                        review.getTeacher().getId(),
+                        review.getStudent().getFullName(),
+                        review.getRating(),
+                        review.getContent(),
+                        review.getDate()
+                )).toList();
     }
 
     @PostMapping("/create")
@@ -58,6 +68,12 @@ public class ReviewController {
         Student student = studentService.fetch(principle.getStoredUser().getId());
         Logger.getLogger("ReviewController").info("Creating review: " + reviewDto);
         Review review = reviewService.createReview(reviewDto, student);
+        Teacher teacher = review.getTeacher();
+        List<Review> teacherReviews = reviewService.findAllByTeacher(teacher);
+        if (teacherReviews.stream()
+                .anyMatch(r -> r.getStudent().getId().equals(student.getId()))) {
+            throw new IllegalArgumentException("You have already reviewed this teacher");
+        }
         Logger.getLogger("ReviewController").info("Review created: " + review);
         return dtoMapper.createDto(review, ReviewViewDTO.class);
     }

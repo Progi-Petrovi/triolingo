@@ -17,8 +17,6 @@ const Profile = React.lazy(() => import("../pages/profile/Profile"));
 
 const Calendar = React.lazy(() => import("../pages/Calendar"));
 
-const Teacher = React.lazy(() => import("../pages/Teacher"));
-
 const TeacherReviews = React.lazy(() => import("../pages/TeacherReviews"));
 
 const BookLessonStudent = React.lazy(
@@ -27,9 +25,9 @@ const BookLessonStudent = React.lazy(
 
 const LessonRequests = React.lazy(() => import("../pages/LessonRequests"));
 
-const StudentProfile = React.lazy(() => import("../pages/profile/Student"));
-
 const PendingRequests = React.lazy(() => import("../pages/PendingRequests"));
+
+const UserProfile = React.lazy(() => import("../pages/profile/UserProfile"));
 
 const routes = [
     { path: PathConstants.HOME, element: <Home /> },
@@ -41,11 +39,11 @@ const routes = [
     { path: PathConstants.VERIFY_REQUEST, element: <VerifyRequest /> },
     { path: PathConstants.PROFILE, element: <Profile /> },
     { path: PathConstants.CALENDAR, element: <Calendar /> },
-    { path: PathConstants.TEACHER_PROFILE, element: <Teacher /> },
+    { path: PathConstants.TEACHER_PROFILE, element: <UserProfile /> },
+    { path: PathConstants.STUDENT_PROFILE, element: <UserProfile /> },
     { path: PathConstants.TEACHER_REVIEWS, element: <TeacherReviews /> },
     { path: PathConstants.BOOK_LESSON_STUDENT, element: <BookLessonStudent /> },
     { path: PathConstants.LESSON_REQUESTS, element: <LessonRequests /> },
-    { path: PathConstants.STUDENT_PROFILE, element: <StudentProfile /> },
     { path: PathConstants.PENDING_REQUESTS, element: <PendingRequests /> },
 ];
 

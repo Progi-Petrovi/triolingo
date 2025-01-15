@@ -1,85 +1,33 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import emailIcon from "../../icons/email-outline.svg";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TeachingStyle } from "@/types/teaching-style";
 import { Button } from "@/components/ui/button";
-import ChangePasswordDialog from "./components/ChangePasswordDialog";
-import { initials } from "@/utils/main";
-import { Student, Teacher, User } from "@/types/users";
-
-export type TeacherProfileType = {
-    userProfile: User | Teacher | Student;
-    profileOwner?: boolean;
-};
+import { Teacher } from "@/types/users";
+import AddReviewDialog from "@/components/AddReviewDialog";
+import { Review } from "@/components/Review";
+import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useReviews } from "@/hooks/use-reviews";
+import ProfileLayout from "./components/ProfileLayout";
+import { ProfileProps } from "@/types/profile";
 
 export default function TeacherProfile({
     userProfile,
+    role,
     profileOwner,
-}: TeacherProfileType) {
+}: ProfileProps) {
     const teacher = userProfile as Teacher;
 
-    function renderChangePasswordDialog() {
-        if (!profileOwner) {
-            return null;
-        }
+    const maxReviews = 5;
+    const [{ reviews, latestRewiews, averageRating }, updateReviews] =
+        useReviews(maxReviews, teacher.id);
 
+    useEffect(() => {
+        updateReviews();
+    }, []);
+
+    function TeacherRight() {
         return (
-            <CardContent>
-                <ChangePasswordDialog />
-            </CardContent>
-        );
-    }
-
-    return (
-        <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row">
-            <div className="flex flex-col gap-4 md:w-96">
-                <Card className="flex flex-col justify-center items-center">
-                    <CardHeader>
-                        <CardTitle>
-                            <Avatar className="w-32 h-32 cursor-pointer">
-                                <AvatarImage src="TODO:get_from_backend" />
-                                <AvatarFallback className="text-2xl md:text-4xl">
-                                    {initials(teacher.fullName)}
-                                </AvatarFallback>
-                            </Avatar>
-                        </CardTitle>
-                        <CardDescription className="text-center">
-                            {teacher.fullName}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex gap-2">
-                        <img src={emailIcon} alt="mail" />
-                        <p>{teacher.email}</p>
-                    </CardContent>
-                    <CardContent>Teacher</CardContent>
-                    {renderChangePasswordDialog()}
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Hourly Rate</CardTitle>
-                    </CardHeader>
-                    <CardContent>€{teacher.hourlyRate}</CardContent>
-                </Card>
-                <Card className="max-h-50 overflow-scroll">
-                    <CardHeader>
-                        <CardTitle>Languages</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex gap-2 flex-wrap">
-                        {teacher.languages.map((lang) => (
-                            <Badge key={lang}>{lang}</Badge>
-                        ))}
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div className="flex flex-col gap-4 justify-center w-full md:w-96">
+            <>
                 <Card>
                     <CardHeader>
                         <CardTitle>Years of experience</CardTitle>
@@ -104,10 +52,61 @@ export default function TeacherProfile({
                             : "No qualifications."}
                     </CardContent>
                 </Card>
-                <div className="flex justify-center items-center">
-                    <Button>Edit profile</Button>
-                </div>
-            </div>
-        </div>
+                <Card className="md:w-96">
+                    <CardHeader>
+                        <CardTitle>Reviews</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-4">
+                        {reviews && reviews.length > 0 ? (
+                            <>
+                                <div className="flex justify-between items-center gap-2">
+                                    <div className="font-bold text-xl">
+                                        Average rating: {averageRating}
+                                    </div>
+                                </div>
+                                <Card className="flex flex-col gap-4 max-h-60 overflow-scroll p-2">
+                                    {latestRewiews.map((review) => (
+                                        <Review
+                                            review={review}
+                                            key={review.id}
+                                        />
+                                    ))}
+                                </Card>
+                            </>
+                        ) : (
+                            <div>No reviews</div>
+                        )}
+                        {reviews.length > maxReviews && (
+                            <Button className="p-0 flex justify-center items-center">
+                                <Link
+                                    to={`/teacher/reviews/${userProfile.id}`}
+                                    className="text-inherit focus:text-inherit hover:text-inherit w-full h-full
+                                            flex justify-center items-center text-base"
+                                >
+                                    See all reviews
+                                </Link>
+                            </Button>
+                        )}
+
+                        {role && (
+                            <AddReviewDialog
+                                teacher={teacher.id}
+                                updateReviews={updateReviews}
+                            />
+                        )}
+                    </CardContent>
+                </Card>
+            </>
+        );
+    }
+
+    return (
+        <ProfileLayout
+            userProfile={userProfile}
+            profileOwner={profileOwner}
+            role={role}
+        >
+            <TeacherRight />
+        </ProfileLayout>
     );
 }

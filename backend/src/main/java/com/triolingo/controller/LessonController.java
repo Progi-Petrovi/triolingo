@@ -18,10 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +28,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/lesson")
@@ -45,7 +41,7 @@ public class LessonController {
     private SimpMessagingTemplate messagingTemplate;
 
     public LessonController(LessonService lessonService, TeacherService teacherService, StudentService studentService,
-                            DtoMapper dtoMapper, LessonRequestRepository lessonRequestRepository) {
+            DtoMapper dtoMapper, LessonRequestRepository lessonRequestRepository) {
         this.lessonService = lessonService;
         this.teacherService = teacherService;
         this.studentService = studentService;
@@ -85,23 +81,8 @@ public class LessonController {
     })
     public List<LessonViewDTO> getByTeacher(@PathVariable("id") Long id) {
         Teacher teacher = teacherService.fetch(id);
-        /*return lessonService.findAllByTeacher(teacher).stream()
+        return lessonService.findAllByTeacher(teacher).stream()
                 .map((lesson) -> dtoMapper.createDto(lesson, LessonViewDTO.class)).toList();
-
-        Teacher teacher = teacherService.fetch(principal.getStoredUser().getId());
-        List<LessonRequest> teachRequests = lessonService.findAllRequestsByTeacher(teacher);
-        return teachRequests.stream().map((request) -> {
-            Lesson lesson = request.getLesson();
-            return (new LessonRequestViewDTO(request.getStudent().getFullName(), request.getId(), request.getLesson().getId(), teacher.getId(), teacher.getFullName(),
-                    lesson.getStartInstant(), lesson.getEndInstant(), request.getLesson().getLanguage().getName(), request.getStatus()));
-        }).toList();
-         */
-        List<Lesson> lessons = lessonService.findAllByTeacher(teacher);
-        return lessons.stream().map((lesson) -> {
-            return (new LessonViewDTO(lesson.getId(), teacher.getFullName(),
-                    teacher.getProfileImageHash(),
-                    teacher.getId(), lesson.getStatus(), lesson.getStartInstant(), lesson.getEndInstant(), lesson.getLanguage().getName(), lesson.getTeacherPayment()));
-        }).toList();
     }
 
     @GetMapping("/student/{id}")
@@ -186,12 +167,8 @@ public class LessonController {
     })
     public List<LessonRequestViewDTO> getRequestsByTeacher(@AuthenticationPrincipal DatabaseUser principal) {
         Teacher teacher = teacherService.fetch(principal.getStoredUser().getId());
-        List<LessonRequest> teachRequests = lessonService.findAllRequestsByTeacher(teacher);
-        return teachRequests.stream().map((request) -> {
-            Lesson lesson = request.getLesson();
-            return (new LessonRequestViewDTO(request.getStudent().getFullName(), request.getId(), request.getLesson().getId(), teacher.getId(), teacher.getFullName(),
-                    lesson.getTeacherPayment(), lesson.getTeacher().getProfileImageHash(), lesson.getStartInstant(), lesson.getEndInstant(), request.getLesson().getLanguage().getName(), request.getStatus()));
-        }).toList();
+        return lessonService.findAllRequestsByTeacher(teacher).stream()
+                .map((request) -> dtoMapper.createDto(request, LessonRequestViewDTO.class)).toList();
     }
 
     @GetMapping("/requests/student")
@@ -203,12 +180,8 @@ public class LessonController {
     })
     public List<LessonRequestViewDTO> getRequestsByStudent(@AuthenticationPrincipal DatabaseUser principal) {
         Student student = studentService.fetch(principal.getStoredUser().getId());
-        List<LessonRequest> studentRequests = lessonService.findAllRequestsByStudent(student);
-        return studentRequests.stream().map((request) -> {
-            Lesson lesson = request.getLesson();
-            return (new LessonRequestViewDTO(student.getFullName(), request.getId(), request.getLesson().getId(), lesson.getTeacher().getId(), lesson.getTeacher().getFullName(),
-                    lesson.getTeacherPayment(), lesson.getTeacher().getProfileImageHash(), lesson.getStartInstant(), lesson.getEndInstant(), lesson.getLanguage().getName(), request.getStatus()));
-        }).toList();
+        return lessonService.findAllRequestsByStudent(student).stream()
+                .map((request) -> dtoMapper.createDto(request, LessonRequestViewDTO.class)).toList();
     }
 
     @PostMapping("/request/{id}")
@@ -225,8 +198,7 @@ public class LessonController {
         Student student = studentService.fetch(principal.getStoredUser().getId());
         LessonRequest request = lessonService.createRequest(student, lesson);
 
-        LessonRequestViewDTO lessonRequest = new LessonRequestViewDTO(student.getFullName(), request.getId(), lesson.getId(), lesson.getTeacher().getId(), lesson.getTeacher().getFullName(),
-                lesson.getTeacherPayment(), lesson.getTeacher().getProfileImageHash(), lesson.getStartInstant(), lesson.getEndInstant(), lesson.getLanguage().getName(), request.getStatus());
+        LessonRequestViewDTO lessonRequest = dtoMapper.createDto(request, LessonRequestViewDTO.class);
         messagingTemplate.convertAndSend("/topic/lesson-requests", lessonRequest);
 
         Long lessonRequestId = request.getId();

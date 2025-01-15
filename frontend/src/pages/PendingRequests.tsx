@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import useUserContext from "@/context/use-user-context";
 import { useLoadStudentRequests } from "@/hooks/use-lessons";
 import { useWSStudentRequests } from "@/hooks/use-socket";
-import { Role } from "@/types/users";
+import { Role, User } from "@/types/users";
 import { formatLessonDate, formatStartTime, formatEndTime } from "@/utils/main";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -16,7 +16,10 @@ export default function PendingRequests() {
         loadStudentRequests();
     };
 
-    const useClient = useWSStudentRequests(loadLessonsAndRequests);
+    const useClient = useWSStudentRequests(
+        user as User,
+        loadLessonsAndRequests
+    );
 
     useEffect(() => {
         if (!user) {
@@ -52,23 +55,35 @@ export default function PendingRequests() {
                             <Card key={lessonRequest.id}>
                                 <CardContent className="flex flex-col justify-center items-center pt-4 pb-4 gap-4">
                                     <span className="font-bold">
-                                        {lessonRequest.title}
+                                        {lessonRequest.lesson.title}
                                     </span>
                                     <span>
                                         @{" "}
-                                        {formatLessonDate(lessonRequest.start)}{" "}
-                                        {formatStartTime(lessonRequest.start)} -{" "}
-                                        {formatEndTime(lessonRequest.end)}
+                                        {formatLessonDate(
+                                            lessonRequest.lesson.start
+                                        )}{" "}
+                                        {formatStartTime(
+                                            lessonRequest.lesson.start
+                                        )}{" "}
+                                        -{" "}
+                                        {formatEndTime(
+                                            lessonRequest.lesson.end
+                                        )}
                                     </span>
                                     <span>
                                         Teacher:{" "}
                                         <Link
-                                            to={`/teacher/${lessonRequest.teacher}`}
+                                            to={`/teacher/${lessonRequest.lesson.teacher}`}
                                         >
-                                            {lessonRequest.teacherFullName}
+                                            {
+                                                lessonRequest.lesson.teacher
+                                                    .fullName
+                                            }
                                         </Link>
                                     </span>
-                                    <span>€{lessonRequest.teacherPayment}</span>
+                                    <span>
+                                        €{lessonRequest.lesson.teacherPayment}
+                                    </span>
                                 </CardContent>
                             </Card>
                         ))

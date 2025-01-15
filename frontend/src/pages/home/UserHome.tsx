@@ -7,19 +7,31 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import useUserContext from "@/context/use-user-context";
 import { useFetch } from "@/hooks/use-fetch";
+import { useWSLessonRequests } from "@/hooks/use-socket";
 import { TeacherTableRow } from "@/types/user-table-row";
+import { User } from "@/types/users";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function UserHome() {
+    const { user, fetchUser } = useUserContext();
     const fetch = useFetch();
     const [teachers, setTeachers] = useState<TeacherTableRow[]>([]);
 
+    const useRequestsClient = useWSLessonRequests({
+        user: user as User,
+    });
+
     useEffect(() => {
+        if (!user) {
+            fetchUser();
+        }
         fetch("teacher/all").then((res) => {
             setTeachers(res.body as TeacherTableRow[]);
         });
+        useRequestsClient();
     }, []);
 
     return (
