@@ -4,6 +4,7 @@ import SiteConfig from "@/config/site";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { NavConfig } from "@/config/header-nav";
+import { getNavLinkId } from "@/utils/main";
 
 type MainNavType = {
     navConfig: NavConfig;
@@ -26,6 +27,7 @@ export function MainNav({ navConfig }: MainNavType) {
                     <Link
                         to={item.href}
                         key={item.href}
+                        id={getNavLinkId(item.title)}
                         className={cn(
                             "transition-colors hover:text-foreground/80",
                             pathname === item.href

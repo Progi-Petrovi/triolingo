@@ -61,7 +61,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
 
             {/* Time Picker */}
             <Input
-                className="w-16"
+                className="w-18"
                 type="time"
                 value={formattedTime}
                 onChange={handleTimeChange}

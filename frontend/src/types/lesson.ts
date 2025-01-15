@@ -4,7 +4,10 @@ export type LessonType = {
     end: Date;
     title: string;
     teacher: string;
+    teacherFullName: string;
     teacherProfileUrl: string;
+    teacherProfileImageHash: string;
+    teacherPayment: number;
     status: string;
 };
 
@@ -14,7 +17,9 @@ export interface LessonDTO {
     endInstant: string;
     language: string;
     teacher: number;
+    teacherFullName: string;
     teacherPayment: number;
+    teacherProfileImageHash: string
     status: string;
 }
 
@@ -25,7 +30,10 @@ export type LessonRequest = {
     end: Date;
     title: string;
     teacher: string;
+    teacherFullName: string;
     teacherProfileUrl: string;
+    teacherPayment: number;
+    teacherProfileImageHash: string;
     student: string;
     status: string;
 }
@@ -33,13 +41,15 @@ export type LessonRequest = {
 export interface LessonRequestDTO {
     id: number;
     lessonId: number;
+    teacherId: number;
     teacherFullName: string;
     studentFullName: string;
     startInstant: string;
     endInstant: string;
     language: string;
     status: string;
-    teacherProfilePictureHash: string;
+    teacherProfileImageHash: string;
+    teacherPayment: number;
 };
 
 export enum LessonRequestStatus {
@@ -52,5 +62,5 @@ export enum LessonStatus {
     OPEN = "OPEN",
     CLOSED = "CLOSED",
     CANCELLED = "CANCELLED",
-    COMPLETED = "COMPLETED",
+    COMPLETED = "COMPLETE",
 }

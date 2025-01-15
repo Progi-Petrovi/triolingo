@@ -7,59 +7,31 @@ import {
 } from "@/components/ui/card";
 import useUserContext from "@/context/use-user-context";
 import { useFetch } from "@/hooks/use-fetch";
-import {
-    LessonRequest,
-    LessonRequestDTO,
-    LessonRequestStatus,
-} from "@/types/lesson";
-import {
-    formatEndTime,
-    formatLessonDate,
-    formatStartTime,
-    lessonRequestDTOtoLessonRequest,
-} from "@/utils/main";
-import { useEffect, useState } from "react";
+import { LessonRequestStatus } from "@/types/lesson";
+import { formatEndTime, formatLessonDate, formatStartTime } from "@/utils/main";
+import { useEffect } from "react";
+import { useLoadTeacherRequests } from "@/hooks/use-lessons";
+import { useWSTeacherRequests } from "@/hooks/use-socket";
 
 export default function LessonRequests() {
     const { user, fetchUser } = useUserContext();
+    const [pendingLessonRequests, getTeacherLessonRequests] =
+        useLoadTeacherRequests();
 
-    const [lessonRequests, setLessonRequests] = useState<LessonRequest[]>([]);
     const fetch = useFetch();
+
+    const useClient = useWSTeacherRequests(() => {
+        getTeacherLessonRequests();
+    });
 
     useEffect(() => {
         if (!user) {
             fetchUser();
+        } else {
+            getTeacherLessonRequests();
         }
-    }, []);
 
-    useEffect(() => {
-        fetch("lesson/requests/teacher")
-            .then((res) => {
-                if (res.status === 404) {
-                    console.error("Lessons not found");
-                    return;
-                }
-
-                const lessonRequestsDto = res.body as LessonRequestDTO[];
-                console.log("Lesson requests: ", lessonRequestsDto);
-
-                setLessonRequests(
-                    lessonRequestsDto
-                        .map((lessonRequest) => {
-                            return lessonRequestDTOtoLessonRequest(
-                                lessonRequest
-                            );
-                        })
-                        .filter(
-                            (lessonRequest) =>
-                                lessonRequest.status ===
-                                LessonRequestStatus.PENDING
-                        )
-                );
-            })
-            .catch((error) =>
-                console.error("Error fetching lesson requests:", error)
-            );
+        useClient();
     }, []);
 
     if (!user) {
@@ -70,63 +42,28 @@ export default function LessonRequests() {
         return <div>Only teachers can view lesson requests</div>;
     }
 
-    console.log("Requests: ", lessonRequests);
-
-    const acceptLessonRequest = (id: number) => {
+    const modifyLessonRequest = (id: number, status: LessonRequestStatus) => {
         fetch(`lesson/request/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                status: LessonRequestStatus.ACCEPTED.toString(),
-            }),
+            body: JSON.stringify({ status }),
         })
             .then((res) => {
                 if (res.status === 200) {
-                    console.log("Lesson request accepted");
-                    setLessonRequests((prev) =>
-                        prev.filter((lessonRequest) => lessonRequest.id !== id)
-                    );
-                } else {
-                    console.error("Error accepting lesson request");
+                    getTeacherLessonRequests();
                 }
             })
             .catch((error) =>
-                console.error("Error accepting lesson request:", error)
+                console.error("Error modifying lesson request:", error)
             );
-        removeLessonRequest(id);
+    };
+
+    const acceptLessonRequest = (id: number) => {
+        modifyLessonRequest(id, LessonRequestStatus.ACCEPTED);
     };
 
     const rejectLessonRequest = (id: number) => {
-        fetch(`lesson/request/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: LessonRequestStatus.REJECTED }),
-        })
-            .then((res) => {
-                if (res.status === 200) {
-                    console.log("Lesson request rejected");
-                    setLessonRequests((prev) =>
-                        prev.filter((lessonRequest) => lessonRequest.id !== id)
-                    );
-                } else {
-                    console.error("Error rejecting lesson request");
-                }
-            })
-            .catch((error) =>
-                console.error("Error rejecting lesson request:", error)
-            );
-        removeLessonRequest(id);
-    };
-
-    const removeLessonRequest = (id: number) => {
-        setLessonRequests((prev) =>
-            prev.filter((lessonRequest) => lessonRequest.id !== id)
-        );
-        const requestCard = document.getElementById(`request-${id}`);
-        if (requestCard) {
-            requestCard.style.display = "none";
-        }
-        console.log("Accepted lesson request: ", id);
+        modifyLessonRequest(id, LessonRequestStatus.REJECTED);
     };
 
     return (
@@ -135,12 +72,9 @@ export default function LessonRequests() {
 
             <Card className="pt-6">
                 <CardContent className="flex flex-col gap-4 max-h-[65vh] overflow-y-auto">
-                    {lessonRequests && lessonRequests.length > 0 ? (
-                        lessonRequests.map((lessonRequest) => (
-                            <Card
-                                key={lessonRequest.id}
-                                id={`request-${lessonRequest.id}`}
-                            >
+                    {pendingLessonRequests.length > 0 ? (
+                        pendingLessonRequests.map((lessonRequest) => (
+                            <Card key={lessonRequest.id}>
                                 <CardHeader>
                                     <span className="font-bold">
                                         {lessonRequest.title}
@@ -148,26 +82,29 @@ export default function LessonRequests() {
                                     @ {formatLessonDate(lessonRequest.start)}{" "}
                                     {formatStartTime(lessonRequest.start)} -{" "}
                                     {formatEndTime(lessonRequest.end)}
+                                    <br />
+                                    <span>€{lessonRequest.teacherPayment}</span>
+                                    <br />
+                                    <span>
+                                        Requested by: {lessonRequest.student}
+                                    </span>
                                 </CardHeader>
-                                <CardContent className="flex flex-col gap-4">
-                                    Requested by: {lessonRequest.student}
-                                </CardContent>
                                 <CardFooter className="flex gap-4">
                                     <Button
-                                        onClick={() => {
+                                        onClick={() =>
                                             acceptLessonRequest(
                                                 lessonRequest.id
-                                            );
-                                        }}
+                                            )
+                                        }
                                     >
                                         Accept
                                     </Button>
                                     <Button
-                                        onClick={() => {
+                                        onClick={() =>
                                             rejectLessonRequest(
                                                 lessonRequest.id
-                                            );
-                                        }}
+                                            )
+                                        }
                                     >
                                         Reject
                                     </Button>

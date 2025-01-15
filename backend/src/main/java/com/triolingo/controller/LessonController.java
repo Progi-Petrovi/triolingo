@@ -23,10 +23,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,6 +41,8 @@ public class LessonController {
     private final StudentService studentService;
     private final DtoMapper dtoMapper;
     private final LessonRequestRepository lessonRequestRepository;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     public LessonController(LessonService lessonService, TeacherService teacherService, StudentService studentService,
                             DtoMapper dtoMapper, LessonRequestRepository lessonRequestRepository) {
@@ -79,8 +85,23 @@ public class LessonController {
     })
     public List<LessonViewDTO> getByTeacher(@PathVariable("id") Long id) {
         Teacher teacher = teacherService.fetch(id);
-        return lessonService.findAllByTeacher(teacher).stream()
+        /*return lessonService.findAllByTeacher(teacher).stream()
                 .map((lesson) -> dtoMapper.createDto(lesson, LessonViewDTO.class)).toList();
+
+        Teacher teacher = teacherService.fetch(principal.getStoredUser().getId());
+        List<LessonRequest> teachRequests = lessonService.findAllRequestsByTeacher(teacher);
+        return teachRequests.stream().map((request) -> {
+            Lesson lesson = request.getLesson();
+            return (new LessonRequestViewDTO(request.getStudent().getFullName(), request.getId(), request.getLesson().getId(), teacher.getId(), teacher.getFullName(),
+                    lesson.getStartInstant(), lesson.getEndInstant(), request.getLesson().getLanguage().getName(), request.getStatus()));
+        }).toList();
+         */
+        List<Lesson> lessons = lessonService.findAllByTeacher(teacher);
+        return lessons.stream().map((lesson) -> {
+            return (new LessonViewDTO(lesson.getId(), teacher.getFullName(),
+                    teacher.getProfileImageHash(),
+                    teacher.getId(), lesson.getStatus(), lesson.getStartInstant(), lesson.getEndInstant(), lesson.getLanguage().getName(), lesson.getTeacherPayment()));
+        }).toList();
     }
 
     @PostMapping
@@ -142,8 +163,8 @@ public class LessonController {
         List<LessonRequest> teachRequests = lessonService.findAllRequestsByTeacher(teacher);
         return teachRequests.stream().map((request) -> {
             Lesson lesson = request.getLesson();
-            return (new LessonRequestViewDTO(request.getStudent().getFullName(), request.getId(), request.getLesson().getId(), teacher.getFullName(),
-                    lesson.getStartInstant(), lesson.getEndInstant(), request.getLesson().getLanguage().getName(), request.getStatus()));
+            return (new LessonRequestViewDTO(request.getStudent().getFullName(), request.getId(), request.getLesson().getId(), teacher.getId(), teacher.getFullName(),
+                    lesson.getTeacherPayment(), lesson.getTeacher().getProfileImageHash(), lesson.getStartInstant(), lesson.getEndInstant(), request.getLesson().getLanguage().getName(), request.getStatus()));
         }).toList();
     }
 
@@ -159,8 +180,8 @@ public class LessonController {
         List<LessonRequest> studentRequests = lessonService.findAllRequestsByStudent(student);
         return studentRequests.stream().map((request) -> {
             Lesson lesson = request.getLesson();
-            return (new LessonRequestViewDTO(student.getFullName(), request.getId(), request.getLesson().getId(), lesson.getTeacher().getFullName(),
-                    lesson.getStartInstant(), lesson.getEndInstant(), lesson.getLanguage().getName(), request.getStatus()));
+            return (new LessonRequestViewDTO(student.getFullName(), request.getId(), request.getLesson().getId(), lesson.getTeacher().getId(), lesson.getTeacher().getFullName(),
+                    lesson.getTeacherPayment(), lesson.getTeacher().getProfileImageHash(), lesson.getStartInstant(), lesson.getEndInstant(), lesson.getLanguage().getName(), request.getStatus()));
         }).toList();
     }
 
@@ -176,9 +197,15 @@ public class LessonController {
             @PathVariable("id") Long id) {
         Lesson lesson = lessonService.fetch(id);
         Student student = studentService.fetch(principal.getStoredUser().getId());
-        lessonService.createRequest(student, lesson);
+        LessonRequest request = lessonService.createRequest(student, lesson);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        LessonRequestViewDTO lessonRequest = new LessonRequestViewDTO(student.getFullName(), request.getId(), lesson.getId(), lesson.getTeacher().getId(), lesson.getTeacher().getFullName(),
+                lesson.getTeacherPayment(), lesson.getTeacher().getProfileImageHash(), lesson.getStartInstant(), lesson.getEndInstant(), lesson.getLanguage().getName(), request.getStatus());
+        messagingTemplate.convertAndSend("/topic/lesson-requests", lessonRequest);
+
+        Long lessonRequestId = request.getId();
+
+        return new ResponseEntity<>(lessonRequestId, HttpStatus.OK);
     }
 
     @PutMapping("/request/{id}")
@@ -192,15 +219,13 @@ public class LessonController {
     public ResponseEntity<?> updateRequest(@AuthenticationPrincipal DatabaseUser principal, @PathVariable("id") Long id,
             @RequestBody LessonRequestUpdateDTO dto) {
         LessonRequest lessonRequest = lessonRequestRepository.findById(id).get();
-        if (dto.status() == LessonRequest.Status.REJECTED) {
-            lessonRequestRepository.delete(lessonRequest);
-            return new ResponseEntity<>(HttpStatus.OK);
+        lessonService.setRequestStatus(lessonRequest, dto.status());
+
+        if (dto.status() == LessonRequest.Status.ACCEPTED) {
+            messagingTemplate.convertAndSend("/topic/lesson-request-accepted", lessonRequest);
+        } else if (dto.status() == LessonRequest.Status.REJECTED) {
+            messagingTemplate.convertAndSend("/topic/lesson-request-rejected", lessonRequest);
         }
-        /*if (dto.status() == LessonRequest.Status.ACCEPTED) {
-            ;
-        }*/
-        lessonRequest.setStatus(dto.status());
-        lessonRequestRepository.save(lessonRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

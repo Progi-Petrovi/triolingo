@@ -337,16 +337,16 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-show-more {
-  background-color: #7c1f18;
+  background-color: #c1ca44;
   z-index: 4;
   font-weight: bold;
   font-size: 85%;
   height: auto;
   line-height: normal;
-  color: #ddd;
+  color: #000;
 }
 .rbc-show-more:hover, .rbc-show-more:focus {
-  color: #fff;
+  color: #333;
 }
 
 .rbc-month-view {
@@ -862,8 +862,107 @@ button {
 }
 
 @media (max-width: 640px) {
-  .App > div {
+  .calendar > div {
     min-width: 80vw;
   }
   
+}
+
+.rbc-event:has(.rbc-event-content > .PENDING) {
+  border: none;
+  background-color: #f0ad4e;
+  color: #fff;
+}
+
+.rbc-agenda-event-cell:has(.PENDING)  {
+  background-color: #f0ad4e;
+  color: #fff;
+}
+
+.rbc-event:has(.rbc-event-content > .ACCEPTED) {
+  border: none;
+  background-color: #74ad31;
+  color: #fff;
+}
+
+.rbc-agenda-event-cell:has(.ACCEPTED) {
+  background-color: #74ad31;
+  color: #fff;
+}
+
+.rbc-event-content:has(.ACCEPTED) a {
+  color: #ddd;
+}
+
+.rbc-event-content:has(.ACCEPTED) a:hover {
+  color: #fff;
+}
+
+.rbc-agenda-event-cell:has(.ACCEPTED) a {
+  color: #ddd;
+}
+
+.rbc-agenda-event-cell:has(.ACCEPTED) a:hover {
+  color: #fff;
+}
+
+.rbc-event:has(.rbc-event-content > .COMPLETE) {
+  border: none;
+  background-color: #444;
+  color: #fff;
+}
+
+.rbc-agenda-event-cell:has(.COMPLETE) {
+  background-color: #444;
+  color: #fff;
+}
+
+.rbc-event:has(.rbc-event-content > .OPEN) {
+  border: none;
+  background-color: #646cff;
+  color: #fff;
+}
+
+.rbc-event:has(.OPEN) a {
+  border: none;
+  color: #ddd;
+}
+
+.rbc-event:has(.OPEN) a:hover {
+  border: none;
+  color: #fff;
+}
+
+.rbc-agenda-event-cell:has(.OPEN) {
+  background-color: #646cff;
+  color: #fff;
+}
+
+.rbc-agenda-event-cell:has(.OPEN) a {
+  color: #ddd;
+}
+
+.rbc-agenda-event-cell:has(.OPEN) a:hover {
+  color: #fff;
+}
+
+.rbc-event:has(.rbc-event-content > .CLOSED) {
+  border: none;
+  background-color: #de5e55;
+  color: #000;
+}
+.rbc-agenda-event-cell:has(.CLOSED) {
+  background-color: #de5e55;
+  color: #000;
+}
+
+.rbc-event:has(.rbc-event-content > .CANCELLED) {
+  border: none;
+  background-color: #760800;
+  color: #fff;
+}
+
+.rbc-agenda-event-cell:has(.CANCELLED) {
+  background-color: #760800;
+  color: #fff;
 }

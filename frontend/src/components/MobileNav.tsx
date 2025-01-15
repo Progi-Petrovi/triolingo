@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { NavConfig } from "@/config/header-nav";
+import { getNavLinkId } from "@/utils/main";
 
 type MobileNavType = {
     navConfig: NavConfig;
@@ -53,6 +54,7 @@ export function MobileNav({ navConfig }: MobileNavType) {
                                     <MobileLink
                                         key={item.href}
                                         to={item.href}
+                                        id={getNavLinkId(item.title)}
                                         onOpenChange={setOpen}
                                         className={cn(
                                             pathname === item.href

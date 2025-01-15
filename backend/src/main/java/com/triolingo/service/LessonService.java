@@ -2,6 +2,7 @@ package com.triolingo.service;
 
 import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.lesson.*;
+import com.triolingo.entity.TeachingStyle;
 import com.triolingo.entity.lesson.Lesson;
 import com.triolingo.entity.lesson.LessonRequest;
 import com.triolingo.entity.user.Student;
@@ -121,10 +122,27 @@ public class LessonService {
         return lesson;
     }
 
-    public LessonRequest setRequestStatus(@NotNull LessonRequest request, @NotNull LessonRequest.Status status) {
+    public void setRequestStatus(@NotNull LessonRequest request, @NotNull LessonRequest.Status status) {
         request.setStatus(status);
+        if (status == LessonRequest.Status.REJECTED) {
+            lessonRequestRepository.delete(request);
+            return;
+        }
         lessonRequestRepository.save(request);
-        return request;
+
+        // If teaching style is individual and a request is accepted, close the lesson
+        // and reject other pending requests.
+        if (status == LessonRequest.Status.ACCEPTED
+                && request.getLesson().getTeacher().getTeachingStyle() == TeachingStyle.INDIVIDUAL) {
+            Lesson lesson = request.getLesson();
+            lesson.setStatus(Lesson.Status.CLOSED);
+            List<LessonRequest> requests = findAllRequestsByLesson(lesson);
+            for (LessonRequest otherRequest : requests)
+                if (otherRequest.getStatus() == LessonRequest.Status.PENDING)
+                    otherRequest.setStatus(LessonRequest.Status.REJECTED);
+            lessonRequestRepository.saveAll(requests);
+            lessonRepository.save(lesson);
+        }
     }
 
     public LessonRequest createRequest(@NotNull Student student, @NotNull Lesson lesson) {

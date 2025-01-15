@@ -1,34 +1,44 @@
-import { View } from "react-big-calendar";
 import ReactBigCalendar from "@/components/ReactBigCalendar";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import {
-    LessonDTO,
-    LessonType as LessonEvent,
-    LessonRequest,
-    LessonRequestDTO,
-} from "@/types/lesson";
+import { LessonType } from "@/types/lesson";
 import useUserContext from "@/context/use-user-context";
 import { useFetch } from "@/hooks/use-fetch";
-import "@/calendar.css";
-import { Teacher } from "@/types/users";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { formatEndTime, formatLessonDate, formatStartTime } from "@/utils/main";
+import { CalendarComponent } from "@/types/calendar";
+import { useWSStudentRequests } from "@/hooks/use-socket";
 import {
-    formatEndTime,
-    formatLessonDate,
-    formatStartTime,
-    lessonRequestDTOtoLessonRequest,
-} from "@/utils/main";
+    useLoadStudentRequests,
+    useLoadTeacherLessons,
+} from "@/hooks/use-lessons";
 
 export default function BookLessonStudent() {
     const { user, fetchUser } = useUserContext();
+
+    const { id } = useParams<{ id: string }>();
+    const fetch = useFetch();
+
+    const [teacherLessons, loadTeacherLessons] = useLoadTeacherLessons(id);
+    const [studentRequests, loadStudentRequests] = useLoadStudentRequests();
+
+    const { toast } = useToast();
+
+    const loadLessonsAndRequests = () => {
+        loadTeacherLessons();
+        loadStudentRequests();
+    };
+
+    const useClient = useWSStudentRequests(loadLessonsAndRequests);
 
     useEffect(() => {
         if (!user) {
             fetchUser();
         }
+        loadLessonsAndRequests();
+        useClient();
     }, []);
 
     if (!user) {
@@ -39,100 +49,23 @@ export default function BookLessonStudent() {
         return <div>Only students can book lessons</div>;
     }
 
-    const { id } = useParams<{ id: string }>();
-    const fetch = useFetch();
-    const [lessonRequests, setLessonRequests] = useState<LessonRequest[]>([]);
-    const [teacherLessons, setTeacherLessons] = useState<LessonEvent[]>([]);
-    const [view, setView] = useState<View>("month");
-
-    const { toast } = useToast();
-
-    const loadTeacherAndLessons = () => {
-        fetch(`teacher/${id}`).then((res) => {
-            if (res.status === 404) {
-                console.error("Teacher not found");
-                return;
-            }
-        });
-
-        fetch(`lesson/teacher/${id}`)
-            .then((res) => {
-                console.log("FETCHED LESSONS", res);
-                if (res.status === 404) {
-                    console.error("Lessons not found");
-                    return;
-                }
-                console.log("Lessons: ", res.body);
-                setTeacherLessons(
-                    res.body.map((lesson: LessonDTO) => ({
-                        id: lesson.id,
-                        start: new Date(lesson.startInstant),
-                        end: new Date(lesson.endInstant),
-                        title: lesson.language + " lesson " + lesson.id,
-                        teacher: lesson.teacher,
-                        teacherProfileUrl: `/teacher/${lesson.teacher}`,
-                        status: lesson.status,
-                    }))
-                );
-            })
-            .catch((error) => console.error("Error fetching lessons:", error));
-
-        fetch(`lesson/requests/student`)
-            .then((res) => {
-                if (res.status === 404) {
-                    console.error("Lessons not found");
-                    return;
-                }
-                const lessonRequests = res.body as LessonRequestDTO[];
-                console.log("Lessons requests by student: ", res.body);
-
-                setLessonRequests(
-                    lessonRequests.map((lessonRequest) => {
-                        return lessonRequestDTOtoLessonRequest(lessonRequest);
-                    })
-                );
-            })
-            .catch((error) => console.error("Error fetching lessons:", error));
-    };
-
-    useEffect(() => {
-        loadTeacherAndLessons();
-    }, [id]);
-
-    function StudentLesson({ event }: { event: LessonEvent }) {
-        return (
-            <span>
-                <strong>{event.title}</strong> <br />
-                <Link to={event.teacherProfileUrl}>{event.teacher}</Link>
-            </span>
-        );
-    }
-
-    if (!lessonRequests) {
+    if (!teacherLessons) {
         return <div>Loading...</div>;
     }
 
-    const disableButton = (lessonId: number) => {
-        const button = document.getElementById(
-            "lesson-btn-" + lessonId.toString()
-        );
-        if (button) {
-            button.setAttribute("disabled", "true");
-        }
-    };
+    const sendLessonRequest = (lessonRequest: LessonType) => {
+        console.log("Sending lesson request: ", lessonRequest);
 
-    const sendLessonRequest = (lesson: LessonEvent) => {
-        fetch(`lesson/request/${lesson.id}`, {
+        fetch(`lesson/request/${lessonRequest.id}`, {
             method: "POST",
         }).then((res) => {
             if (res.status === 200) {
-                console.log("Lesson request sent successfully");
                 toast({
                     title: "Lesson request sent successfully",
                 });
-                disableButton(lesson.id);
+
+                loadLessonsAndRequests();
             } else {
-                console.error("Failed to send lesson request");
                 toast({
                     title: "Failed to send lesson request",
                     variant: "destructive",
@@ -141,39 +74,33 @@ export default function BookLessonStudent() {
         });
     };
 
-    const isRequested = (lessonId: number) => {
-        const lessonRequest = lessonRequests.find(
+    const isPending = (lessonId: number) => {
+        const lessonRequest = studentRequests.find(
             (request) => request.lessonId === lessonId
         );
-        const isRequested = lessonRequest === undefined ? false : true;
-        const isPending = lessonRequest?.status === "PENDING";
-        return isRequested && isPending;
+
+        if (lessonRequest === undefined) return false;
+
+        return lessonRequest?.status === "PENDING";
     };
 
-    const isApproved = (lessonId: number) => {
-        const lessonRequest = lessonRequests.find(
-            (request) => request.lessonId === lessonId
-        );
-        const isRequested = lessonRequest === undefined ? false : true;
-        const isApproved = lessonRequest?.status === "ACCEPTED";
-        return isRequested && isApproved;
-    };
+    console.log("Teacher lessons: ", teacherLessons);
+    console.log("Student lesson requests: ", studentRequests);
 
-    console.log("Lesson requests: ", lessonRequests);
+    const avaliableLessons = teacherLessons.filter(
+        (lessonRequest) => lessonRequest.status === "OPEN"
+    );
 
     return (
         <div className="flex flex-col gap-4 justify-center items-center">
             <div
-                className={`App ${
-                    view + "-active"
-                } flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-4 m-2 w-full lg:flex-wrap`}
+                className={`calendar flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-4 m-2 w-full lg:flex-wrap`}
             >
                 <div className="flex flex-col gap-4">
                     <h1>Your lessons</h1>
                     <ReactBigCalendar
-                        lessonRequests={lessonRequests}
-                        setView={setView}
-                        eventComponent={StudentLesson}
+                        lessonRequests={studentRequests}
+                        componentType={CalendarComponent.STUDENT_COMPONENT}
                     />
                 </div>
                 <Card className="pb-4">
@@ -181,45 +108,63 @@ export default function BookLessonStudent() {
                         Avaliable lessons from{" "}
                         <Link to={`/teacher/${id}`}>
                             {" "}
-                            {lessonRequests &&
-                                lessonRequests.length > 0 &&
-                                lessonRequests[0].teacher}
+                            {teacherLessons &&
+                                teacherLessons.length > 0 &&
+                                teacherLessons[0].teacherFullName}
                         </Link>
                     </CardHeader>
 
-                    <CardContent className="flex flex-col gap-4 max-h-[65vh] overflow-y-auto">
-                        {teacherLessons
-                            .filter((lesson) => lesson.status === "OPEN")
-                            .filter((lesson) => !isApproved(lesson.id))
-                            .map((lesson) => (
-                                <Card key={lesson.title}>
-                                    <CardHeader>
-                                        <span className="font-bold">
-                                            {lesson.title}
-                                        </span>{" "}
-                                        @ {formatLessonDate(lesson.start)}{" "}
-                                        {formatStartTime(lesson.start)} -{" "}
-                                        {formatEndTime(lesson.end)}
-                                    </CardHeader>
-                                    <CardContent className="flex flex-col gap-4">
-                                        <Button
-                                            onClick={() => {
-                                                sendLessonRequest(lesson);
-                                            }}
-                                            id={
-                                                "lesson-btn-" +
-                                                lesson.id.toString()
-                                            }
-                                            disabled={isRequested(lesson.id)}
-                                        >
-                                            {isRequested(lesson.id)
-                                                ? "Request sent"
-                                                : "Request lesson"}
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                    </CardContent>
+                    {avaliableLessons && avaliableLessons.length > 0 ? (
+                        <CardContent className="flex flex-col gap-4 max-h-[65vh] overflow-y-auto">
+                            {avaliableLessons.map(
+                                (lessonRequest: LessonType) => (
+                                    <Card key={lessonRequest.title}>
+                                        <CardHeader>
+                                            <span className="font-bold">
+                                                {lessonRequest.title}
+                                            </span>
+                                            @{" "}
+                                            {formatLessonDate(
+                                                lessonRequest.start
+                                            )}{" "}
+                                            {formatStartTime(
+                                                lessonRequest.start
+                                            )}{" "}
+                                            - {formatEndTime(lessonRequest.end)}
+                                            <br />
+                                            <span>
+                                                €{lessonRequest.teacherPayment}
+                                            </span>
+                                        </CardHeader>
+                                        <CardContent className="flex flex-col gap-4">
+                                            {isPending(lessonRequest.id) ? (
+                                                <Button disabled>
+                                                    Request sent
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    onClick={() => {
+                                                        sendLessonRequest(
+                                                            lessonRequest
+                                                        );
+                                                    }}
+                                                >
+                                                    Request lesson
+                                                </Button>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                )
+                            )}
+                        </CardContent>
+                    ) : (
+                        <div
+                            className="flex justify-center items-center pb-2
+                        "
+                        >
+                            No lessons available
+                        </div>
+                    )}
                 </Card>
             </div>
         </div>

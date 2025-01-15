@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React from "react";
 import PathConstants from "./pathConstants";
-import path from "path";
 
 const Home = React.lazy(() => import("../pages/home/Home"));
 const Login = React.lazy(() => import("../pages/Login"));
