@@ -38,3 +38,10 @@ VALUES (1, 'Spanish'),
        (37, 'Esperanto'),
        (38, 'Navajo'),
        (39, 'Yiddish');
+
+-- password: 123456789
+INSERT OR IGNORE INTO user (id, email, full_name, password, verified)
+VALUES (100, 'admin@triolingo.space', 'admin', '$2a$10$zc5V1BakWl/0kiU9fRsLxeR0FS.vbPdsIGGG6DOfBJE1ODm3nA1eK', 1);
+
+INSERT OR IGNORE INTO admin(id)
+VALUES (100)
