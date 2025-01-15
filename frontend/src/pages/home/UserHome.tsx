@@ -26,7 +26,7 @@ export default function UserHome() {
 
     useEffect(() => {
         if (!user) {
-            fetchUser();
+            fetchUser(true);
         }
         fetch("teacher/all").then((res) => {
             setTeachers(res.body as TeacherTableRow[]);
