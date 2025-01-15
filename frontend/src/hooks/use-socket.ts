@@ -2,6 +2,8 @@ import { Client } from "@stomp/stompjs";
 import { useToast } from "./use-toast";
 import PathConstants from "@/routes/pathConstants";
 import { Role, User } from "@/types/users";
+import { LessonRequest, LessonRequestDTO } from "@/types/lesson";
+import { lessonRequestDTOtoLessonRequest } from "@/utils/main";
 
 type WebSocketProp = {
     socketUrl: string;
@@ -49,37 +51,40 @@ export function useWSTeacherRequests(user: User, teacherSocketCallback?: (messag
     const socketUrl = "/topic/lesson-requests";
 
     const socketCallback = (_message: any) => {
-        const lessonRequest = JSON.parse(_message.body);
+        const lessonRequest: LessonRequestDTO = JSON.parse(_message.body);
 
-        console.log("Lesson request: ", lessonRequest);
-        console.log("User: ", user);
-        console.log("lessonRequest.teacherId !== user.id", lessonRequest.teacherId !== user.id);
+        lessonRequestDTOtoLessonRequest(lessonRequest).then((lessonRequest: LessonRequest) => {
 
-        if (lessonRequest.teacherId !== user?.id || !user) {
-            console.warn("Not for this user");
-            return;
-        }
+            console.log("Lesson request: ", lessonRequest);
+            console.log("User: ", user);
+            console.log("lessonRequest.teacherId !== user.id", lessonRequest.lesson.teacher.id !== user.id);
 
-        const requestsNavLink = document.getElementById(
-            "nav-link-lesson-requests"
-        );
-        if (requestsNavLink) {
-            requestsNavLink.classList.remove("text-foreground");
-            requestsNavLink.classList.add("text-red-500");
+            if (lessonRequest.lesson.teacher.id !== user?.id || !user) {
+                console.warn("Not for this user");
+                return;
+            }
 
-            toast({
-                title: "New lesson request",
-                description: "You have a new lesson request",
-            });
+            const requestsNavLink = document.getElementById(
+                "nav-link-lesson-requests"
+            );
+            if (requestsNavLink) {
+                requestsNavLink.classList.remove("text-foreground");
+                requestsNavLink.classList.add("text-red-500");
 
-            if (typeof teacherSocketCallback === "function")
-                teacherSocketCallback(_message);
+                toast({
+                    title: "New lesson request",
+                    description: "You have a new lesson request",
+                });
 
-            setTimeout(() => {
-                requestsNavLink.classList.remove("text-red-500");
-                requestsNavLink.classList.add("text-foreground");
-            }, 5000);
-        }
+                if (typeof teacherSocketCallback === "function")
+                    teacherSocketCallback(_message);
+
+                setTimeout(() => {
+                    requestsNavLink.classList.remove("text-red-500");
+                    requestsNavLink.classList.add("text-foreground");
+                }, 5000);
+            }
+        });
     };
 
     return useWebSocket({ socketUrl, socketCallback });

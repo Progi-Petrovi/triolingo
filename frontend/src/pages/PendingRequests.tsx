@@ -55,23 +55,35 @@ export default function PendingRequests() {
                             <Card key={lessonRequest.id}>
                                 <CardContent className="flex flex-col justify-center items-center pt-4 pb-4 gap-4">
                                     <span className="font-bold">
-                                        {lessonRequest.title}
+                                        {lessonRequest.lesson.title}
                                     </span>
                                     <span>
                                         @{" "}
-                                        {formatLessonDate(lessonRequest.start)}{" "}
-                                        {formatStartTime(lessonRequest.start)} -{" "}
-                                        {formatEndTime(lessonRequest.end)}
+                                        {formatLessonDate(
+                                            lessonRequest.lesson.start
+                                        )}{" "}
+                                        {formatStartTime(
+                                            lessonRequest.lesson.start
+                                        )}{" "}
+                                        -{" "}
+                                        {formatEndTime(
+                                            lessonRequest.lesson.end
+                                        )}
                                     </span>
                                     <span>
                                         Teacher:{" "}
                                         <Link
-                                            to={`/teacher/${lessonRequest.teacher}`}
+                                            to={`/teacher/${lessonRequest.lesson.teacher}`}
                                         >
-                                            {lessonRequest.teacherFullName}
+                                            {
+                                                lessonRequest.lesson.teacher
+                                                    .fullName
+                                            }
                                         </Link>
                                     </span>
-                                    <span>€{lessonRequest.teacherPayment}</span>
+                                    <span>
+                                        €{lessonRequest.lesson.teacherPayment}
+                                    </span>
                                 </CardContent>
                             </Card>
                         ))

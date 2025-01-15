@@ -45,5 +45,5 @@ export enum LessonStatus {
 	OPEN = "OPEN",
 	CLOSED = "CLOSED",
 	CANCELLED = "CANCELLED",
-	COMPLETED = "COMPLETE",
+	COMPLETE = "COMPLETE",
 }

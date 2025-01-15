@@ -22,6 +22,7 @@ import {
 import useUserContext from "@/context/use-user-context";
 import { Teacher as TeacherType } from "@/types/users";
 import { DateTimePicker } from "./DateTimePicker";
+import { useState } from "react";
 
 const formSchema = z
     .object({
@@ -60,6 +61,7 @@ export default function AddLessonTeacherForm({
     const { toast } = useToast();
     const fetch = useFetch();
     const teacher = useUserContext().user as TeacherType;
+    const [selectedLanguage, setSelectedLanguage] = useState<string>("");
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -104,6 +106,7 @@ export default function AddLessonTeacherForm({
 
     function resetForm() {
         form.reset();
+        setSelectedLanguage("");
     }
 
     return (
@@ -121,7 +124,13 @@ export default function AddLessonTeacherForm({
                             <FormControl>
                                 <DateTimePicker
                                     value={field.value}
-                                    onChange={field.onChange}
+                                    onChange={(value) => {
+                                        field.onChange(value);
+                                        form.setValue(
+                                            "endInstant",
+                                            new Date(value.getTime() + 3600000)
+                                        );
+                                    }}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -152,8 +161,11 @@ export default function AddLessonTeacherForm({
                             <FormLabel>Language</FormLabel>
                             <FormControl>
                                 <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
+                                    value={selectedLanguage}
+                                    onValueChange={(value) => {
+                                        setSelectedLanguage(value);
+                                        field.onChange(value);
+                                    }}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select a language" />

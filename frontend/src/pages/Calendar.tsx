@@ -47,6 +47,7 @@ export default function Calendar() {
             : CalendarComponent.STUDENT_COMPONENT;
 
     console.log("Lessons: ", lessons);
+    console.log("Lesson requests !!!!: ", lessonRequests);
 
     return (
         <div

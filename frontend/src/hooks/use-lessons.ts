@@ -64,9 +64,10 @@ export function useLoadStudentRequests() {
 	const fetch = useFetch();
 	const [lessonRequests, setLessonRequests] = useState<LessonRequest[]>([]);
 
-	const loadStudentRequests = () => {
-		fetch(`lesson/requests/student`)
-			.then(async (res) => {
+	const loadStudentRequests = async () => {
+		try {
+        const res = await fetch(`lesson/requests/student`)
+			
 				if (res.status === 404) {
 					console.error("Lessons not found");
 					return;
@@ -76,9 +77,11 @@ export function useLoadStudentRequests() {
 				setLessonRequests(
 					await lessonRequestDTOsToLessonRequests(lessonRequests)
 				);
-			})
-			.catch((error) => console.error("Error fetching lessons:", error));
-	};
+        }
+			catch (error) { 
+                console.error("Error fetching lessons:", error);
+        }
+    };
 
 	return [lessonRequests, loadStudentRequests] as const;
 }

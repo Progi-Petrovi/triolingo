@@ -78,16 +78,25 @@ export default function LessonRequests() {
                             <Card key={lessonRequest.id}>
                                 <CardHeader>
                                     <span className="font-bold">
-                                        {lessonRequest.title}
+                                        {lessonRequest.lesson.language} lesson{" "}
+                                        {lessonRequest.lesson.id}
                                     </span>{" "}
-                                    @ {formatLessonDate(lessonRequest.start)}{" "}
-                                    {formatStartTime(lessonRequest.start)} -{" "}
-                                    {formatEndTime(lessonRequest.end)}
-                                    <br />
-                                    <span>€{lessonRequest.teacherPayment}</span>
+                                    @{" "}
+                                    {formatLessonDate(
+                                        lessonRequest.lesson.start
+                                    )}{" "}
+                                    {formatStartTime(
+                                        lessonRequest.lesson.start
+                                    )}{" "}
+                                    - {formatEndTime(lessonRequest.lesson.end)}
                                     <br />
                                     <span>
-                                        Requested by: {lessonRequest.student}
+                                        €{lessonRequest.lesson.teacherPayment}
+                                    </span>
+                                    <br />
+                                    <span>
+                                        Requested by:{" "}
+                                        {lessonRequest.student.fullName}
                                     </span>
                                 </CardHeader>
                                 <CardFooter className="flex gap-4">
