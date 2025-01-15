@@ -1,7 +1,6 @@
 package com.triolingo.service;
 
 import com.triolingo.dto.user.UserChangePasswordDTO;
-import com.triolingo.entity.user.Teacher;
 import com.triolingo.entity.user.User;
 import com.triolingo.exception.ChangePasswordException;
 import com.triolingo.repository.UserRepository;

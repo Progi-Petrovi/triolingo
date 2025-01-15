@@ -104,6 +104,32 @@ public class LessonController {
         }).toList();
     }
 
+    @GetMapping("/student/{id}")
+    @Secured({ "ROLE_ADMIN" })
+    @Operation(description = "Returns all lessons with existing request originating from the specified student.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
+    })
+    public List<LessonViewDTO> getByStudent(@PathVariable("id") Long id) {
+        Student student = studentService.fetch(id);
+        return lessonService.findAllByStudent(student).stream()
+                .map((lesson) -> dtoMapper.createDto(lesson, LessonViewDTO.class)).toList();
+    }
+
+    @GetMapping("/student")
+    @Secured({ "ROLE_STUDENT", "ROLE_VERIFIED" })
+    @Operation(description = "Returns all lessons with existing request originating from the logged in student.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
+    })
+    public List<LessonViewDTO> getByStudent(@AuthenticationPrincipal DatabaseUser principal) {
+        Student student = studentService.fetch(principal.getStoredUser().getId());
+        return lessonService.findAllByStudent(student).stream()
+                .map((lesson) -> dtoMapper.createDto(lesson, LessonViewDTO.class)).toList();
+    }
+
     @PostMapping
     @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
     @Operation(description = "Creates a new lesson")
