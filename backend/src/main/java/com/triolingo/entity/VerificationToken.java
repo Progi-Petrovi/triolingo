@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VerificationToken {
     // This is difficult to move into a .properties, since it is used statically
-    private static final int EXPIRATION = 24;
+    private static final int EXPIRATION = 5;
 
     public VerificationToken(User user) {
         this.user = user;
@@ -48,7 +48,7 @@ public class VerificationToken {
     private static Instant calculateExpirationDate() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Timestamp(cal.getTime().getTime()));
-        cal.add(Calendar.HOUR, EXPIRATION);
+        cal.add(Calendar.MINUTE, EXPIRATION);
         return new Date(cal.getTime().getTime()).toInstant();
     }
 

@@ -6,6 +6,7 @@ import java.time.Instant;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import com.triolingo.entity.VerificationToken;
@@ -16,6 +17,7 @@ import com.triolingo.repository.VerificationRepository;
 import jakarta.mail.MessagingException;
 
 @Service
+@Transactional
 public class VerificationService {
 
     private final VerificationRepository verificationRepository;
@@ -38,7 +40,7 @@ public class VerificationService {
             if (verificationToken.getExpirationDate().isBefore(Instant.now()))
                 verificationRepository.delete(verificationToken);
             else
-                throw new IllegalArgumentException("This user already has an active verification token");
+                return verificationToken;
         }
 
         verificationToken = new VerificationToken(user);
@@ -65,7 +67,7 @@ public class VerificationService {
                 uri.toString());
     }
 
-    @Scheduled(cron = "0 0 * ? * *")
+    @Scheduled(cron = "0 */5 * ? * *")
     public void clearExpiredVerification() {
         verificationRepository.deleteAllByExpirationDateGreaterThan(Instant.now());
     }
