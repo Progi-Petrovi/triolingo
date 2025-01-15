@@ -126,8 +126,12 @@ public class LessonService {
         return lesson;
     }
 
-    public LessonRequest setRequestStatus(@NotNull LessonRequest request, @NotNull LessonRequest.Status status) {
+    public void setRequestStatus(@NotNull LessonRequest request, @NotNull LessonRequest.Status status) {
         request.setStatus(status);
+        if (status == LessonRequest.Status.REJECTED) {
+            lessonRequestRepository.delete(request);
+            return;
+        }
         lessonRequestRepository.save(request);
 
         // If teaching style is individual and a request is accepted, close the lesson
@@ -143,7 +147,6 @@ public class LessonService {
             lessonRequestRepository.saveAll(requests);
             lessonRepository.save(lesson);
         }
-        return request;
     }
 
     public LessonRequest createRequest(@NotNull Student student, @NotNull Lesson lesson) {

@@ -26,6 +26,10 @@ const teacherNav = [
         href: PathConstants.CALENDAR,
     },
     {
+        title: "Lesson requests",
+        href: PathConstants.LESSON_REQUESTS,
+    },
+    {
         title: "Log out",
         href: PathConstants.LOG_OUT,
     },
@@ -39,6 +43,10 @@ const studentNav = [
     {
         title: "Calendar",
         href: PathConstants.CALENDAR,
+    },
+    {
+        title: "Pending requests",
+        href: PathConstants.PENDING_REQUESTS,
     },
     {
         title: "Log out",

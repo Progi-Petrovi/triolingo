@@ -1,69 +1,67 @@
+import ReactBigCalendar from "@/components/ReactBigCalendar";
+import { useEffect } from "react";
+import useUserContext from "@/context/use-user-context";
+import AddLessonTeacherForm from "@/components/AddLessonTeacherForm";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CalendarComponent } from "@/types/calendar";
+import { Role } from "@/types/users";
+import { useWSStudentRequests, useWSTeacherRequests } from "@/hooks/use-socket";
 import {
-    Calendar as ReactBigCalendar,
-    View,
-    momentLocalizer,
-} from "react-big-calendar";
-import moment from "moment";
-import { LessonType as LessonEvent } from "@/types/lesson-event";
-
-import "@/calendar.css";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-
-const localizer = momentLocalizer(moment);
+    useLoadStudentRequests as useLoadStudentRequests,
+    useLoadTeacherLessons,
+} from "@/hooks/use-lessons";
 
 export default function Calendar() {
-    /* TODO: Fetch lessons from the server */
+    const { user, fetchUser } = useUserContext();
 
-    const lessons = [
-        {
-            start: moment("2025-01-10T09:45:00").toDate(),
-            end: moment("2025-01-10T10:45:00").toDate(),
-            title: "English Lesson #1",
-            teacher: "Leonardo Šimunović",
-            teacherProfileUrl: "/teacher/1",
-        },
-        {
-            start: moment("2025-01-11T09:45:00").toDate(),
-            end: moment("2025-01-11T20:45:00").toDate(),
-            title: "German Lesson #1",
-            teacher: "Stjepan Bonić",
-            teacherProfileUrl: "/teacher/2",
-        },
-    ];
+    const useClientTeacher = useWSTeacherRequests();
+    const useClientStudent = useWSStudentRequests();
 
-    function Lesson({ event }: { event: LessonEvent }) {
-        return (
-            <span>
-                <strong>{event.title}</strong> <br />
-                <Link to={event.teacherProfileUrl}>{event.teacher}</Link>
-            </span>
-        );
+    const [lessons, loadTeacherLessons] = useLoadTeacherLessons();
+    const [lessonRequests, loadStudentRequests] = useLoadStudentRequests();
+
+    useEffect(() => {
+        if (!user) {
+            fetchUser();
+        } else if (user.role === Role.ROLE_TEACHER) {
+            loadTeacherLessons();
+            useClientTeacher();
+        } else if (user.role === Role.ROLE_STUDENT) {
+            loadStudentRequests();
+            useClientStudent();
+        }
+    }, []);
+
+    if (!user) {
+        return <div>Loading...</div>;
     }
 
-    const [view, setView] = useState("month");
+    let componentType =
+        user.role === "ROLE_TEACHER"
+            ? CalendarComponent.TEACHER_COMPONENT
+            : CalendarComponent.STUDENT_COMPONENT;
 
-    const handleViewChange = (newView: View) => {
-        setView(newView);
-    };
+    console.log("Lessons: ", lessons);
 
     return (
         <div
-            className={`App ${view === "week" ? "week-active" : ""} ${
-                view === "day" ? "day-active" : ""
-            }`}
+            className={`App flex flex-col md:flex-row items-center gap-4 m-2 w-full`}
         >
             <ReactBigCalendar
-                localizer={localizer}
-                defaultDate={new Date()}
-                defaultView="month"
-                events={lessons}
-                style={{ height: "70vh" }}
-                components={{
-                    event: Lesson,
-                }}
-                onView={(newView) => handleViewChange(newView)}
+                lessons={lessons}
+                lessonRequests={lessonRequests}
+                componentType={componentType}
             />
+            {user.role === "ROLE_TEACHER" && (
+                <Card className="w-96 flex-1 max-w-[95vw]">
+                    <CardHeader>
+                        <CardTitle>Add Lesson Opening</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <AddLessonTeacherForm onSuccess={loadTeacherLessons} />
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 }

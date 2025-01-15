@@ -60,7 +60,7 @@ export default function ChangePasswordDialog() {
             },
             body: JSON.stringify(values),
         }).then((res) => {
-            if (res.status == 200) {
+            if (res.status === 200) {
                 toast({
                     title: "Changed password successfully",
                     description: `${res.body}`,

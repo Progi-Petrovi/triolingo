@@ -32,6 +32,10 @@ export default function Teacher() {
         }
     }, []);
 
+    if (!user) {
+        return <div>Loading...</div>;
+    }
+
     const fetch = useFetch();
     const { id } = useParams();
     const [teacher, setTeacher] = useState<TeacherType>();
@@ -191,7 +195,15 @@ export default function Teacher() {
                         <Button className="font-base">
                             See previous lessons
                         </Button>
-                        <Button className="font-base">Book a lesson</Button>
+                        <Button className="font-base">
+                            <Link
+                                to={`/teacher/lessons/${id}`}
+                                className="text-inherit focus:text-inherit hover:text-inherit w-full h-full
+                                    flex justify-center items-center text-base"
+                            >
+                                Book a lesson
+                            </Link>
+                        </Button>
                     </CardContent>
                 </Card>
             </div>
