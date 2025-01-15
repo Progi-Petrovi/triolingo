@@ -1,66 +1,49 @@
-export type LessonType = {
-    id: number;
-    start: Date;
-    end: Date;
-    title: string;
-    teacher: string;
-    teacherFullName: string;
-    teacherProfileUrl: string;
-    teacherProfileImageHash: string;
-    teacherPayment: number;
-    status: string;
+import { Student, Teacher } from "./users";
+
+export type Lesson = {
+	id: number;
+	start: Date;
+	end: Date;
+	title: string;
+	language: string;
+	teacher: Teacher;
+	teacherPayment: number;
+	status: LessonStatus;
 };
 
 export interface LessonDTO {
-    id: number;
-    startInstant: string;
-    endInstant: string;
-    language: string;
-    teacher: number;
-    teacherFullName: string;
-    teacherPayment: number;
-    teacherProfileImageHash: string
-    status: string;
+	id: number;
+	startInstant: string;
+	endInstant: string;
+	language: string;
+	teacher: number;
+	status: string;
+	teacherPayment: number;
 }
 
 export type LessonRequest = {
-    id: number;
-    lessonId: number;
-    start: Date;
-    end: Date;
-    title: string;
-    teacher: string;
-    teacherFullName: string;
-    teacherProfileUrl: string;
-    teacherPayment: number;
-    teacherProfileImageHash: string;
-    student: string;
-    status: string;
-}
-
-export interface LessonRequestDTO {
-    id: number;
-    lessonId: number;
-    teacherId: number;
-    teacherFullName: string;
-    studentFullName: string;
-    startInstant: string;
-    endInstant: string;
-    language: string;
-    status: string;
-    teacherProfileImageHash: string;
-    teacherPayment: number;
+	id: number;
+	lesson: Lesson;
+	student: Student;
+	status: LessonRequestStatus;
 };
 
+export interface LessonRequestDTO {
+	id: number;
+	student: number;
+	lesson: number;
+	status: string;
+}
+
 export enum LessonRequestStatus {
-    PENDING = "PENDING",
-    ACCEPTED = "ACCEPTED",
-    REJECTED = "REJECTED",
+	PENDING = "PENDING",
+	ACCEPTED = "ACCEPTED",
+	REJECTED = "REJECTED",
 }
 
 export enum LessonStatus {
-    OPEN = "OPEN",
-    CLOSED = "CLOSED",
-    CANCELLED = "CANCELLED",
-    COMPLETED = "COMPLETE",
+	OPEN = "OPEN",
+	CLOSED = "CLOSED",
+	CANCELLED = "CANCELLED",
+	COMPLETED = "COMPLETE",
 }
