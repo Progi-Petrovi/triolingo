@@ -23,6 +23,10 @@ import { z } from "zod";
 import { Textarea } from "./ui/textarea";
 import { Star } from "lucide-react";
 
+const NO_LESSON_ERROR_MESSAGE =
+    "Specified result type [com.triolingo.entity.lesson.Lesson] did not match Query selection type" +
+    " [com.triolingo.entity.lesson.LessonRequest] - multiple selections: use Tuple or array";
+
 const formSchema = z.object({
     rating: z.number().int().min(1).max(5),
     content: z.string().min(10).max(250),

@@ -25,6 +25,12 @@ const BookLessonStudent = React.lazy(
 
 const LessonRequests = React.lazy(() => import("../pages/LessonRequests"));
 
+const BookLessonStudent = React.lazy(
+    () => import("../pages/BookLessonStudent")
+);
+
+const LessonRequests = React.lazy(() => import("../pages/LessonRequests"));
+
 const PendingRequests = React.lazy(() => import("../pages/PendingRequests"));
 
 import UserProfile from "../pages/profile/UserProfile";
