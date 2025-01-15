@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import useUserContext from "@/context/use-user-context";
 import { useLoadStudentRequests } from "@/hooks/use-lessons";
 import { useWSStudentRequests } from "@/hooks/use-socket";
-import { Role } from "@/types/users";
+import { Role, User } from "@/types/users";
 import { formatLessonDate, formatStartTime, formatEndTime } from "@/utils/main";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -16,7 +16,10 @@ export default function PendingRequests() {
         loadStudentRequests();
     };
 
-    const useClient = useWSStudentRequests(loadLessonsAndRequests);
+    const useClient = useWSStudentRequests(
+        user as User,
+        loadLessonsAndRequests
+    );
 
     useEffect(() => {
         if (!user) {

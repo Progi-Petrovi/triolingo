@@ -82,6 +82,7 @@ export function useLoadStudentRequests() {
                     return;
                 }
                 const lessonRequests = res.body as LessonRequestDTO[];
+                console.log("lessonRequests", lessonRequests);
                 setLessonRequests(
                     requestDTOsToSudentRequests(lessonRequests)
                 );

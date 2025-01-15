@@ -23,10 +23,6 @@ import { z } from "zod";
 import { Textarea } from "./ui/textarea";
 import { Star } from "lucide-react";
 
-const NO_LESSON_ERROR_MESSAGE =
-    "Specified result type [com.triolingo.entity.lesson.Lesson] did not match Query selection type" +
-    " [com.triolingo.entity.lesson.LessonRequest] - multiple selections: use Tuple or array";
-
 const formSchema = z.object({
     rating: z.number().int().min(1).max(5),
     content: z.string().min(10).max(250),
@@ -46,13 +42,13 @@ function StarRating({
                     type="button"
                     key={star}
                     className={`lg:text-3xl bg-transparent md:text-2xl text-lg p-0
-                                                        border-none hover:border-none focus:border-none
-                                                        outline-none hover:outline-none focus:outline-none
-                                                         ${
-                                                             field.value >= star
-                                                                 ? "text-yellow-500"
-                                                                 : "text-gray-300"
-                                                         }`}
+                                border-none hover:border-none focus:border-none
+                                outline-none hover:outline-none focus:outline-none
+                                    ${
+                                        field.value >= star
+                                            ? "text-yellow-500"
+                                            : "text-gray-300"
+                                    }`}
                     onClick={() => field.onChange(star)}
                 >
                     <Star fill="currentColor" />
@@ -98,13 +94,10 @@ export function submitReview(
             });
             updateReviews();
             resetForm();
-        } else if (
-            res.status === 500 &&
-            responseBody.message === NO_LESSON_ERROR_MESSAGE
-        ) {
+        } else if (res.status === 400) {
             toast({
                 title: "Adding review failed",
-                description: `You need to have a lesson to review a teacher`,
+                description: `You need to have at least one lesson to review a teacher!`,
                 variant: "destructive",
             });
         } else {
@@ -124,8 +117,8 @@ export default function AddReviewDialog({
     teacher: number;
     updateReviews: () => void;
 }) {
-    const { toast } = useToast();
     const [open, setOpen] = useState(false);
+    const { toast } = useToast();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),

@@ -14,6 +14,7 @@ import {
     useLoadStudentRequests,
     useLoadTeacherLessons,
 } from "@/hooks/use-lessons";
+import { Role, User } from "@/types/users";
 
 export default function BookLessonStudent() {
     const { user, fetchUser } = useUserContext();
@@ -31,7 +32,10 @@ export default function BookLessonStudent() {
         loadStudentRequests();
     };
 
-    const useClient = useWSStudentRequests(loadLessonsAndRequests);
+    const useClient = useWSStudentRequests(
+        user as User,
+        loadLessonsAndRequests
+    );
 
     useEffect(() => {
         if (!user) {
@@ -45,7 +49,7 @@ export default function BookLessonStudent() {
         return <div>Loading...</div>;
     }
 
-    if (user.role !== "ROLE_STUDENT") {
+    if (user.role !== Role.ROLE_STUDENT) {
         return <div>Only students can book lessons</div>;
     }
 

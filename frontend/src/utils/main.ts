@@ -5,9 +5,11 @@ import {
     studentNavConfig,
     teacherNavConfig,
 } from "@/config/header-nav";
+import PathConstants from "@/routes/pathConstants";
 import { LessonDTO, LessonRequestDTO, LessonType } from "@/types/lesson";
 import { Role, User } from "@/types/users";
 import moment from "moment";
+import { useFetch } from "@/hooks/use-fetch";
 
 export function initials(fullName: string): string {
     return fullName
@@ -83,3 +85,24 @@ export const lessonDTOsToLessons = (lessonDTOs: LessonDTO[]) => {
 export const getNavLinkId = (title: string) => {
     return "nav-link-" + title.toLowerCase().replace(" ", "-");
 };
+
+export function deleteProfile(role: Role, id: number, toast: any, navigate: any) {
+    const fetch = useFetch();
+
+    const roleName = role === Role.ROLE_ADMIN ? "admin" : role === Role.ROLE_STUDENT ? "student" : "teacher";
+
+    fetch(`/user/${id}`, {
+        method: "DELETE",
+    }).then((res) => {
+        if (res.status === 200) {
+            toast({
+                title: `Successfully deleted ${roleName} with id: ${id}`,
+            });
+            navigate(PathConstants.HOME);
+        } else {
+            toast({
+                title: `Failed to delete ${roleName} with id: ${id}`,
+            });
+        }
+    });
+}

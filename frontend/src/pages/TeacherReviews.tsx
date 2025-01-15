@@ -3,10 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFetch } from "@/hooks/use-fetch";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Review as ReviewType } from "@/types/review";
-import { Teacher as TeacherType } from "@/types/users";
+import { ReviewType } from "@/types/review";
+import { Teacher as TeacherType, User } from "@/types/users";
+import useUserContext from "@/context/use-user-context";
+import { useWSStudentRequests } from "@/hooks/use-socket";
 
 export default function TeacherReviews() {
+    const { user, fetchUser } = useUserContext();
     const fetch = useFetch();
     const { id } = useParams();
     const [teacher, setTeacher] = useState<TeacherType>();
@@ -15,6 +18,15 @@ export default function TeacherReviews() {
     const [averageRating, setAverageRating] = useState<number | string>(
         "No reviews"
     );
+
+    const useStudentRequestsClient = useWSStudentRequests(user as User);
+
+    useEffect(() => {
+        if (!user) {
+            fetchUser();
+        }
+        useStudentRequestsClient();
+    }, []);
 
     const setLastReviews = (reviews: ReviewType[]) => {
         if (!reviews || !reviews.length) return;

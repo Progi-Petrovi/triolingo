@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Review as ReviewType } from "@/types/review";
+import { ReviewType } from "@/types/review";
 
 interface ReviewProps {
     review: ReviewType;
@@ -26,6 +26,7 @@ const StarRating = ({ rating }: { rating: number }) => {
 };
 
 export const Review = ({ review }: ReviewProps) => {
+    console.log("Review: ", review);
     return (
         <div className={"flex flex-col gap-1"} id={`review-${review.id}`}>
             <div className={"flex gap-4"}>

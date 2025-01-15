@@ -4,8 +4,8 @@ import useUserContext from "@/context/use-user-context";
 import AddLessonTeacherForm from "@/components/AddLessonTeacherForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarComponent } from "@/types/calendar";
-import { Role } from "@/types/users";
-import { useWSStudentRequests, useWSTeacherRequests } from "@/hooks/use-socket";
+import { User } from "@/types/users";
+import { useWSLessonRequests } from "@/hooks/use-socket";
 import {
     useLoadStudentRequests as useLoadStudentRequests,
     useLoadTeacherLessons,
@@ -14,21 +14,26 @@ import {
 export default function Calendar() {
     const { user, fetchUser } = useUserContext();
 
-    const useClientTeacher = useWSTeacherRequests();
-    const useClientStudent = useWSStudentRequests();
-
     const [lessons, loadTeacherLessons] = useLoadTeacherLessons();
     const [lessonRequests, loadStudentRequests] = useLoadStudentRequests();
+
+    const teacherWSCallback = (_message: any) => {
+        console.log("Teacher WS Callback");
+        console.log("Message: ", _message);
+    };
+
+    const useRequestsClient = useWSLessonRequests({
+        user: user as User,
+        teacherCallback: loadTeacherLessons,
+        studentCallback: loadStudentRequests,
+        teacherWSCallback,
+    });
 
     useEffect(() => {
         if (!user) {
             fetchUser();
-        } else if (user.role === Role.ROLE_TEACHER) {
-            loadTeacherLessons();
-            useClientTeacher();
-        } else if (user.role === Role.ROLE_STUDENT) {
-            loadStudentRequests();
-            useClientStudent();
+        } else {
+            useRequestsClient();
         }
     }, []);
 

@@ -12,6 +12,7 @@ import { formatEndTime, formatLessonDate, formatStartTime } from "@/utils/main";
 import { useEffect } from "react";
 import { useLoadTeacherRequests } from "@/hooks/use-lessons";
 import { useWSTeacherRequests } from "@/hooks/use-socket";
+import { User } from "@/types/users";
 
 export default function LessonRequests() {
     const { user, fetchUser } = useUserContext();
@@ -20,18 +21,18 @@ export default function LessonRequests() {
 
     const fetch = useFetch();
 
-    const useClient = useWSTeacherRequests(() => {
-        getTeacherLessonRequests();
-    });
+    const useClient = useWSTeacherRequests(
+        user as User,
+        getTeacherLessonRequests
+    );
 
     useEffect(() => {
         if (!user) {
             fetchUser();
         } else {
             getTeacherLessonRequests();
+            useClient();
         }
-
-        useClient();
     }, []);
 
     if (!user) {
