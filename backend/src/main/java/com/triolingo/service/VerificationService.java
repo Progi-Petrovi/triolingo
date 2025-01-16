@@ -1,12 +1,16 @@
 package com.triolingo.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.time.Instant;
 
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import com.triolingo.entity.VerificationToken;
@@ -58,13 +62,18 @@ public class VerificationService {
         verificationRepository.delete(verificationToken);
     }
 
-    public void sendVerification(VerificationToken verificationToken) throws MessagingException {
+    public void sendVerification(VerificationToken verificationToken) throws MessagingException, IOException {
         @SuppressWarnings("null")
         DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(env.getProperty("path.backend.base"));
         URI uri = uriBuilderFactory.uriString("/verification/verify/{token}")
                 .build(verificationToken.getToken());
-        emailService.sendMessage(verificationToken.getUser().getEmail(), "Verify your Triolingo account",
-                uri.toString());
+
+        File file = ResourceUtils.getFile("classpath:templates/email-verification.html");
+        String content = Files.readString(file.toPath());
+
+        content = content.replace("{{verification_link}}", uri.toString());
+
+        emailService.sendMessage(verificationToken.getUser().getEmail(), "Verify your Triolingo account", content);
     }
 
     @Scheduled(cron = "0 */5 * ? * *")

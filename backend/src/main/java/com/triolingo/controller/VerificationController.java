@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.mail.MessagingException;
 
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -35,7 +37,8 @@ public class VerificationController {
             @ApiResponse(responseCode = "400", description = "This user is already verified", content = @Content(schema = @Schema()))
     })
     @Transactional
-    public ResponseEntity<?> request(@AuthenticationPrincipal DatabaseUser principal) throws MessagingException {
+    public ResponseEntity<?> request(@AuthenticationPrincipal DatabaseUser principal)
+            throws MessagingException, IOException {
         if (principal.getStoredUser().getVerified())
             return new ResponseEntity<>("This user is already verified", HttpStatus.BAD_REQUEST);
 
