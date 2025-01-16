@@ -62,6 +62,6 @@ HELP.md
 secret.properties
 
 ### Saved profile images ###
-backend/public/images/profile
+backend/public/images/profile/*
+!backend/public/images/profile/.gitfollow
 
-!gitFollow
