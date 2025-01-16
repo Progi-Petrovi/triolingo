@@ -4,19 +4,19 @@ import { deleteProfile } from "@/utils/main";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
+type RenderEditDeleteProfileType = {
+    role: Role | null;
+    userProfile: User;
+    profileOwner?: boolean;
+};
+
 export default function RenderEditDeleteProfile({
     role,
     userProfile,
-}: {
-    role: Role | null;
-    userProfile: User;
-}) {
+    profileOwner,
+}: RenderEditDeleteProfileType) {
     const navigate = useNavigate();
     const { toast } = useToast();
-
-    if (role !== Role.ROLE_ADMIN) {
-        return null;
-    }
 
     const deleteCurrentProfile = () => {
         deleteProfile(userProfile.role, userProfile.id, toast, navigate);
@@ -24,8 +24,10 @@ export default function RenderEditDeleteProfile({
 
     return (
         <div className="flex gap-5 justify-center items-center">
-            <Button>Edit profile</Button>
-            <Button onClick={deleteCurrentProfile}>Delete profile</Button>
+            {profileOwner && <Button>Edit profile</Button>}
+            {role === Role.ROLE_ADMIN && (
+                <Button onClick={deleteCurrentProfile}>Delete profile</Button>
+            )}
         </div>
     );
 }

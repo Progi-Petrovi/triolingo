@@ -56,7 +56,7 @@ export default function ProfileLayout({
                     </CardContent>
                     <RenderChangePasswordDialog profileOwner={profileOwner} />
                 </Card>
-                {profileRole === "ROLE_TEACHER" ? (
+                {profileRole === Role.ROLE_TEACHER ? (
                     <>
                         <Card>
                             <CardHeader>
@@ -123,6 +123,7 @@ export default function ProfileLayout({
                 <RenderEditDeleteProfile
                     role={role}
                     userProfile={userProfile}
+                    profileOwner={profileOwner}
                 />
             </div>
         </div>
