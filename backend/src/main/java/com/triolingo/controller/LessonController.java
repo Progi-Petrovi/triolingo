@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +51,7 @@ public class LessonController {
     }
 
     @GetMapping("/{id}")
-    @Secured({ "ROLE_USER", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('USER') and hasRole('VERIFIED')")
     @Operation(description = "Returns lesson with the specified id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -61,7 +62,7 @@ public class LessonController {
     }
 
     @GetMapping("/teacher")
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
     @Operation(description = "Returns all lessons created by the currently logged in teacher")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200")
@@ -73,7 +74,7 @@ public class LessonController {
     }
 
     @GetMapping("/teacher/{id}")
-    @Secured({ "ROLE_USER", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('USER') and hasRole('VERIFIED')")
     @Operation(description = "Returns all lessons created by the specified teacher.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -99,7 +100,7 @@ public class LessonController {
     }
 
     @GetMapping("/student")
-    @Secured({ "ROLE_STUDENT", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED')")
     @Operation(description = "Returns all lessons with existing request originating from the logged in student.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -112,7 +113,7 @@ public class LessonController {
     }
 
     @PostMapping
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
     @Operation(description = "Creates a new lesson")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201"),
@@ -125,7 +126,7 @@ public class LessonController {
     }
 
     @PutMapping("/{id}")
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
     @Operation(description = "Updates the lesson status")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -143,7 +144,7 @@ public class LessonController {
     }
 
     @GetMapping("/requests/{id}")
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
     @Operation(description = "Returns all requests for specified lesson id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -159,7 +160,7 @@ public class LessonController {
     }
 
     @GetMapping("/requests/teacher")
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
     @Operation(description = "Returns all requests for logged in teacher")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -172,7 +173,7 @@ public class LessonController {
     }
 
     @GetMapping("/requests/student")
-    @Secured({ "ROLE_STUDENT", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED')")
     @Operation(description = "Returns all requests for logged in student")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -185,7 +186,7 @@ public class LessonController {
     }
 
     @PostMapping("/request/{id}")
-    @Secured({ "ROLE_STUDENT", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED')")
     @Operation(description = "Creates a request for the specified lesson")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201"),
@@ -207,7 +208,7 @@ public class LessonController {
     }
 
     @PutMapping("/request/{id}")
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
     @Operation(description = "Updates the request status")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),

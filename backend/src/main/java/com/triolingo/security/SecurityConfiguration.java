@@ -29,7 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @Configuration
 @EnableTransactionManagement
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfiguration {
     private final DatabaseUserService databaseUserService;
     private final Environment env;
