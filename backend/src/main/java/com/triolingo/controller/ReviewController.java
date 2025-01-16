@@ -11,11 +11,13 @@ import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.ReviewService;
 import com.triolingo.service.StudentService;
 import com.triolingo.service.TeacherService;
+
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,25 +42,20 @@ public class ReviewController {
     }
 
     @GetMapping("/teacher/{id}")
-    // @Secured("ROLE_USER")
+    @Operation(description = "Returns reviews of teacher with {id}.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Teacher not found", content = @Content(schema = @Schema()))
+    })
     public List<ReviewSendDTO> listTeacherReviews(@PathVariable Long id) {
         Teacher teacher = teacherService.fetch(id);
-//        return reviewService.findAllByTeacher(teacher).stream()
-//                .map(review -> dtoMapper.createDto(review, ReviewSendDTO.class)).toList();
-        List<Review> teacherReviews = reviewService.findAllByTeacher(teacher);
-        return teacherReviews.stream()
-                .map(review -> new ReviewSendDTO(
-                        review.getId(),
-                        review.getTeacher().getId(),
-                        review.getStudent().getFullName(),
-                        review.getRating(),
-                        review.getContent(),
-                        review.getDate()
-                )).toList();
+        return reviewService.findAllByTeacher(teacher).stream()
+                .map(review -> dtoMapper.createDto(review, ReviewSendDTO.class)).toList();
     }
 
     @PostMapping("/create")
-    @Secured("ROLE_STUDENT")
+    @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED')")
+    @Operation(description = "Creates new review")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Wrong input data", content = @Content(schema = @Schema()))
