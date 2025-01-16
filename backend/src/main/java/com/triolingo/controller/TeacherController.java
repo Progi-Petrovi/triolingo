@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RestController
@@ -112,7 +111,7 @@ public class TeacherController {
         return new ResponseEntity<String>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     @Secured("ROLE_ADMIN")
     @Operation(description = "Updates the teacher with {id}.")
     @ApiResponses(value = {
@@ -125,7 +124,7 @@ public class TeacherController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/update")
+    @PutMapping
     @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
     @Operation(description = "Updates the teacher the current principal is logged in as. If profile image hash is set to null, the image is also deleted from the provider.")
     @ApiResponses(value = {
@@ -138,6 +137,19 @@ public class TeacherController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @DeleteMapping
+    @Secured("ROLE_TEACHER")
+    @Operation(description = "Deletes the teacher that is currently logged in.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
+    })
+    public ResponseEntity<?> deleteTeacher(
+                                           @AuthenticationPrincipal DatabaseUser principal) {
+        teacherService.delete((Teacher) principal.getStoredUser());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @RequestMapping(path = "/update/profileImage", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
     @Operation(description = "Expects a 'multipart/form-data' with an image file. Assigns a hash to the file and saves it under that hash. The images are statically provided on images/profile/{image-hash}.jpg")
@@ -147,7 +159,7 @@ public class TeacherController {
     })
     public ResponseEntity<?> updateProfileImage(@RequestParam(value = "file") MultipartFile file,
             @AuthenticationPrincipal DatabaseUser principal)
-            throws NoSuchAlgorithmException, IOException {
+            throws IOException {
         String fileName;
         try {
             fileName = teacherService.uploadProfileImage(file, (Teacher) principal.getStoredUser());

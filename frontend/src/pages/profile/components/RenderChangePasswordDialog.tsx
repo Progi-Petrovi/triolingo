@@ -1,12 +1,16 @@
 import { CardContent } from "@/components/ui/card";
 import ChangePasswordDialog from "./ChangePasswordDialog";
 
-export default function renderChangePasswordDialog({
+type RenderChangePasswordDialogType = {
+    profileOwner?: boolean;
+    editMode: boolean;
+};
+
+export default function RenderChangePasswordDialog({
     profileOwner,
-}: {
-    profileOwner: boolean | undefined;
-}) {
-    if (!profileOwner) {
+    editMode,
+}: RenderChangePasswordDialogType) {
+    if (!profileOwner || editMode) {
         return null;
     }
 

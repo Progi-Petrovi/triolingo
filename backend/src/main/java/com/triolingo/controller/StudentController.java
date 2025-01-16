@@ -101,7 +101,7 @@ public class StudentController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     @Secured("ROLE_ADMIN")
     @Operation(description = "Updates the student with {id}.")
     @ApiResponses(value = {
@@ -114,7 +114,7 @@ public class StudentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/update")
+    @PutMapping
     @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED')")
     @Operation(description = "Updates the student the current principal is logged in as.")
     @ApiResponses(value = {
@@ -127,6 +127,19 @@ public class StudentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @DeleteMapping
+    @Secured("ROLE_STUDENT")
+    @Operation(description = "Deletes the student that is currently logged in.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
+    })
+    public ResponseEntity<?> deleteStudent(
+            @AuthenticationPrincipal DatabaseUser principal) {
+        studentService.delete((Student) principal.getStoredUser());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/{id}/email")
     @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
     @Operation(description = "Returns student email if the logged in teacher has an approved lesson request with the student")
@@ -135,7 +148,7 @@ public class StudentController {
             @ApiResponse(responseCode = "400", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public String getTeacherEmail(@AuthenticationPrincipal DatabaseUser principal,
+    public String getStudentEmail(@AuthenticationPrincipal DatabaseUser principal,
             @PathVariable("id") Long id) {
         Student student = studentService.fetch(id);
         Teacher teacher = teacherService.fetch(principal.getStoredUser().getId());

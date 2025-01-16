@@ -25,7 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import { TabsValues } from "./types/tabs-values";
 import { TeachingStyle } from "../../types/teaching-style";
 import BasicInfo from "./components/BasicInfo";
-import TeachingStyleFormField from "./components/TeachingStyleFormField";
+import TeachingStyleFormField from "../common/TeachingStyleFormField";
 import KnowledgeSelect from "./components/KnowledgeSelect";
 import { useFetch } from "@/hooks/use-fetch";
 import useUserContext from "@/context/use-user-context";
@@ -42,7 +42,6 @@ const formSchema = z
         learningGoals: z.string().min(0).max(250, {
             message: "Can't be over 250 characters, keep it nice and short :)",
         }),
-        isVerified: z.boolean().optional(),
     })
     .superRefine(({ confirmPassword, password }, ctx) => {
         if (confirmPassword !== password) {

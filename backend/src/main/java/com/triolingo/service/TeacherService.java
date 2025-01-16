@@ -67,15 +67,27 @@ public class TeacherService {
     public Teacher create(TeacherCreateDTO teacherDto) {
         if (userRepository.existsByEmail(teacherDto.email()))
             throw new EntityExistsException("User with that email already exists");
+        if (teacherDto.hourlyRate() < 0){
+            throw new IllegalArgumentException("Hourly Rate cannot be negative");
+        }
+        if (teacherDto.yearsOfExperience() < 0){
+            throw new IllegalArgumentException("Years of Experience cannot be negative");
+        }
 
         Teacher teacher = dtoMapper.createEntity(teacherDto, Teacher.class);
         teacher.setPassword(passwordEncoder.encode(teacher.getPassword()));
         return teacherRepository.save(teacher);
     }
 
-    public Teacher update(@NotNull Teacher teacher, @NotNull TeacherUpdateDTO teacherDto) {
+    public void update(@NotNull Teacher teacher, @NotNull TeacherUpdateDTO teacherDto) {
+        if (teacherDto.hourlyRate() < 0){
+            throw new IllegalArgumentException("Hourly Rate cannot be negative");
+        }
+        if (teacherDto.yearsOfExperience() < 0){
+            throw new IllegalArgumentException("Years of Experience cannot be negative");
+        }
         dtoMapper.updateEntity(teacher, teacherDto);
-        return teacherRepository.save(teacher);
+        teacherRepository.save(teacher);
     }
 
     public void delete(Teacher teacher) {

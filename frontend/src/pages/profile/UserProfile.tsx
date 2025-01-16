@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useFetch } from "@/hooks/use-fetch";
 import { languageMapToArray } from "@/types/language-level";
 import { Role, Student, Teacher, User } from "@/types/users";

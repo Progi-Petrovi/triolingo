@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Card,
     CardHeader,
@@ -14,25 +15,41 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import RenderEditDeleteProfile from "./RenderEditOrDeleteProfile";
+import {
+    FormField,
+    FormItem,
+    FormControl,
+    FormMessage,
+    FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+type ProfileLayoutType = {
+    userProfile: User | Teacher | Student;
+    role: Role;
+    profileOwner?: boolean;
+    children: JSX.Element;
+    editMode: boolean;
+    toggleEditMode: () => void;
+    form: any;
+};
 
 export default function ProfileLayout({
     userProfile,
     role,
     profileOwner = false,
     children,
-}: {
-    userProfile: User | Teacher | Student;
-    role: Role;
-    profileOwner?: boolean;
-    children: JSX.Element;
-}) {
+    editMode,
+    toggleEditMode,
+    form,
+}: ProfileLayoutType) {
     const profileRole = userProfile.role as Role;
 
     return (
         <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row md:px-0">
             <div className="flex flex-col gap-4 md:w-96">
                 <Card className="flex flex-col justify-center items-center">
-                    <CardHeader>
+                    <CardHeader className="flex flex-col justify-center items-center">
                         <CardTitle>
                             <Avatar className="w-32 h-32 cursor-pointer">
                                 <AvatarImage src="TODO:get_from_backend" />
@@ -41,9 +58,25 @@ export default function ProfileLayout({
                                 </AvatarFallback>
                             </Avatar>
                         </CardTitle>
-                        <CardDescription className="text-center">
-                            {userProfile.fullName}
-                        </CardDescription>
+                        {editMode ? (
+                            <FormField
+                                control={form.control}
+                                name="fullName"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Name</FormLabel>
+                                        <FormControl>
+                                            <Input {...field}></Input>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        ) : (
+                            <CardDescription className="text-center">
+                                {userProfile.fullName}
+                            </CardDescription>
+                        )}
                     </CardHeader>
                     <CardContent className="flex gap-2">
                         <img src={emailIcon} alt="mail" />
@@ -54,16 +87,39 @@ export default function ProfileLayout({
                             ? "Teacher"
                             : "Student"}
                     </CardContent>
-                    <RenderChangePasswordDialog profileOwner={profileOwner} />
+                    <RenderChangePasswordDialog
+                        profileOwner={profileOwner}
+                        editMode={editMode}
+                    />
                 </Card>
-                {profileRole === "ROLE_TEACHER" ? (
+                {profileRole === Role.ROLE_TEACHER ? (
                     <>
                         <Card>
                             <CardHeader>
                                 <CardTitle>Hourly Rate</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                €{(userProfile as Teacher).hourlyRate}
+                                {editMode ? (
+                                    <FormField
+                                        control={form.control}
+                                        name="hourlyRate"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                ) : (
+                                    <span>
+                                        €{(userProfile as Teacher).hourlyRate}
+                                    </span>
+                                )}
                             </CardContent>
                         </Card>
                         <Card className="max-h-50 overflow-scroll">
@@ -123,6 +179,9 @@ export default function ProfileLayout({
                 <RenderEditDeleteProfile
                     role={role}
                     userProfile={userProfile}
+                    profileOwner={profileOwner}
+                    editMode={editMode}
+                    toggleEditMode={toggleEditMode}
                 />
             </div>
         </div>
