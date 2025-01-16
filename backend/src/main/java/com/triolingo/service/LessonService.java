@@ -59,6 +59,10 @@ public class LessonService {
         return lessonRepository.findAllByTeacher(teacher);
     }
 
+    public List<Lesson> findAllByTeacherAndStatus(@NotNull Teacher teacher, @NotNull Lesson.Status status) {
+        return lessonRepository.findAllByTeacherAndStatus(teacher, status);
+    }
+
     public List<Lesson> findAllByStudent(@NotNull Student student) {
         return lessonRepository.findAllByStudent(student);
     }

@@ -3,6 +3,7 @@ package com.triolingo.controller;
 import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.teacher.*;
 import com.triolingo.entity.lesson.LessonRequest;
+import com.triolingo.entity.lesson.Lesson;
 import com.triolingo.entity.user.Student;
 import com.triolingo.entity.user.Teacher;
 import com.triolingo.security.DatabaseUser;
@@ -185,6 +186,30 @@ public class TeacherController {
         if (!lessonService.requestExistsByTeacherAndStudentAndStatus(teacher, student, LessonRequest.Status.ACCEPTED))
             throw new IllegalArgumentException("You don't have an accepted request with that teacher");
         return teacher.getEmail();
+    }
+
+    @GetMapping("/{id}/studentNumber")
+    @Operation(description = "Returns number of students the teacher has completed lessons with")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
+    })
+    public Integer getTeacherStudentNumber(@PathVariable("id") Long id) {
+        Teacher teacher = teacherService.fetch(id);
+        return studentService.findAllByTeacher(teacher).size();
+    }
+
+    @GetMapping("/{id}/lessonNumber")
+    @Operation(description = "Returns number of completed lessons the teacher has")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
+    })
+    public Integer getTeacherLessonNumber(@PathVariable("id") Long id) {
+        Teacher teacher = teacherService.fetch(id);
+        return lessonService.findAllByTeacherAndStatus(teacher, Lesson.Status.COMPLETE).size();
     }
 
 }

@@ -3,7 +3,7 @@ package com.triolingo.service;
 import com.dtoMapper.DtoMapper;
 import com.triolingo.dto.student.*;
 import com.triolingo.entity.user.Student;
-
+import com.triolingo.entity.user.Teacher;
 import com.triolingo.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,8 @@ public class StudentService {
     private final DtoMapper dtoMapper;
     private final UserRepository userRepository;
 
-    public StudentService(StudentRepository studentRepository, PasswordEncoder passwordEncoder, DtoMapper dtoMapper, UserRepository userRepository) {
+    public StudentService(StudentRepository studentRepository, PasswordEncoder passwordEncoder, DtoMapper dtoMapper,
+            UserRepository userRepository) {
         this.studentRepository = studentRepository;
         this.passwordEncoder = passwordEncoder;
         this.dtoMapper = dtoMapper;
@@ -42,6 +43,10 @@ public class StudentService {
         } catch (NoSuchElementException e) {
             throw new EntityNotFoundException("Student with that id does not exist");
         }
+    }
+
+    public List<Student> findAllByTeacher(@NotNull Teacher teacher) {
+        return studentRepository.findAllByTeacher(teacher);
     }
 
     public Student create(StudentCreateDTO studentDto) {
