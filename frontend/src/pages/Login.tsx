@@ -108,16 +108,18 @@ export default function Login() {
                     </Button>
                 </form>
                 <div className="flex flex-col justify-center items-center pt-2">
-                    <Button variant="outline" className="w-full">
-                        <Link
-                            to={new URL(
+                    <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                            const githubLoginUrl = new URL(
                                 "oauth2/authorization/github",
                                 PathConstants.API_URL
-                            ).toString()}
-                            className="text-white"
-                        >
-                            Log in with Github
-                        </Link>
+                            ).toString();
+                            window.location.href = githubLoginUrl;
+                        }}
+                    >
+                        Log in with Github
                     </Button>
                 </div>
                 <div className="flex flex-col justify-center items-center pt-2">
