@@ -4,6 +4,7 @@ import PathConstants from "@/routes/pathConstants";
 import { Role, User } from "@/types/users";
 import { LessonRequest, LessonRequestDTO } from "@/types/lesson";
 import { lessonRequestDTOtoLessonRequest } from "@/utils/main";
+import { showChatPopupStudent } from "./use-chat";
 
 type WebSocketProp = {
     socketUrl: string;
@@ -92,11 +93,16 @@ export function useWSTeacherRequests(user: User, teacherSocketCallback?: (messag
 
 export function useWSStudentRequests(user: User, studentSocketCallback?: (message: any) => void | undefined) {
     const { toast } = useToast();
+    const safeStudentSocketCallback = safeCallback(studentSocketCallback);
 
     const webSocketAccepted = {
         socketUrl: "/topic/lesson-request-accepted",
         socketCallback: (message: any) => {
             const lessonRequest = JSON.parse(message.body);
+            const email = lessonRequest.lesson.teacher.email;
+            const fullName = lessonRequest.lesson.teacher.fullName;
+            const lessonTitle = lessonRequest.lesson.language.name + " lesson " + lessonRequest.lesson.id;
+             
             console.log("Lesson request accepted: ", lessonRequest);
             console.log("User: ", user);
             console.log("lessonRequest.student.id !== user.id", lessonRequest.student.id !== user.id);
@@ -115,8 +121,9 @@ export function useWSStudentRequests(user: User, studentSocketCallback?: (messag
                     lessonRequest.lesson.id,
             });
 
-            if (typeof studentSocketCallback === "function")
-                studentSocketCallback(message);
+            showChatPopupStudent({lessonTitle, email, fullName});
+
+            safeStudentSocketCallback(message);
         },
     };
 
@@ -124,7 +131,7 @@ export function useWSStudentRequests(user: User, studentSocketCallback?: (messag
         socketUrl: "/topic/lesson-request-rejected",
         socketCallback: (message: any) => {
             const lessonRequest = JSON.parse(message.body);
-            console.log("Lesson request accepted: ", lessonRequest);
+            console.log("Lesson request rejected: ", lessonRequest);
             console.log("User: ", user);
             console.log("lessonRequest.student.id !== user.id", lessonRequest.student.id !== user.id);
 
@@ -143,15 +150,22 @@ export function useWSStudentRequests(user: User, studentSocketCallback?: (messag
                 variant: "destructive",
             });
 
-            if (typeof studentSocketCallback === "function")
-                studentSocketCallback(message);
+            safeStudentSocketCallback(message);
         },
     };
 
     return useWebSocket([webSocketAccepted, webSocketRejected]);
 }
 
-function safeCallback(
+function safeCallback(callback?: (args?: any) => void) {
+    return (args?: any) => {
+        if (callback) {
+            callback(args);
+        }
+    }
+}
+
+function safeCallbackWithArgs(
     {
         callback,
         args,
@@ -161,30 +175,19 @@ function safeCallback(
         args?: any;
     }
 ) {
+    const safeCallbackFn = safeCallback(callback);
+
     return () => {
-        if (callback) {
-            if (args !== undefined) {
-                callback(args);
-            } else {
-                callback();
-            }
+        if (args) {
+            safeCallbackFn(args);
+        } else {
+            safeCallbackFn();
         }
     }
 }
 
-export function useWSLessonRequests({
-    user,
-    teacherCallback,
-    studentCallback,
-    teacherWSCallback,
-    studentWSCallback,
-    teacherCallbackArgs,
-    studentCallbackArgs,
-    teacherWSCallbackArgs,
-    studentWSCallbackArgs,
-}:
-{
-    user: User,
+type WebSocketLessonRequestProps = {
+    user: User;
     teacherCallback?: (teacherCallbackArgs?: any) => void;
     studentCallback?: (studentCallbackArgs?: any) => void;
     teacherWSCallback?: (
@@ -199,25 +202,38 @@ export function useWSLessonRequests({
     studentCallbackArgs?: any;
     teacherWSCallbackArgs?: any;
     studentWSCallbackArgs?: any;
-}
-) {
-    const teacherSafeCallback = safeCallback({ callback: teacherCallback, args: teacherCallbackArgs });
+};
 
-    const studentSafeCallback = safeCallback({ callback: studentCallback, args: studentCallbackArgs });
+export function useWSLessonRequests({
+    user,
+    teacherCallback,
+    studentCallback,
+    teacherWSCallback,
+    studentWSCallback,
+    teacherCallbackArgs,
+    studentCallbackArgs,
+    teacherWSCallbackArgs,
+    studentWSCallbackArgs,
+}:
+WebSocketLessonRequestProps
+) {
+    const teacherSafeCallback = safeCallbackWithArgs({ callback: teacherCallback, args: teacherCallbackArgs });
+
+    const studentSafeCallback = safeCallbackWithArgs({ callback: studentCallback, args: studentCallbackArgs });
 
     const teacherWSCallbackFullArgs = {
         _message: null,
         teacherWSCallbackArgs,
     };
 
-    const teacherWSSafeCallback = safeCallback({ callback: teacherWSCallback, args: teacherWSCallbackFullArgs });
+    const teacherWSSafeCallback = safeCallbackWithArgs({ callback: teacherWSCallback, args: teacherWSCallbackFullArgs });
 
     const studentWSCallbackFullArgs = {
         _message: null,
         studentWSCallbackArgs,
     };
 
-    const studentWSSafeCallback = safeCallback({ callback: studentWSCallback, args: studentWSCallbackFullArgs });
+    const studentWSSafeCallback = safeCallbackWithArgs({ callback: studentWSCallback, args: studentWSCallbackFullArgs });
 
     const useClientTeacher = useWSTeacherRequests(user, teacherWSSafeCallback);
     const useClientStudent = useWSStudentRequests(user, studentWSSafeCallback);

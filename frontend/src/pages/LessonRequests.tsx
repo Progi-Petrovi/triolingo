@@ -29,10 +29,9 @@ export default function LessonRequests() {
     useEffect(() => {
         if (!user) {
             fetchUser();
-        } else {
-            getTeacherLessonRequests();
-            useClient();
         }
+        getTeacherLessonRequests();
+        useClient();
     }, []);
 
     if (!user) {
@@ -42,6 +41,14 @@ export default function LessonRequests() {
     if (user.role !== "ROLE_TEACHER") {
         return <div>Only teachers can view lesson requests</div>;
     }
+
+    const acceptLessonRequest = (id: number) => {
+        modifyLessonRequest(id, LessonRequestStatus.ACCEPTED);
+    };
+
+    const rejectLessonRequest = (id: number) => {
+        modifyLessonRequest(id, LessonRequestStatus.REJECTED);
+    };
 
     const modifyLessonRequest = (id: number, status: LessonRequestStatus) => {
         fetch(`lesson/request/${id}`, {
@@ -57,14 +64,6 @@ export default function LessonRequests() {
             .catch((error) =>
                 console.error("Error modifying lesson request:", error)
             );
-    };
-
-    const acceptLessonRequest = (id: number) => {
-        modifyLessonRequest(id, LessonRequestStatus.ACCEPTED);
-    };
-
-    const rejectLessonRequest = (id: number) => {
-        modifyLessonRequest(id, LessonRequestStatus.REJECTED);
     };
 
     return (

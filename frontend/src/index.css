@@ -166,4 +166,68 @@ button:focus-visible {
 div[aria-label="Notifications (F8)"] > ol > li > div > div {
   text-wrap: auto ;
   text-wrap: pretty;
+  z-index: 10;
+}
+
+#freechatpopup {
+  z-index: 5;
+  display: none;
+}
+
+#freechatpopup.visible {
+  display: flex !important;
+}
+
+.freechat-popup-credit {
+  display: none; 
+}
+
+.freechat-popup-bottom {
+  display: none;
+}
+
+.freechat-popup-notinput-information {
+  display: none;
+}
+
+#freechat-popup-notinput-message {
+  display: none;
+}
+
+.freechat-popup-header {
+  padding: 30px 30px 30px !important;
+  background-color: #000 !important;
+}
+
+.freechat-popup {
+  background-color: #000 !important;
+}
+
+#freechat-popup-notinput-button {
+  background-color: hsl(263.4 70% 50.4%) !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+}
+
+#freechat-popup-notinput-button:hover {
+  background-color: hsl(263.4 70% 40.4%) !important;
+  color: #fff !important;
+}
+
+.freechat-popup-notinput {
+  border: none;
+}
+
+.freechat-popup-notinput-icon {
+  background-color: #000 !important;
+}
+
+.freechat-popup-content {
+  padding-bottom: 0px !important;
+  padding-top: 25px !important;
+  background-color: #000 !important;
+}
+
+.freechat-popup-content > p {
+  background-color: hsl(263.4 70% 50.4%) !important;
 }
