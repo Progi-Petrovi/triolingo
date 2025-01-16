@@ -12,7 +12,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.imageio.ImageIO;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import java.awt.Graphics2D;
@@ -80,7 +79,7 @@ public class TeacherService {
         return teacherRepository.save(teacher);
     }
 
-    public void update(@NotNull @Valid Teacher teacher, @NotNull TeacherUpdateDTO teacherDto) {
+    public void update(@NotNull Teacher teacher, @NotNull TeacherUpdateDTO teacherDto) {
         if (teacherDto.hourlyRate() < 0){
             throw new IllegalArgumentException("Hourly Rate cannot be negative");
         }
