@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TeachingStyle } from "@/types/teaching-style";
 import { ProfileProps } from "@/types/profile";
-import { Student } from "@/types/users";
+import { Role, Student } from "@/types/users";
 import ProfileLayout from "./components/ProfileLayout";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -49,7 +49,8 @@ export default function StudentProfile({
     });
 
     async function onSubmit(data: StudentFormValues) {
-        fetch("student", {
+        const fetchLink = role === Role.ROLE_ADMIN ? `${student.id}` : "";
+        fetch(`student/${fetchLink}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -64,6 +65,7 @@ export default function StudentProfile({
             } else
                 toast({
                     title: "Updating student failed",
+                    description: `${res.status === 400 ? res.body : ""}`,
                     variant: "destructive",
                 });
         });

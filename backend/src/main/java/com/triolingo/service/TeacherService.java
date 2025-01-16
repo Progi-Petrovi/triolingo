@@ -91,6 +91,10 @@ public class TeacherService {
         teacherRepository.save(teacher);
     }
 
+    public void delete(Teacher teacher) {
+        teacherRepository.delete(teacher);
+    }
+
     public String uploadProfileImage(@NotNull MultipartFile file, Teacher teacher)
             throws IOException {
         String contentType = file.getContentType();

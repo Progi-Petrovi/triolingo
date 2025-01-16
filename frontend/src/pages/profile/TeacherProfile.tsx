@@ -68,7 +68,8 @@ export default function TeacherProfile({
     });
 
     async function onSubmit(data: TeacherFormValues) {
-        fetch("teacher", {
+        const fetchLink = role === Role.ROLE_ADMIN ? `${teacher.id}` : "";
+        fetch(`teacher/${fetchLink}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

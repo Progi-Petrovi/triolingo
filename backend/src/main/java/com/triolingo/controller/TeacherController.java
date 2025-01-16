@@ -19,7 +19,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 
-import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RestController
@@ -132,9 +130,22 @@ public class TeacherController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public ResponseEntity<?> updateTeacher(@RequestBody @Valid TeacherUpdateDTO teacherDto,
+    public ResponseEntity<?> updateTeacher(@RequestBody TeacherUpdateDTO teacherDto,
             @AuthenticationPrincipal DatabaseUser principal) {
         teacherService.update((Teacher) principal.getStoredUser(), teacherDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    @Secured("ROLE_TEACHER")
+    @Operation(description = "Deletes the teacher that is currently logged in.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
+    })
+    public ResponseEntity<?> deleteTeacher(
+                                           @AuthenticationPrincipal DatabaseUser principal) {
+        teacherService.delete((Teacher) principal.getStoredUser());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -147,7 +158,7 @@ public class TeacherController {
     })
     public ResponseEntity<?> updateProfileImage(@RequestParam(value = "file") MultipartFile file,
             @AuthenticationPrincipal DatabaseUser principal)
-            throws NoSuchAlgorithmException, IOException {
+            throws IOException {
         String fileName;
         try {
             fileName = teacherService.uploadProfileImage(file, (Teacher) principal.getStoredUser());
