@@ -9,7 +9,7 @@ import useUserContext from "@/context/use-user-context";
 import { useWSLessonRequests } from "@/hooks/use-socket";
 
 export default function UserProfile() {
-    const { user } = useUserContext();
+    const { user, fetchUser } = useUserContext();
     const role = user?.role as Role;
     const { id } = useParams();
     const location = useLocation();
@@ -72,7 +72,4 @@ export default function UserProfile() {
     } else if (profileRole === Role.ROLE_STUDENT && student) {
         return <StudentProfile userProfile={student} role={role} />;
     }
-}
-function fetchUser() {
-    throw new Error("Function not implemented.");
 }
