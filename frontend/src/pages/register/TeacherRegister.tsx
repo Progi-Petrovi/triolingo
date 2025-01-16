@@ -35,7 +35,7 @@ const formSchema = z
         confirmPassword: z.string().min(8).max(250),
         teachingStyle: z.nativeEnum(TeachingStyle),
         yearsOfExperience: z.coerce.number().max(100),
-        hourlyRate: z.coerce.number().max(100000),
+        hourlyRate: z.coerce.number().positive().max(100000),
         qualifications: z.string().max(500),
         isVerified: z.boolean().optional(),
     })
