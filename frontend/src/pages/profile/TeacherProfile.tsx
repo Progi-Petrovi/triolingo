@@ -5,10 +5,36 @@ import { Role, Teacher } from "@/types/users";
 import AddReviewDialog from "@/components/AddReviewDialog";
 import { Review } from "@/components/Review";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useReviews } from "@/hooks/use-reviews";
 import ProfileLayout from "./components/ProfileLayout";
 import { ProfileProps } from "@/types/profile";
+import { z } from "zod";
+import { useFetch } from "@/hooks/use-fetch";
+import { useToast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormMessage,
+} from "@/components/ui/form";
+import RenderFormButtons from "./components/RenderFormButtons";
+import { Input } from "@/components/ui/input";
+import TeachingStyleFormField from "../common/TeachingStyleFormField";
+import { Textarea } from "@/components/ui/textarea";
+
+const teacherSchema = z.object({
+    teachingStyle: z.nativeEnum(TeachingStyle),
+    qualifications: z.string().optional(),
+    fullName: z.string().min(2).max(250),
+    yearsOfExperience: z.coerce.number().min(0).max(100),
+    hourlyRate: z.coerce.number().min(0).max(100000),
+});
+
+type TeacherFormValues = z.infer<typeof teacherSchema>;
 
 export default function TeacherProfile({
     userProfile,
@@ -21,26 +47,84 @@ export default function TeacherProfile({
     const [{ reviews, latestRewiews, averageRating }, updateReviews] =
         useReviews(maxReviews, teacher.id);
 
+    const fetch = useFetch();
+    const { toast } = useToast();
+    const [editMode, setEditMode] = useState<boolean>(false);
+
     useEffect(() => {
         updateReviews();
         console.log("TeacherProfile role:", role);
     }, []);
 
+    const form = useForm<TeacherFormValues>({
+        resolver: zodResolver(teacherSchema),
+        defaultValues: {
+            fullName: teacher.fullName,
+            teachingStyle: teacher.teachingStyle,
+            qualifications: teacher.qualifications,
+            yearsOfExperience: teacher.yearsOfExperience,
+            hourlyRate: teacher.hourlyRate,
+        },
+    });
+
+    async function onSubmit(data: TeacherFormValues) {
+        fetch("teacher", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                ...data,
+                preferredTeachingStyle: data.teachingStyle,
+            }),
+        }).then((res) => {
+            if (res.status === 200) {
+                window.location.reload();
+            } else
+                toast({
+                    title: "Updating teacher failed",
+                    description: `${res.status === 400 ? res.body : ""}`,
+                    variant: "destructive",
+                });
+        });
+
+        setEditMode(false);
+    }
+
     function TeacherRight() {
         return (
             <>
-                <Card>
+                <Card className="md:w-96 p-3">
                     <CardHeader>
                         <CardTitle>Years of experience</CardTitle>
                     </CardHeader>
-                    <CardContent>{teacher.yearsOfExperience}</CardContent>
+                    {editMode ? (
+                        <FormField
+                            control={form.control}
+                            name="yearsOfExperience"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Input type="number" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    ) : (
+                        <CardContent>{teacher.yearsOfExperience}</CardContent>
+                    )}
                 </Card>
                 <Card>
                     <CardHeader>
                         <CardTitle>Teaching style</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {teacher.teachingStyle as TeachingStyle}
+                        {editMode ? (
+                            <TeachingStyleFormField form={form} />
+                        ) : (
+                            teacher.teachingStyle
+                        )}
                     </CardContent>
                 </Card>
                 <Card className="md:w-96 max-h-60 overflow-scroll">
@@ -48,9 +132,24 @@ export default function TeacherProfile({
                         <CardTitle>Qualifications</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {teacher.qualifications
-                            ? teacher.qualifications
-                            : "No qualifications."}
+                        {editMode ? (
+                            <FormField
+                                control={form.control}
+                                name="qualifications"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Textarea {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        ) : teacher.qualifications ? (
+                            teacher.qualifications
+                        ) : (
+                            "No qualifications."
+                        )}
                     </CardContent>
                 </Card>
                 {role !== Role.ROLE_TEACHER && (
@@ -104,12 +203,24 @@ export default function TeacherProfile({
     }
 
     return (
-        <ProfileLayout
-            userProfile={userProfile}
-            profileOwner={profileOwner}
-            role={role}
-        >
-            <TeacherRight />
-        </ProfileLayout>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <ProfileLayout
+                    userProfile={userProfile}
+                    profileOwner={profileOwner}
+                    role={role}
+                    form={form}
+                    editMode={editMode}
+                    toggleEditMode={() => setEditMode(!editMode)}
+                >
+                    <TeacherRight />
+                </ProfileLayout>
+                {editMode && (
+                    <RenderFormButtons
+                        toggleEditMode={() => setEditMode(!editMode)}
+                    />
+                )}
+            </form>
+        </Form>
     );
 }

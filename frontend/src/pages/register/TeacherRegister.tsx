@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { TabsValues } from "./types/tabs-values";
 import { TeachingStyle } from "../../types/teaching-style";
 import BasicInfo from "./components/BasicInfo";
-import TeachingStyleFormField from "./components/TeachingStyleFormField";
+import TeachingStyleFormField from "../common/TeachingStyleFormField";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TeacherRegistration } from "./types/registration-types";
@@ -35,9 +35,8 @@ const formSchema = z
         confirmPassword: z.string().min(8).max(250),
         teachingStyle: z.nativeEnum(TeachingStyle),
         yearsOfExperience: z.coerce.number().max(100),
-        hourlyRate: z.coerce.number().positive().max(100000),
+        hourlyRate: z.coerce.number().min(0).max(100000),
         qualifications: z.string().max(500),
-        isVerified: z.boolean().optional(),
     })
     .superRefine(({ confirmPassword, password }, ctx) => {
         if (confirmPassword !== password) {

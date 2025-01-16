@@ -8,12 +8,16 @@ type RenderEditDeleteProfileType = {
     role: Role | null;
     userProfile: User;
     profileOwner?: boolean;
+    editMode: boolean;
+    toggleEditMode: () => void;
 };
 
 export default function RenderEditDeleteProfile({
     role,
     userProfile,
     profileOwner,
+    editMode,
+    toggleEditMode,
 }: RenderEditDeleteProfileType) {
     const navigate = useNavigate();
     const { toast } = useToast();
@@ -22,12 +26,22 @@ export default function RenderEditDeleteProfile({
         deleteProfile(userProfile.role, userProfile.id, toast, navigate);
     };
 
+    if (!profileOwner && role !== Role.ROLE_ADMIN) {
+        return null;
+    }
+
+    if (editMode) {
+        return null;
+    }
+
     return (
         <div className="flex gap-5 justify-center items-center">
-            {profileOwner && <Button>Edit profile</Button>}
-            {role === Role.ROLE_ADMIN && (
-                <Button onClick={deleteCurrentProfile}>Delete profile</Button>
-            )}
+            <Button type="button" onClick={toggleEditMode}>
+                Edit profile
+            </Button>
+            <Button type="button" onClick={deleteCurrentProfile}>
+                Delete profile
+            </Button>
         </div>
     );
 }

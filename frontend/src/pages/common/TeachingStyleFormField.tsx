@@ -22,13 +22,15 @@ type TeachingStyleFormField = {
 export default function TeachingStyleFormField({
     form,
 }: TeachingStyleFormField) {
+    console.log(form.getValues());
+
     return (
         <FormField
             control={form.control}
             name="teachingStyle"
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>* Teaching Style</FormLabel>
+                    <FormLabel>Teaching Style</FormLabel>
                     <Select onValueChange={field.onChange}>
                         <FormControl>
                             <SelectTrigger>

@@ -2,10 +2,8 @@ package com.triolingo.entity.user;
 
 import com.triolingo.entity.TeachingStyle;
 import com.triolingo.entity.language.Language;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+
+import java.util.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -50,7 +48,7 @@ public class Teacher extends User {
 
     @Override
     public List<GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>(Arrays.asList(Role.TEACHER.getAuthority()));
+        List<GrantedAuthority> authorities = new ArrayList<>(Collections.singletonList(Role.TEACHER.getAuthority()));
         authorities.addAll(super.getAuthorities());
         return authorities;
     }

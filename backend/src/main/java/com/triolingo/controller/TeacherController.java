@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -111,7 +112,7 @@ public class TeacherController {
         return new ResponseEntity<String>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     @Secured("ROLE_ADMIN")
     @Operation(description = "Updates the teacher with {id}.")
     @ApiResponses(value = {
@@ -124,14 +125,14 @@ public class TeacherController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/update")
+    @PutMapping
     @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
     @Operation(description = "Updates the teacher the current principal is logged in as. If profile image hash is set to null, the image is also deleted from the provider.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public ResponseEntity<?> updateTeacher(@RequestBody TeacherUpdateDTO teacherDto,
+    public ResponseEntity<?> updateTeacher(@RequestBody @Valid TeacherUpdateDTO teacherDto,
             @AuthenticationPrincipal DatabaseUser principal) {
         teacherService.update((Teacher) principal.getStoredUser(), teacherDto);
         return new ResponseEntity<>(HttpStatus.OK);

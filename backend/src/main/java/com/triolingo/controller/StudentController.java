@@ -98,7 +98,7 @@ public class StudentController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     @Secured("ROLE_ADMIN")
     @Operation(description = "Updates the student with {id}.")
     @ApiResponses(value = {
@@ -111,7 +111,7 @@ public class StudentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/update")
+    @PutMapping
     @Secured({ "ROLE_STUDENT", "ROLE_VERIFIED" })
     @Operation(description = "Updates the student the current principal is logged in as.")
     @ApiResponses(value = {
@@ -132,7 +132,7 @@ public class StudentController {
             @ApiResponse(responseCode = "400", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public String getTeacherEmail(@AuthenticationPrincipal DatabaseUser principal,
+    public String getStudentEmail(@AuthenticationPrincipal DatabaseUser principal,
             @PathVariable("id") Long id) {
         Student student = studentService.fetch(id);
         Teacher teacher = teacherService.fetch(principal.getStoredUser().getId());
