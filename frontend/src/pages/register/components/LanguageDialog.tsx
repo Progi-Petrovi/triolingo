@@ -93,8 +93,9 @@ export default function LanguageDialog({
                         <DialogHeader className="p-2">
                             <DialogTitle>Choose Your Language</DialogTitle>
                             <DialogDescription>
-                                Select the language you'd like to learn and tell
-                                us about your knowledge level.
+                                {isStudent
+                                    ? "Select the language you'd like to learn and tell us about your knowledge level."
+                                    : "Select the languages you'd like to teach."}
                             </DialogDescription>
                         </DialogHeader>
                         <div className="flex items-center space-x-2">

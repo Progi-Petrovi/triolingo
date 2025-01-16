@@ -14,6 +14,7 @@ import ChangePasswordDialog from "./components/ChangePasswordDialog";
 import ProfilePictureEditor from "./components/ProfilePictureEditor";
 import { initials } from "@/utils/main";
 import { Student, Teacher, User } from "@/types/users";
+import PathConstants from "@/routes/pathConstants.ts";
 
 export type TeacherProfileType = {
     userProfile: User | Teacher | Student;
@@ -58,7 +59,7 @@ export default function TeacherProfile({
                         <CardTitle>
                             <Avatar className="w-32 h-32 cursor-pointer">
                                 <AvatarImage
-                                    src={`images/profile/${teacher.profileImageHash}`}
+                                    src={`${PathConstants.API_URL}/images/profile/${teacher.profileImageHash}`}
                                 />
                                 <AvatarFallback className="text-2xl md:text-4xl">
                                     {initials(teacher.fullName)}
