@@ -76,8 +76,7 @@ public class LessonRepositoryCustomImpl implements LessonRepositoryCustom {
 
         return entityManager
                 .createQuery(
-                        query
-                                .where(predicate)
+                        query.where(predicate)
                                 .groupBy(requestRoot.get(LessonRequest.Fields.lesson))
                                 .orderBy(order))
                 .getResultList().stream().map(request -> request.getLesson()).toList();
