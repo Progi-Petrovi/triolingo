@@ -68,8 +68,20 @@ export default function UserProfile() {
     }
 
     if (profileRole === Role.ROLE_TEACHER && teacher) {
-        return <TeacherProfile userProfile={teacher} role={role} />;
+        return (
+            <TeacherProfile
+                userProfile={teacher}
+                role={role}
+                profileOwner={user?.id === teacher.id}
+            />
+        );
     } else if (profileRole === Role.ROLE_STUDENT && student) {
-        return <StudentProfile userProfile={student} role={role} />;
+        return (
+            <StudentProfile
+                userProfile={student}
+                role={role}
+                profileOwner={user?.id === student.id}
+            />
+        );
     }
 }
