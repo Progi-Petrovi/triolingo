@@ -94,6 +94,8 @@ export default function BookLessonStudent() {
     const avaliableLessons = teacherLessons.filter(
         (lessonRequest) =>
             lessonRequest.status === LessonStatus.OPEN &&
+            // TODO: remove when implemented on backend
+            lessonRequest.start > new Date() &&
             !studentRequests.find(
                 (request) =>
                     request.lesson.id === lessonRequest.id &&
