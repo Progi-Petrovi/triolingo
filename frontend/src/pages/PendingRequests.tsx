@@ -73,7 +73,7 @@ export default function PendingRequests() {
                                     <span>
                                         Teacher:{" "}
                                         <Link
-                                            to={`/teacher/${lessonRequest.lesson.teacher}`}
+                                            to={`/teacher/${lessonRequest.lesson.teacher.id}`}
                                         >
                                             {
                                                 lessonRequest.lesson.teacher
