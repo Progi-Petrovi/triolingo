@@ -15,6 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import RenderEditDeleteProfile from "./RenderEditOrDeleteProfile";
+import RenderProfileImageEditor from "./RenderProfileImageEditor.tsx";
+import PathConstants from "@/routes/pathConstants.ts";
 import {
     FormField,
     FormItem,
@@ -52,7 +54,9 @@ export default function ProfileLayout({
                     <CardHeader className="flex flex-col justify-center items-center">
                         <CardTitle>
                             <Avatar className="w-32 h-32 cursor-pointer">
-                                <AvatarImage src="TODO:get_from_backend" />
+                                {profileRole === Role.ROLE_TEACHER
+                                    ? <AvatarImage src={`${PathConstants.API_URL}/images/profile/${(userProfile as Teacher).profileImageHash}`}/>
+                                    : <AvatarImage />}
                                 <AvatarFallback className="text-2xl md:text-4xl">
                                     {initials(userProfile.fullName)}
                                 </AvatarFallback>
@@ -87,6 +91,7 @@ export default function ProfileLayout({
                             ? "Teacher"
                             : "Student"}
                     </CardContent>
+                    <RenderProfileImageEditor profileOwner={profileOwner} />
                     <RenderChangePasswordDialog
                         profileOwner={profileOwner}
                         editMode={editMode}
