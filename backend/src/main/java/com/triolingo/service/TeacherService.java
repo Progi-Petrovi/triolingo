@@ -38,7 +38,7 @@ public class TeacherService {
     private final UserRepository userRepository;
 
     public TeacherService(TeacherRepository teacherRepository, PasswordEncoder passwordEncoder, DtoMapper dtoMapper,
-                          Environment env, UserRepository userRepository) {
+            Environment env, UserRepository userRepository) {
         this.teacherRepository = teacherRepository;
         this.passwordEncoder = passwordEncoder;
         this.dtoMapper = dtoMapper;
@@ -67,10 +67,13 @@ public class TeacherService {
     public Teacher create(TeacherCreateDTO teacherDto) {
         if (userRepository.existsByEmail(teacherDto.email()))
             throw new EntityExistsException("User with that email already exists");
-        if (teacherDto.hourlyRate() < 0){
+        if (teacherDto.password().length() < 8) {
+            throw new IllegalArgumentException("Password must be at least 8 characters");
+        }
+        if (teacherDto.hourlyRate() < 0) {
             throw new IllegalArgumentException("Hourly Rate cannot be negative");
         }
-        if (teacherDto.yearsOfExperience() < 0){
+        if (teacherDto.yearsOfExperience() < 0) {
             throw new IllegalArgumentException("Years of Experience cannot be negative");
         }
 
@@ -80,10 +83,10 @@ public class TeacherService {
     }
 
     public void update(@NotNull Teacher teacher, @NotNull TeacherUpdateDTO teacherDto) {
-        if (teacherDto.hourlyRate() < 0){
+        if (teacherDto.hourlyRate() < 0) {
             throw new IllegalArgumentException("Hourly Rate cannot be negative");
         }
-        if (teacherDto.yearsOfExperience() < 0){
+        if (teacherDto.yearsOfExperience() < 0) {
             throw new IllegalArgumentException("Years of Experience cannot be negative");
         }
         dtoMapper.updateEntity(teacher, teacherDto);

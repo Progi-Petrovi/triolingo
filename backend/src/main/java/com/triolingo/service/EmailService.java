@@ -39,7 +39,22 @@ public class EmailService {
         if (user != null)
             helper.setFrom(user);
 
+//        if (!isTestProfileActive()) {
+//            System.out.println("TestProfile is not active");
+//            mailSender.send(mimeMessage);
+//        }
         mailSender.send(mimeMessage);
+
+    }
+
+    private boolean isTestProfileActive() {
+        String[] activeProfiles = env.getActiveProfiles();
+        for (String profile : activeProfiles) {
+            if ("test".equals(profile)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
