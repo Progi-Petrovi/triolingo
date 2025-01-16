@@ -74,7 +74,7 @@ export default function TeacherRegister() {
         }).then((res) => {
             if (res.status == 201) {
                 fetchUser();
-                navigate(PathConstants.HOME);
+                navigate(PathConstants.VERIFY_REQUEST);
             } else
                 toast({
                     title: "Registration failed.",
