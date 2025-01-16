@@ -24,12 +24,12 @@ const Uploader = () =>{
         setPreview(view);
     };
 
-    const onBeforeFileLoad = (elem:React.ChangeEvent<HTMLInputElement>) => {
-        if (elem.target.files[0].size > 716800) {
-            alert("Slika je prevelika!");
-            elem.target.value = "";
-        }
-    };
+    //const onBeforeFileLoad = (elem:React.ChangeEvent<HTMLInputElement>) => {
+    //    if (elem.target.files[0].size > 716800) {
+    //        alert("Slika je prevelika!");
+    //        elem.target.value = "";
+    //    }
+    //};
 
     function base64ToFile(base64String: string, fileName: string) {
         const base64PrefixPattern = /^data:(.*?);base64,/;
@@ -97,7 +97,7 @@ const Uploader = () =>{
                         height={400}
                         onCrop={onCrop}
                         onClose={onClose}
-                        onBeforeFileLoad={onBeforeFileLoad}
+                        //onBeforeFileLoad={onBeforeFileLoad}   not needed because of exportSize
                         exportAsSquare={true}
                         exportSize={256}
                         exportMimeType={"image/jpeg"}
