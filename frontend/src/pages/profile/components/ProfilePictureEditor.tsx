@@ -95,6 +95,7 @@ const Uploader = () =>{
                     <Avatar
                         width="100%"
                         height={400}
+                        imageWidth={400}
                         onCrop={onCrop}
                         onClose={onClose}
                         //onBeforeFileLoad={onBeforeFileLoad}   not needed because of exportSize
