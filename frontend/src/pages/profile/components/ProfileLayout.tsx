@@ -78,25 +78,27 @@ export default function ProfileLayout({
                                 )}
                             </CardContent>
                         </Card>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Lessons</CardTitle>
-                            </CardHeader>
-                            <CardContent className="flex flex-col gap-2">
-                                <Button className="font-base">
-                                    See previous lessons
-                                </Button>
-                                <Button className="font-base">
-                                    <Link
-                                        to={`/teacher/lessons/${userProfile.id}`}
-                                        className="text-inherit focus:text-inherit hover:text-inherit w-full h-full
+                        {role !== Role.ROLE_TEACHER && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Lessons</CardTitle>
+                                </CardHeader>
+                                <CardContent className="flex flex-col gap-2">
+                                    <Button className="font-base">
+                                        See previous lessons
+                                    </Button>
+                                    <Button className="font-base">
+                                        <Link
+                                            to={`/teacher/lessons/${userProfile.id}`}
+                                            className="text-inherit focus:text-inherit hover:text-inherit w-full h-full
                                             flex justify-center items-center text-base"
-                                    >
-                                        Book a lesson
-                                    </Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
+                                        >
+                                            Book a lesson
+                                        </Link>
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        )}
                     </>
                 ) : (
                     <Card className="max-h-50 overflow-scroll">
