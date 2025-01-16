@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -124,7 +125,7 @@ public class TeacherController {
     }
 
     @PutMapping
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
     @Operation(description = "Updates the teacher the current principal is logged in as. If profile image hash is set to null, the image is also deleted from the provider.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -149,8 +150,8 @@ public class TeacherController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
     @RequestMapping(path = "/update/profileImage", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
     @Operation(description = "Expects a 'multipart/form-data' with an image file. Assigns a hash to the file and saves it under that hash. The images are statically provided on images/profile/{image-hash}.jpg")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The filename (hash) of the saved file.", content = @Content(mediaType = "text/plain")),
@@ -170,7 +171,7 @@ public class TeacherController {
     }
 
     @GetMapping("/{id}/email")
-    @Secured({ "ROLE_STUDENT", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED')")
     @Operation(description = "Returns teacher email if the logged in student has an approved lesson request with the teacher")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),

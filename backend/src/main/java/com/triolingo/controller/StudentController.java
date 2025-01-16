@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,7 @@ public class StudentController {
     }
 
     @GetMapping("/all")
+    @Secured("ROLE_ADMIN")
     @Operation(description = "Returns information regarding all students registered within the application.")
     public List<StudentViewDTO> listStudents() {
         return studentService.listAll().stream().map((student) -> dtoMapper.createDto(student, StudentViewDTO.class))
@@ -52,6 +54,7 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
+    @Secured("ROLE_ADMIN")
     @Operation(description = "Returns information regarding student with {id}.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -112,7 +115,7 @@ public class StudentController {
     }
 
     @PutMapping
-    @Secured({ "ROLE_STUDENT", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED')")
     @Operation(description = "Updates the student the current principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -138,7 +141,7 @@ public class StudentController {
     }
 
     @GetMapping("/{id}/email")
-    @Secured({ "ROLE_TEACHER", "ROLE_VERIFIED" })
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
     @Operation(description = "Returns student email if the logged in teacher has an approved lesson request with the student")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),

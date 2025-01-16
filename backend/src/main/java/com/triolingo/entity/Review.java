@@ -30,5 +30,5 @@ public class Review {
     private String content = "";
     @NotNull
     private Integer rating;
-    private final Instant date = Instant.now();
+    private Instant date = Instant.now();
 }
