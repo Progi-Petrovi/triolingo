@@ -9,7 +9,6 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { format } from "date-fns";
 
 interface DateTimePickerProps {
     value: Date;
@@ -24,6 +23,9 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
 
     const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const [hours, minutes] = event.target.value.split(":").map(Number);
+        if (isNaN(hours) || isNaN(minutes)) {
+            return;
+        }
         const updatedDate = new Date(value);
         updatedDate.setHours(hours);
         updatedDate.setMinutes(minutes);
@@ -46,7 +48,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
                 <PopoverTrigger asChild>
                     <Button variant="outline" className="w-60">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {value ? format(value, "PPP p") : "Pick a date"}
+                        {value ? value.toDateString() : "Pick a date"}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
