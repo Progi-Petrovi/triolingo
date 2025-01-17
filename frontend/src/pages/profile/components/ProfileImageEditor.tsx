@@ -9,11 +9,10 @@ import {
 import Avatar from "react-avatar-edit";
 import { useFetch } from "@/hooks/use-fetch";
 import { useToast } from "@/hooks/use-toast";
-const Uploader = () =>{
-
+const Uploader = () => {
     const fetch = useFetch();
     const { toast } = useToast();
-    const [preview, setPreview] = useState(null);
+    const [preview, setPreview] = useState<string | null>(null);
     const [open, setOpen] = useState(false);
 
     const onClose = () => {
@@ -33,7 +32,7 @@ const Uploader = () =>{
 
     function base64ToFile(base64String: string, fileName: string) {
         const base64PrefixPattern = /^data:(.*?);base64,/;
-        let base64Data = base64String.replace(base64PrefixPattern, '');
+        let base64Data = base64String.replace(base64PrefixPattern, "");
 
         while (base64Data.length % 4 !== 0) {
             base64Data += "=";
@@ -47,11 +46,11 @@ const Uploader = () =>{
         }
 
         const mimeMatch = base64String.match(base64PrefixPattern);
-        const mimeType = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+        const mimeType = mimeMatch ? mimeMatch[1] : "application/octet-stream";
         return new File([uint8Array], fileName, { type: mimeType });
     }
 
-    const handleSubmit = () =>{
+    const handleSubmit = () => {
         if (preview) {
             const file = base64ToFile(preview, "profileImage");
             const formData = new FormData();
@@ -60,23 +59,24 @@ const Uploader = () =>{
             fetch("/teacher/update/profileImage", {
                 method: "POST",
                 body: formData,
-            }).then((res) => {
-                if (res.status == 201) {
-                    window.location.reload();
-                }
-                else
+            })
+                .then((res) => {
+                    if (res.status == 201) {
+                        window.location.reload();
+                    } else
+                        toast({
+                            title: "Upload failed...",
+                            description: "Please, try again.",
+                            variant: "destructive",
+                        });
+                })
+                .catch(() => {
                     toast({
-                        title: "Upload failed...",
-                        description: "Please, try again.",
+                        title: "Network error...",
+                        description: "Could not upload the image.",
                         variant: "destructive",
                     });
-            }).catch(() => {
-                toast({
-                    title: "Network error...",
-                    description: "Could not upload the image.",
-                    variant: "destructive",
                 });
-            });
         }
     };
 
@@ -92,7 +92,7 @@ const Uploader = () =>{
 
                 <div className="flex flex-col gap-5">
                     <Avatar
-                        width="100%"
+                        width={"100%" as unknown as number}
                         height={400}
                         imageWidth={400}
                         onCrop={onCrop}
@@ -103,10 +103,18 @@ const Uploader = () =>{
                         exportMimeType={"image/jpeg"}
                         backgroundColor={"none"}
                         label={"Click to load image"}
-                        labelStyle={{color: "white", textDecoration: "underline", cursor: "pointer"}}
-                        className="flex justify-center"
+                        labelStyle={{
+                            color: "white",
+                            textDecoration: "underline",
+                            cursor: "pointer",
+                        }}
                     />
-                    <button onClick={handleSubmit} className="flex justify-center">Upload</button>
+                    <button
+                        onClick={handleSubmit}
+                        className="flex justify-center"
+                    >
+                        Upload
+                    </button>
                 </div>
             </DialogContent>
         </Dialog>
