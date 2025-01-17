@@ -1,12 +1,9 @@
 import { z } from "zod";
 import { TeacherTableRow } from "@/types/user-table-row";
 import { orderOptionStrings, teachingStyleStrings } from "@/types/filter";
-import {
-    useRangeInput,
-    useMultiSelect,
-    useSelectInput,
-} from "@/hooks/use-filter";
 import Filter from "@/components/Filter";
+import { toEnum } from "@/utils/main";
+import { FilterField } from "@/types/filter";
 
 const filterSchema = z
     .object({
@@ -18,8 +15,7 @@ const filterSchema = z
             .optional(),
         minHourlyRate: z.number().min(0).optional(),
         maxHourlyRate: z.number().min(0).optional(),
-        // order: z.enum(orderOptionStrings as [string, ...string[]]),
-        order: z.string(),
+        order: z.enum(orderOptionStrings as [string, ...string[]]),
     })
     .superRefine(({ minYearsOfExperience, maxYearsOfExperience }, ctx) => {
         if (minYearsOfExperience && maxYearsOfExperience) {
@@ -49,39 +45,39 @@ export default function TeacherFilteringForm({
     allLanguages: string[];
     setTeachers: React.Dispatch<React.SetStateAction<TeacherTableRow[]>>;
 }) {
-    const formFields: any[] = [
-        useMultiSelect({
-            options: allLanguages,
+    const filterFields = [
+        {
+            type: FilterField.MULTI_SELECT,
             name: "languages",
             label: "Languages",
+            options: allLanguages,
             placeholder: "Select languages",
-        }),
-        useRangeInput({
+        },
+        {
+            type: FilterField.RANGE,
             name: "YearsOfExperience",
             label: "Years of experience",
-        }),
-        useRangeInput({
+        },
+        {
+            type: FilterField.RANGE,
             name: "HourlyRate",
             label: "Hourly rate",
-        }),
-        useMultiSelect({
-            options: teachingStyleStrings,
+        },
+        {
+            type: FilterField.MULTI_SELECT,
             name: "teachingStyles",
             label: "Teaching Styles",
+            options: teachingStyleStrings,
             placeholder: "Select teaching styles",
-        }),
-        useSelectInput({
-            optionStrings: orderOptionStrings,
+        },
+        {
+            type: FilterField.SELECT,
             name: "order",
             label: "Order",
+            options: orderOptionStrings,
             placeholder: "Select order",
-            // defaultValue: "ALPHABETICAL_DESC",
-        }),
+        },
     ];
-
-    const toEnum = (str: string) => {
-        return str.toUpperCase().replace(/ /g, "_") as string;
-    };
 
     const filterToFetchParams = (data: any) => {
         return {
@@ -99,9 +95,9 @@ export default function TeacherFilteringForm({
 
     return (
         <Filter
-            filterFields={formFields}
-            filterToFetch={filterToFetchParams}
             filterSchema={filterSchema}
+            filterFields={filterFields}
+            filterToFetch={filterToFetchParams}
             setTeachers={setTeachers}
         />
     );

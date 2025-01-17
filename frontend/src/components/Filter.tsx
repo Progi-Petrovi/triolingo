@@ -5,6 +5,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { FilterField } from "./FilterFields";
+import {
+    useMultiSelect,
+    useRangeInput,
+    useSelectInput,
+} from "@/hooks/use-filter";
+import {
+    FilterField as FilterFieldEnum,
+    FilterFieldType,
+} from "@/types/filter";
 
 export default function Filter({
     filterSchema,
@@ -13,11 +22,39 @@ export default function Filter({
     setTeachers,
 }: {
     filterSchema: any;
-    filterFields: ((form: any) => [() => JSX.Element, (() => void)[]])[];
+    filterFields: any[];
     filterToFetch: (arg: any) => void;
     setTeachers: (arg: any) => void;
 }) {
     const fetch = useFetch();
+
+    const filterFieldsToFilterFieldHooks = (
+        filterFields: FilterFieldType[]
+    ) => {
+        return filterFields.map((filterField) => {
+            if (filterField.type === FilterFieldEnum.SELECT) {
+                return useSelectInput({
+                    optionStrings: filterField.options || [],
+                    name: filterField.name,
+                    label: filterField.label,
+                    placeholder: filterField.placeholder || "",
+                });
+            } else if (filterField.type === FilterFieldEnum.MULTI_SELECT) {
+                return useMultiSelect({
+                    options: filterField.options || [],
+                    name: filterField.name,
+                    label: filterField.label,
+                    placeholder: filterField.placeholder || "",
+                });
+            }
+            return useRangeInput({
+                name: filterField.name,
+                label: filterField.label,
+            });
+        });
+    };
+
+    const filterFieldHooks = filterFieldsToFilterFieldHooks(filterFields);
 
     const form = useForm<z.infer<typeof filterSchema>>({
         resolver: zodResolver(filterSchema),
@@ -29,9 +66,9 @@ export default function Filter({
     let elementCreators: (() => JSX.Element)[] = [];
     let resetFields: (() => void)[] = [];
 
-    for (let i = 0; i < filterFields.length; i++) {
-        const [elementCreator, resetField] = filterFields[i](form);
-        elementCreators.push(elementCreator);
+    for (let i = 0; i < filterFieldHooks.length; i++) {
+        const [elementCreator, resetField] = filterFieldHooks[i](form);
+        elementCreators.push(elementCreator as unknown as () => JSX.Element);
         resetFields = resetFields.concat(resetField);
     }
 

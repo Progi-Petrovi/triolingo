@@ -175,6 +175,6 @@ export function enumToStringList(enumObject: Record<string, string>) {
     );
 }
 
-export function enumToEnumNamesList(enumObject: Record<string, string>) {
-    return Object.values(enumObject);
-}
+export const toEnum = (str: string) => {
+	return str.toUpperCase().replace(/ /g, "_") as string;
+};
