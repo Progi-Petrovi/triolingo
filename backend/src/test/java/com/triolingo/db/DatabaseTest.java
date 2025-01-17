@@ -25,6 +25,7 @@ public class DatabaseTest {
         teacher.setFullName("John Doe");
 
         Teacher savedTeacher = teacherRepository.save(teacher);
+        savedTeacher = teacherRepository.findById(savedTeacher.getId()).get();
 
         assertThat(savedTeacher.getId()).isNotNull();
         assertThat(savedTeacher.getFullName()).isEqualTo("John Doe");
@@ -36,6 +37,7 @@ public class DatabaseTest {
         student.setFullName("Igor");
 
         Student savedStudent = studentRepository.save(student);
+        savedStudent = studentRepository.findById(savedStudent.getId()).get();
 
         assertThat(savedStudent.getId()).isNotNull();
         assertThat(savedStudent.getFullName()).isEqualTo("Igor");
