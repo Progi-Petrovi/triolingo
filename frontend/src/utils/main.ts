@@ -19,7 +19,6 @@ import {
 import { Role, Student, Teacher, User } from "@/types/users";
 import moment from "moment";
 import { useFetch } from "@/hooks/use-fetch";
-import useUserContext from "@/context/use-user-context";
 
 export function initials(fullName: string): string {
     return fullName
@@ -168,4 +167,22 @@ export function deleteProfile(
             });
         }
     });
+}
+
+function toEnglishCase(word: string) {
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+}
+
+function enumObjectToString(enumObject: Record<string, string>, key: string) {
+    return enumObject[key].split("_").map(toEnglishCase).join(" ");
+}
+
+export function enumToStringList(enumObject: Record<string, string>) {
+    return Object.keys(enumObject).map((key) =>
+        enumObjectToString(enumObject, key)
+    );
+}
+
+export function enumToEnumNamesList(enumObject: Record<string, string>) {
+    return Object.values(enumObject);
 }
