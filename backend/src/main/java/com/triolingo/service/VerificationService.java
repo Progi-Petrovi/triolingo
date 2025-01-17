@@ -22,6 +22,8 @@ import com.triolingo.repository.UserRepository;
 import com.triolingo.repository.VerificationRepository;
 
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Service
 @Transactional
@@ -33,6 +35,9 @@ public class VerificationService {
     private final EmailService emailService;
     private final Environment env;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     public VerificationService(VerificationRepository verificationRepository, UserRepository userRepository,
             EmailService emailService, Environment env) {
         this.verificationRepository = verificationRepository;
@@ -43,17 +48,18 @@ public class VerificationService {
 
     public VerificationToken createVerification(User user) {
         VerificationToken verificationToken = verificationRepository.findByUser(user).orElse(null);
-        VerificationToken newVerificationToken = new VerificationToken(user);
         if (verificationToken != null) {
             if (verificationToken.getExpirationDate().isBefore(Instant.now())) {
-                newVerificationToken.setId(verificationToken.getId());
+                verificationRepository.delete(verificationToken);
+                entityManager.flush();
             } else
                 return verificationToken;
         }
 
-        verificationRepository.save(newVerificationToken);
+        verificationToken = new VerificationToken(user);
+        verificationRepository.save(verificationToken);
 
-        return newVerificationToken;
+        return verificationToken;
     }
 
     public void verify(String token) {
