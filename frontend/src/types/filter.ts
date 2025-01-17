@@ -1,4 +1,4 @@
-import { enumToEnumNamesList, enumToStringList } from "@/utils/main";
+import { enumToStringList } from "@/utils/main";
 
 enum OrderOptions {
     ALPHABETICAL_DESC = "ALPHABETICAL_DESC",
@@ -17,12 +17,18 @@ enum TeachingStyle {
 }
 
 export const orderOptionStrings = enumToStringList(OrderOptions);
-export const orderOptionStringEnum = enumToEnumNamesList(OrderOptions);
 export const teachingStyleStrings = enumToStringList(TeachingStyle);
-export const teachingStyleStringEnum = enumToEnumNamesList(TeachingStyle);
 
-export enum FilterFields {
-    MULTISELECT,
-    RANGE,
+export enum FilterField {
     SELECT,
+    MULTI_SELECT,
+    RANGE,
 }
+
+export type FilterFieldType = {
+    type: FilterField;
+    name: string;
+    label: string;
+    options?: string[];
+    placeholder?: string;
+};
