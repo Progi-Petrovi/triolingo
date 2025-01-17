@@ -1,11 +1,9 @@
 package com.triolingo.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.time.Instant;
 
 import org.springframework.core.env.Environment;
@@ -13,7 +11,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import com.triolingo.entity.VerificationToken;
@@ -78,8 +75,7 @@ public class VerificationService {
         URI uri = uriBuilderFactory.uriString("/verification/verify/{token}")
                 .build(verificationToken.getToken());
 
-        File file = ResourceUtils.getFile("classpath:templates/email-verification.html");
-        String content = Files.readString(file.toPath());
+        String content = "";
 
         ClassPathResource resource = new ClassPathResource("templates/email-verification.html");
         try (InputStream inputStream = resource.getInputStream()) {
