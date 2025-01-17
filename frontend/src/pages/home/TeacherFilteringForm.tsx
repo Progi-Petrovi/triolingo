@@ -22,8 +22,7 @@ import { Button } from "@/components/ui/button";
 import { useFetch } from "@/hooks/use-fetch";
 import { TeacherTableRow } from "@/types/user-table-row";
 import { orderOptionStrings, teachingStyleStrings } from "@/types/filter";
-import { useState } from "react";
-import { max } from "date-fns/fp/max";
+import { Dispatch, SetStateAction, useState } from "react";
 
 const filterSchema = z
     .object({
@@ -251,6 +250,121 @@ function FilterField({ children }: { children: React.ReactNode }) {
     );
 }
 
+function MultiSelectElementCreator(props: {
+    form: any;
+    options: Option[];
+    name: string;
+    label: string;
+    placeholder: string;
+    valueHandler: string[];
+    setValueHandler: Dispatch<SetStateAction<string[]>>;
+}) {
+    return () => {
+        return (
+            <MultiSelectInput
+                form={props.form}
+                options={props.options}
+                name={props.name}
+                label={props.label}
+                placeholder={props.placeholder}
+                valueHandler={props.valueHandler}
+                setValueHandler={props.setValueHandler}
+            />
+        );
+    };
+}
+
+function RangeInputElementCreator(props: {
+    form: any;
+    name: string;
+    label: string;
+    minValueHandler: number;
+    setMinValueHandler: React.Dispatch<React.SetStateAction<number>>;
+    maxValueHandler: number;
+    setMaxValueHandler: React.Dispatch<React.SetStateAction<number>>;
+}) {
+    return () => {
+        return (
+            <RangeInput
+                form={props.form}
+                name={props.name}
+                label={props.label}
+                minValueHandler={props.minValueHandler}
+                setMinValueHandler={props.setMinValueHandler}
+                maxValueHandler={props.maxValueHandler}
+                setMaxValueHandler={props.setMaxValueHandler}
+            />
+        );
+    };
+}
+
+function SelectInputElementCreator(props: {
+    form: any;
+    optionStrings: string[];
+    name: string;
+    label: string;
+    placeholder: string;
+    defaultValue: string;
+    valueHandler: string;
+    setValueHandler: React.Dispatch<React.SetStateAction<string>>;
+}) {
+    return () => {
+        return (
+            <SelectInput
+                form={props.form}
+                optionStrings={props.optionStrings}
+                name={props.name}
+                label={props.label}
+                placeholder={props.placeholder}
+                defaultValue={props.defaultValue}
+                valueHandler={props.valueHandler}
+                setValueHandler={props.setValueHandler}
+            />
+        );
+    };
+}
+
+type MultiSelectElementCreatorType = () => JSX.Element;
+type RangeInputElementCreatorType = () => JSX.Element;
+type SelectInputElementCreatorType = () => JSX.Element;
+
+type FormFieldElementCreatorType =
+    | MultiSelectElementCreatorType
+    | RangeInputElementCreatorType
+    | SelectInputElementCreatorType;
+
+function Filter({
+    formFields,
+    form,
+    onSubmit,
+}: {
+    formFields: FormFieldElementCreatorType[];
+    form: any;
+    onSubmit: (data: z.infer<typeof filterSchema>) => void;
+}) {
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="mb-6">
+                <div className="flex flex-row flex-wrap gap-4">
+                    {formFields.map(
+                        (elementCreator: FormFieldElementCreatorType, i) => (
+                            <FilterField key={i}>
+                                {elementCreator()}
+                            </FilterField>
+                        )
+                    )}
+
+                    <div className="flex justify-end items-end">
+                        <Button type="submit" className="">
+                            Apply Filters
+                        </Button>
+                    </div>
+                </div>
+            </form>
+        </Form>
+    );
+}
+
 export default function TeacherFilteringForm({
     allLanguages,
     setTeachers,
@@ -334,83 +448,54 @@ export default function TeacherFilteringForm({
         setOrderingHandler("");
     }
 
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="mb-6">
-                <div className="flex flex-row flex-wrap gap-4">
-                    {/* Languages Filter */}
-                    <FilterField>
-                        <MultiSelectInput
-                            form={form}
-                            options={LANGUAGES}
-                            name="languages"
-                            label="Languages"
-                            placeholder="Select languages"
-                            valueHandler={languagesHandler}
-                            setValueHandler={setLanguagesHandler}
-                        />
-                    </FilterField>
+    const formFields: FormFieldElementCreatorType[] = [
+        MultiSelectElementCreator({
+            form: form,
+            options: LANGUAGES,
+            name: "languages",
+            label: "Languages",
+            placeholder: "Select languages",
+            valueHandler: languagesHandler,
+            setValueHandler: setLanguagesHandler,
+        }),
+        RangeInputElementCreator({
+            form: form,
+            name: "YearsOfExperience",
+            label: "Years of experience",
+            minValueHandler: minYearsOfExperienceHandler,
+            setMinValueHandler: setMinYearsOfExperienceHandler,
+            maxValueHandler: maxYearsOfExperienceHandler,
+            setMaxValueHandler: setMaxYearsOfExperienceHandler,
+        }),
+        RangeInputElementCreator({
+            form: form,
+            name: "HourlyRate",
+            label: "Hourly rate",
+            minValueHandler: minHourlyRateHandler,
+            setMinValueHandler: setMinHourlyRateHandler,
+            maxValueHandler: maxHourlyRateHandler,
+            setMaxValueHandler: setMaxHourlyRateHandler,
+        }),
+        MultiSelectElementCreator({
+            form: form,
+            options: TEACHINGSTYLES,
+            name: "teachingStyles",
+            label: "Teaching Styles",
+            placeholder: "Select teaching styles",
+            valueHandler: teachingStylesHandler,
+            setValueHandler: setTeachingStylesHandler,
+        }),
+        SelectInputElementCreator({
+            form: form,
+            optionStrings: orderOptionStrings,
+            name: "order",
+            label: "Order",
+            placeholder: "Select order",
+            defaultValue: "ALPHABETICAL_DESC",
+            valueHandler: orderingHandler,
+            setValueHandler: setOrderingHandler,
+        }),
+    ];
 
-                    {/* Years of Experience Filters */}
-                    <FilterField>
-                        <RangeInput
-                            form={form}
-                            name="YearsOfExperience"
-                            label="Years of experience"
-                            minValueHandler={minYearsOfExperienceHandler}
-                            setMinValueHandler={setMinYearsOfExperienceHandler}
-                            maxValueHandler={maxYearsOfExperienceHandler}
-                            setMaxValueHandler={setMaxYearsOfExperienceHandler}
-                        />
-                    </FilterField>
-
-                    {/* Hourly Rate Filters */}
-                    <FilterField>
-                        <RangeInput
-                            form={form}
-                            name="HourlyRate"
-                            label="Hourly rate"
-                            minValueHandler={minHourlyRateHandler}
-                            setMinValueHandler={setMinHourlyRateHandler}
-                            maxValueHandler={maxHourlyRateHandler}
-                            setMaxValueHandler={setMaxHourlyRateHandler}
-                        />
-                    </FilterField>
-
-                    {/* Teaching Style Filter */}
-                    <FilterField>
-                        <MultiSelectInput
-                            form={form}
-                            options={TEACHINGSTYLES}
-                            name="teachingStyles"
-                            label="Teaching Styles"
-                            placeholder="Select teaching styles"
-                            valueHandler={teachingStylesHandler}
-                            setValueHandler={setTeachingStylesHandler}
-                        />
-                    </FilterField>
-
-                    {/* Order Filter */}
-                    <FilterField>
-                        <SelectInput
-                            form={form}
-                            optionStrings={orderOptionStrings}
-                            name="order"
-                            label="Order"
-                            placeholder="Select order"
-                            defaultValue={"ALPHABETICAL_DESC"}
-                            valueHandler={orderingHandler}
-                            setValueHandler={setOrderingHandler}
-                        />
-                    </FilterField>
-
-                    <div className="flex justify-end items-end">
-                        <Button type="submit" className="">
-                            Apply Filters
-                        </Button>
-                    </div>
-                </div>
-            </form>
-        </Form>
-    );
+    return <Filter formFields={formFields} form={form} onSubmit={onSubmit} />;
 }
