@@ -1,6 +1,7 @@
 package com.triolingo.repository;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 
 import com.triolingo.entity.user.Student;
@@ -13,4 +14,8 @@ public interface LessonRepositoryCustom {
     boolean existsByTeacherAndAcceptedStudentAndComplete(Teacher teacher, Student student);
 
     List<Lesson> findAllByStudent(Student student);
+
+    void updateStatusIfExpired(Collection<Lesson> lessons);
+
+    void updateAllStatusIfExpired();
 }

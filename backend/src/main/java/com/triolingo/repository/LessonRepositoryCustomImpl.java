@@ -1,6 +1,7 @@
 package com.triolingo.repository;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 
 import com.triolingo.entity.lesson.Lesson;
@@ -13,9 +14,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import jakarta.persistence.criteria.Predicate;
 
 public class LessonRepositoryCustomImpl implements LessonRepositoryCustom {
@@ -66,7 +69,7 @@ public class LessonRepositoryCustomImpl implements LessonRepositoryCustom {
     @Override
     public List<Lesson> findAllByStudent(Student student) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<LessonRequest> query = builder.createQuery(LessonRequest.class);
+        CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
 
         Root<LessonRequest> requestRoot = query.from(LessonRequest.class);
         Join<LessonRequest, Lesson> lessonJoin = requestRoot.join(LessonRequest.Fields.lesson);
@@ -76,9 +79,123 @@ public class LessonRepositoryCustomImpl implements LessonRepositoryCustom {
 
         return entityManager
                 .createQuery(
-                        query.where(predicate)
+                        query.select(lessonJoin).where(predicate)
                                 .groupBy(requestRoot.get(LessonRequest.Fields.lesson))
                                 .orderBy(order))
-                .getResultList().stream().map(request -> request.getLesson()).toList();
+                .getResultList();
+    }
+
+    @Override
+    public void updateStatusIfExpired(Collection<Lesson> lessons) {
+        {// change status to complete for lessons with accepted requests
+            CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+
+            CriteriaUpdate<Lesson> query = builder.createCriteriaUpdate(Lesson.class);
+            Root<Lesson> lessonRoot = query.from(Lesson.class);
+
+            Subquery<LessonRequest> subquery = query.subquery(LessonRequest.class);
+            Root<LessonRequest> requestRoot = subquery.from(LessonRequest.class);
+
+            subquery.where(builder.and(
+                    builder.equal(requestRoot.get(LessonRequest.Fields.lesson), lessonRoot),
+                    builder.equal(requestRoot.get(LessonRequest.Fields.status), LessonRequest.Status.ACCEPTED)));
+
+            Predicate predicate = builder.and(
+                    builder.exists(subquery),
+                    lessonRoot.in(lessons),
+                    builder.notEqual(lessonRoot.get(Lesson.Fields.status), Lesson.Status.CANCELED),
+                    builder.notEqual(lessonRoot.get(Lesson.Fields.status), Lesson.Status.COMPLETE),
+                    builder.or(
+                            builder.equal(lessonRoot.get(Lesson.Fields.status), Lesson.Status.OPEN),
+                            builder.equal(lessonRoot.get(Lesson.Fields.status), Lesson.Status.CLOSED)),
+                    builder.lessThanOrEqualTo(lessonRoot.get(Lesson.Fields.endInstant), Instant.now()));
+
+            entityManager.createQuery(
+                    query.where(predicate).set(lessonRoot.get(Lesson.Fields.status), Lesson.Status.COMPLETE))
+                    .executeUpdate();
+        }
+        {// change status to canceled for lessons without accepted requests
+            CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+
+            CriteriaUpdate<Lesson> query = builder.createCriteriaUpdate(Lesson.class);
+            Root<Lesson> lessonRoot = query.from(Lesson.class);
+
+            Subquery<LessonRequest> subquery = query.subquery(LessonRequest.class);
+            Root<LessonRequest> requestRoot = subquery.from(LessonRequest.class);
+
+            subquery.where(builder.and(
+                    builder.equal(requestRoot.get(LessonRequest.Fields.lesson), lessonRoot),
+                    builder.equal(requestRoot.get(LessonRequest.Fields.status), LessonRequest.Status.ACCEPTED)));
+
+            Predicate predicate = builder.and(
+                    builder.not(builder.exists(subquery)),
+                    lessonRoot.in(lessons),
+                    builder.notEqual(lessonRoot.get(Lesson.Fields.status), Lesson.Status.CANCELED),
+                    builder.notEqual(lessonRoot.get(Lesson.Fields.status), Lesson.Status.COMPLETE),
+                    builder.or(
+                            builder.equal(lessonRoot.get(Lesson.Fields.status), Lesson.Status.OPEN),
+                            builder.equal(lessonRoot.get(Lesson.Fields.status), Lesson.Status.CLOSED)),
+                    builder.lessThanOrEqualTo(lessonRoot.get(Lesson.Fields.endInstant), Instant.now()));
+
+            entityManager.createQuery(
+                    query.where(predicate).set(lessonRoot.get(Lesson.Fields.status), Lesson.Status.CANCELED))
+                    .executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateAllStatusIfExpired() {
+        {// change status to complete for lessons with accepted requests
+            CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+
+            CriteriaUpdate<Lesson> query = builder.createCriteriaUpdate(Lesson.class);
+            Root<Lesson> lessonRoot = query.from(Lesson.class);
+
+            Subquery<LessonRequest> subquery = query.subquery(LessonRequest.class);
+            Root<LessonRequest> requestRoot = subquery.from(LessonRequest.class);
+
+            subquery.where(builder.and(
+                    builder.equal(requestRoot.get(LessonRequest.Fields.lesson), lessonRoot),
+                    builder.equal(requestRoot.get(LessonRequest.Fields.status), LessonRequest.Status.ACCEPTED)));
+
+            Predicate predicate = builder.and(
+                    builder.exists(subquery),
+                    builder.notEqual(lessonRoot.get(Lesson.Fields.status), Lesson.Status.CANCELED),
+                    builder.notEqual(lessonRoot.get(Lesson.Fields.status), Lesson.Status.COMPLETE),
+                    builder.or(
+                            builder.equal(lessonRoot.get(Lesson.Fields.status), Lesson.Status.OPEN),
+                            builder.equal(lessonRoot.get(Lesson.Fields.status), Lesson.Status.CLOSED)),
+                    builder.lessThanOrEqualTo(lessonRoot.get(Lesson.Fields.endInstant), Instant.now()));
+
+            entityManager.createQuery(
+                    query.where(predicate).set(lessonRoot.get(Lesson.Fields.status), Lesson.Status.COMPLETE))
+                    .executeUpdate();
+        }
+        {// change status to canceled for lessons without accepted requests
+            CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+
+            CriteriaUpdate<Lesson> query = builder.createCriteriaUpdate(Lesson.class);
+            Root<Lesson> lessonRoot = query.from(Lesson.class);
+
+            Subquery<LessonRequest> subquery = query.subquery(LessonRequest.class);
+            Root<LessonRequest> requestRoot = subquery.from(LessonRequest.class);
+
+            subquery.where(builder.and(
+                    builder.equal(requestRoot.get(LessonRequest.Fields.lesson), lessonRoot),
+                    builder.equal(requestRoot.get(LessonRequest.Fields.status), LessonRequest.Status.ACCEPTED)));
+
+            Predicate predicate = builder.and(
+                    builder.not(builder.exists(subquery)),
+                    builder.notEqual(lessonRoot.get(Lesson.Fields.status), Lesson.Status.CANCELED),
+                    builder.notEqual(lessonRoot.get(Lesson.Fields.status), Lesson.Status.COMPLETE),
+                    builder.or(
+                            builder.equal(lessonRoot.get(Lesson.Fields.status), Lesson.Status.OPEN),
+                            builder.equal(lessonRoot.get(Lesson.Fields.status), Lesson.Status.CLOSED)),
+                    builder.lessThanOrEqualTo(lessonRoot.get(Lesson.Fields.endInstant), Instant.now()));
+
+            entityManager.createQuery(
+                    query.where(predicate).set(lessonRoot.get(Lesson.Fields.status), Lesson.Status.CANCELED))
+                    .executeUpdate();
+        }
     }
 }

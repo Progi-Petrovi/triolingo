@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -40,42 +41,54 @@ public class LessonService {
     public Lesson fetch(Long id) {
         try {
             Lesson lesson = lessonRepository.findById(id).get();
-            return lesson;
+            lessonRepository.updateStatusIfExpired(Collections.singletonList(lesson));
+            return lessonRepository.findById(id).get();
         } catch (NoSuchElementException e) {
             throw new EntityNotFoundException("Lesson with that id does not exist");
         }
     }
 
-    public Lesson fetchRequest(Long id) {
+    public LessonRequest fetchRequest(Long id) {
         try {
-            Lesson lesson = lessonRepository.findById(id).get();
-            return lesson;
+            LessonRequest request = lessonRequestRepository.findById(id).get();
+            lessonRepository.updateStatusIfExpired(Collections.singletonList(request.getLesson()));
+            request.setLesson(lessonRepository.findById(request.getLesson().getId()).get());
+            return request;
         } catch (NoSuchElementException e) {
-            throw new EntityNotFoundException("Lesson with that id does not exist");
+            throw new EntityNotFoundException("Lesson request with that id does not exist");
         }
     }
 
     public List<Lesson> findAllByTeacher(@NotNull Teacher teacher) {
-        return lessonRepository.findAllByTeacher(teacher);
+        lessonRepository.updateAllStatusIfExpired();
+        List<Lesson> lessons = lessonRepository.findAllByTeacher(teacher);
+        return lessons;
     }
 
     public List<Lesson> findAllByTeacherAndStatus(@NotNull Teacher teacher, @NotNull Lesson.Status status) {
-        return lessonRepository.findAllByTeacherAndStatus(teacher, status);
+        lessonRepository.updateAllStatusIfExpired();
+        List<Lesson> lessons = lessonRepository.findAllByTeacherAndStatus(teacher, status);
+        return lessons;
     }
 
     public List<Lesson> findAllByStudent(@NotNull Student student) {
-        return lessonRepository.findAllByStudent(student);
+        lessonRepository.updateAllStatusIfExpired();
+        List<Lesson> lessons = lessonRepository.findAllByStudent(student);
+        return lessons;
     }
 
     public List<LessonRequest> findAllRequestsByTeacher(@NotNull Teacher teacher) {
+        lessonRepository.updateAllStatusIfExpired();
         return lessonRequestRepository.findAllByTeacher(teacher);
     }
 
     public List<LessonRequest> findAllRequestsByLesson(@NotNull Lesson lesson) {
+        lessonRepository.updateAllStatusIfExpired();
         return lessonRequestRepository.findAllByLesson(lesson);
     }
 
     public List<LessonRequest> findAllRequestsByStudent(@NotNull Student student) {
+        lessonRepository.updateAllStatusIfExpired();
         return lessonRequestRepository.findAllByStudent(student);
     }
 
@@ -85,6 +98,7 @@ public class LessonService {
     }
 
     public Lesson create(@NotNull Teacher teacher, @NotNull LessonCreateDTO dto) {
+        lessonRepository.updateAllStatusIfExpired();
         Lesson lesson = dtoMapper.createEntity(dto, Lesson.class);
         if (!lesson.getStartInstant().isBefore(lesson.getEndInstant()))
             throw new IllegalArgumentException(
@@ -127,7 +141,8 @@ public class LessonService {
 
         lesson.setStatus(status);
         lessonRepository.save(lesson);
-        return lesson;
+        lessonRepository.updateStatusIfExpired(Collections.singletonList(lesson));
+        return lessonRepository.findById(lesson.getId()).get();
     }
 
     public void setRequestStatus(@NotNull LessonRequest request, @NotNull LessonRequest.Status status) {
@@ -170,13 +185,8 @@ public class LessonService {
     }
 
     // Completes lessons with and end instant that has passed
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     public void cleanLessons() {
-        for (Lesson lesson : lessonRepository.findAllByStatusAndEndInstantLessThan(
-                Lesson.Status.CLOSED, Instant.now()))
-            setStatus(lesson, Lesson.Status.COMPLETE);
-        for (Lesson lesson : lessonRepository.findAllByStatusAndEndInstantLessThan(
-                Lesson.Status.OPEN, Instant.now()))
-            setStatus(lesson, Lesson.Status.COMPLETE);
+        lessonRepository.updateAllStatusIfExpired();
     }
 }
