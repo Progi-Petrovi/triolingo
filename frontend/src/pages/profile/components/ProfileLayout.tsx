@@ -25,6 +25,8 @@ import {
     FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useFetch } from "@/hooks/use-fetch.ts";
+import { useEffect, useState } from "react";
 
 type ProfileLayoutType = {
     userProfile: User | Teacher | Student;
@@ -46,6 +48,24 @@ export default function ProfileLayout({
     form,
 }: ProfileLayoutType) {
     const profileRole = userProfile.role as Role;
+    const fetch = useFetch();
+    const [hasPreviousLessons, setHasPreviousLessons] =
+        useState<boolean>(false);
+
+    const tryFetching = () => {
+        fetch(`teacher/${userProfile.id}/email`).then((res) => {
+            if (res.status === 200) {
+                setHasPreviousLessons(true);
+            }
+            setHasPreviousLessons(false);
+        });
+    };
+
+    useEffect(() => {
+        if (role === Role.ROLE_STUDENT) {
+            tryFetching();
+        }
+    }, []);
 
     return (
         <div className="flex flex-col gap-4 px-4 md:items-start md:gap-20 md:flex-row md:px-0">
@@ -54,9 +74,18 @@ export default function ProfileLayout({
                     <CardHeader className="flex flex-col justify-center items-center">
                         <CardTitle>
                             <Avatar className="w-32 h-32 cursor-pointer">
-                                {profileRole === Role.ROLE_TEACHER
-                                    ? <AvatarImage src={`${PathConstants.API_URL}/images/profile/${(userProfile as Teacher).profileImageHash}`}/>
-                                    : <AvatarImage />}
+                                {profileRole === Role.ROLE_TEACHER ? (
+                                    <AvatarImage
+                                        src={`${
+                                            PathConstants.API_URL
+                                        }/images/profile/${
+                                            (userProfile as Teacher)
+                                                .profileImageHash
+                                        }`}
+                                    />
+                                ) : (
+                                    <AvatarImage />
+                                )}
                                 <AvatarFallback className="text-2xl md:text-4xl">
                                     {initials(userProfile.fullName)}
                                 </AvatarFallback>
@@ -139,15 +168,23 @@ export default function ProfileLayout({
                                 )}
                             </CardContent>
                         </Card>
-                        {role !== Role.ROLE_TEACHER && (
+                        {role === Role.ROLE_STUDENT && (
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Lessons</CardTitle>
                                 </CardHeader>
                                 <CardContent className="flex flex-col gap-2">
-                                    <Button className="font-base">
-                                        See previous lessons
-                                    </Button>
+                                    {hasPreviousLessons && (
+                                        <Button className="font-base p-0">
+                                            <Link
+                                                to={`/teacher/prev-lessons/${userProfile.id}`}
+                                                className="text-inherit focus:text-inherit hover:text-inherit w-full h-full
+                                            flex justify-center items-center text-base"
+                                            >
+                                                See previous lessons
+                                            </Link>
+                                        </Button>
+                                    )}
                                     <Button className="font-base">
                                         <Link
                                             to={`/teacher/lessons/${userProfile.id}`}

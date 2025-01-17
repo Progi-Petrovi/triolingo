@@ -14,6 +14,7 @@ const PathConstants = {
     BOOK_LESSON_STUDENT: "/teacher/lessons/:id",
     LESSON_REQUESTS: "/requests",
     PENDING_REQUESTS: "/requests/pending",
+    PREVIOUS_LESSONS: "/teacher/prev-lessons/:id",
     API_URL: import.meta.env.VITE_API_URL ?? "http://localhost:5000",
 };
 
