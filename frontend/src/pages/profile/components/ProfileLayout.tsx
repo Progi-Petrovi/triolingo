@@ -151,7 +151,11 @@ export default function ProfileLayout({
                                     />
                                 ) : (
                                     <span>
-                                        €{(userProfile as Teacher).hourlyRate}
+                                        {(userProfile as Teacher).hourlyRate
+                                            ? `€` +
+                                              (userProfile as Teacher)
+                                                  .hourlyRate
+                                            : "Free"}
                                     </span>
                                 )}
                             </CardContent>
@@ -175,7 +179,10 @@ export default function ProfileLayout({
                                 </CardHeader>
                                 <CardContent className="flex flex-col gap-2">
                                     {hasPreviousLessons && (
-                                        <Button className="font-base p-0">
+                                        <Button
+                                            type="button"
+                                            className="font-base p-0"
+                                        >
                                             <Link
                                                 to={`/teacher/prev-lessons/${userProfile.id}`}
                                                 className="text-inherit focus:text-inherit hover:text-inherit w-full h-full
@@ -185,7 +192,7 @@ export default function ProfileLayout({
                                             </Link>
                                         </Button>
                                     )}
-                                    <Button className="font-base">
+                                    <Button type="button" className="font-base">
                                         <Link
                                             to={`/teacher/lessons/${userProfile.id}`}
                                             className="text-inherit focus:text-inherit hover:text-inherit w-full h-full

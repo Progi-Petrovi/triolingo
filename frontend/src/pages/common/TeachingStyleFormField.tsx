@@ -22,8 +22,6 @@ type TeachingStyleFormField = {
 export default function TeachingStyleFormField({
     form,
 }: TeachingStyleFormField) {
-    console.log(form.getValues());
-
     return (
         <FormField
             control={form.control}

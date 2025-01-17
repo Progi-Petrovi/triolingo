@@ -209,7 +209,10 @@ export default function TeacherProfile({
                                 <div>No reviews</div>
                             )}
                             {reviews.length > maxReviews && (
-                                <Button className="p-0 flex justify-center items-center">
+                                <Button
+                                    type="button"
+                                    className="p-0 flex justify-center items-center"
+                                >
                                     <Link
                                         to={`/teacher/reviews/${userProfile.id}`}
                                         className="text-inherit focus:text-inherit hover:text-inherit w-full h-full

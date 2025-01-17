@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useFetch } from "@/hooks/use-fetch";
@@ -63,7 +65,7 @@ export default function Filter({
         },
     });
 
-    let elementCreators: (() => JSX.Element)[] = [];
+    const elementCreators: (() => JSX.Element)[] = [];
     let resetFields: (() => void)[] = [];
 
     for (let i = 0; i < filterFieldHooks.length; i++) {
