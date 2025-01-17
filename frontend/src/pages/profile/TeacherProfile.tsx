@@ -46,13 +46,32 @@ export default function TeacherProfile({
     const maxReviews = 5;
     const [{ reviews, latestRewiews, averageRating }, updateReviews] =
         useReviews(maxReviews, teacher.id);
+    const [numberOfStudents, setNumberOfStudents] = useState<number>(0);
+    const [numberOfLessons, setNumberOfLessons] = useState<number>(0);
 
     const fetch = useFetch();
     const { toast } = useToast();
     const [editMode, setEditMode] = useState<boolean>(false);
 
+    const fetchStudentAndLessonNumbers = () => {
+        fetch(`teacher/${teacher.id}/studentNumber`).then((res) => {
+            if (res.status === 200) {
+                return setNumberOfStudents(res.body);
+            }
+            return -1;
+        });
+
+        fetch(`teacher/${teacher.id}/lessonNumber`).then((res) => {
+            if (res.status === 200) {
+                return setNumberOfLessons(res.body);
+            }
+            return -1;
+        });
+    };
+
     useEffect(() => {
         updateReviews();
+        fetchStudentAndLessonNumbers();
         console.log("TeacherProfile role:", role);
     }, []);
 
@@ -95,6 +114,17 @@ export default function TeacherProfile({
     function TeacherRight() {
         return (
             <>
+                {numberOfLessons >= 0 && numberOfStudents >= 0 && (
+                    <Card className="md:w-96 p-0 pt-6">
+                        <CardContent className="text-center text-lg">
+                            {teacher.fullName} has had
+                            <br />
+                            {numberOfLessons} lessons with
+                            <br />
+                            {numberOfStudents} students
+                        </CardContent>
+                    </Card>
+                )}
                 <Card className="md:w-96 p-3">
                     <CardHeader>
                         <CardTitle>Years of experience</CardTitle>

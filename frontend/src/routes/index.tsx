@@ -30,6 +30,8 @@ const PendingRequests = React.lazy(() => import("../pages/PendingRequests"));
 
 const UserProfile = React.lazy(() => import("../pages/profile/UserProfile"));
 
+const PreviousLessons = React.lazy(() => import("../pages/PreviousLessons"));
+
 const routes = [
     { path: PathConstants.HOME, element: <Home /> },
     { path: PathConstants.LOGIN, element: <Login /> },
@@ -46,6 +48,7 @@ const routes = [
     { path: PathConstants.BOOK_LESSON_STUDENT, element: <BookLessonStudent /> },
     { path: PathConstants.LESSON_REQUESTS, element: <LessonRequests /> },
     { path: PathConstants.PENDING_REQUESTS, element: <PendingRequests /> },
+    { path: PathConstants.PREVIOUS_LESSONS, element: <PreviousLessons /> },
 ];
 
 export default routes;
