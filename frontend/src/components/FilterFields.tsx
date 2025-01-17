@@ -60,11 +60,9 @@ export function RangeInput({
                                     placeholder="Min"
                                     value={minValueHandler || ""}
                                     onChange={(e) => {
-                                        field.onChange(
-                                            Number(e.target.value) || 0
-                                        );
+                                        field.onChange(Math.max(0, Number(e.target.value)) || 0);
                                         setMinValueHandler(
-                                            Number(e.target.value) || 0
+                                            Math.max(0, Number(e.target.value)) || 0
                                         );
                                     }}
                                 />
@@ -89,10 +87,10 @@ export function RangeInput({
                                     value={maxValueHandler || ""}
                                     onChange={(e) => {
                                         field.onChange(
-                                            Number(e.target.value) || 0
+                                            Math.max(0, Number(e.target.value)) || 0
                                         );
                                         setMaxValueHandler(
-                                            Number(e.target.value) || 0
+                                            Math.max(0, Number(e.target.value)) || 0
                                         );
                                     }}
                                 />

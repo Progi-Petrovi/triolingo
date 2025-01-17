@@ -1,12 +1,12 @@
 import { enumToStringList } from "@/utils/main";
 
 enum SortOptions {
-    ALPHABETICAL_ASC = "ABC \u2191", // A-Z
-    ALPHABETICAL_DESC = "ABC \u2193", // Z-A
-    YEARS_OF_EXPERIENCE_ASC = "Experience \u2191", // Low to High
-    YEARS_OF_EXPERIENCE_DESC = "Experience \u2193", // High to Low
-    HOURLY_RATE_ASC = "Rate \u2191", // Low to High
-    HOURLY_RATE_DESC = "Rate \u2193", // High to Low
+    ALPHABETICAL_ASC = "Abc \u2191", 
+    ALPHABETICAL_DESC = "Abc \u2193",
+    YEARS_OF_EXPERIENCE_ASC = "Experience \u2191",
+    YEARS_OF_EXPERIENCE_DESC = "Experience \u2193",
+    HOURLY_RATE_ASC = "Rate \u2191",
+    HOURLY_RATE_DESC = "Rate \u2193",
 }
 
 enum TeachingStyle {
