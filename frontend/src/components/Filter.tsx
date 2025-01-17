@@ -105,13 +105,13 @@ export default function Filter({
 
     return (
         <Form {...form}>
-            <Button
+            {/* <Button
                 onClick={() => {
                     console.log("Print form data: ", form.getValues());
                 }}
             >
                 Print Form Data
-            </Button>
+            </Button> */}
 
             <form onSubmit={form.handleSubmit(onSubmit)} className="mb-6">
                 <div className="flex flex-row flex-wrap gap-4">
