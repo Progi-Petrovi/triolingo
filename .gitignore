@@ -65,3 +65,6 @@ secret.properties
 backend/public/images/profile/*
 !backend/public/images/profile/.gitfollow
 
+### Temporary files ###
+**/tmp*
+**/temp*

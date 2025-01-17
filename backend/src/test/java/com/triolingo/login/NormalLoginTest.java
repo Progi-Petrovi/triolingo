@@ -1,5 +1,6 @@
 package com.triolingo.login;
 
+import com.triolingo.service.EmailService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,15 +31,16 @@ public class NormalLoginTest {
                 "fullName", "Jane Doe",
                 "learningLanguages", Map.of("Spanish", "BEGINNER"),
                 "preferredTeachingStyle", "FLEXIBLE",
-                "learningGoals", "Learn Espanol");
+                "learningGoals", "Learn Espanol"
+        );
 
-        ResponseEntity<String> response = restTemplate.postForEntity("/student/register", registerPayload,
-                String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity("/student/register", registerPayload, String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         Map<String, Object> loginPayload = Map.of(
                 "email", "jane.doe@gmail.com",
-                "password", "12345678");
+                "password", "12345678"
+        );
 
         ResponseEntity<String> loginResponse = restTemplate.postForEntity("/login", loginPayload, String.class);
         assertThat(loginResponse.getStatusCode()).isEqualTo(HttpStatus.OK);

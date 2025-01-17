@@ -3,6 +3,7 @@ package com.triolingo.registration;
 import com.triolingo.dto.student.StudentCreateDTO;
 import com.triolingo.entity.TeachingStyle;
 import com.triolingo.entity.language.KnowledgeLevel;
+import com.triolingo.service.EmailService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,10 +33,10 @@ public class StudentRegistrationTest {
                 "John Doe",
                 Map.of("Spanish", KnowledgeLevel.BEGINNER),
                 TeachingStyle.FLEXIBLE,
-                "Learn Espanol");
+                "Learn Espanol"
+        );
 
-        ResponseEntity<String> response = restTemplate.postForEntity("/student/register", studentCreateDTO,
-                String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity("/student/register", studentCreateDTO, String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
@@ -47,14 +48,13 @@ public class StudentRegistrationTest {
                 "John Doe",
                 Map.of("Spanish", KnowledgeLevel.BEGINNER),
                 TeachingStyle.FLEXIBLE,
-                "Learn Espanol");
+                "Learn Espanol"
+        );
 
-        ResponseEntity<String> response1 = restTemplate.postForEntity("/student/register", studentCreateDTO,
-                String.class);
+        ResponseEntity<String> response1 = restTemplate.postForEntity("/student/register", studentCreateDTO, String.class);
         assertThat(response1.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        ResponseEntity<String> response2 = restTemplate.postForEntity("/student/register", studentCreateDTO,
-                String.class);
+        ResponseEntity<String> response2 = restTemplate.postForEntity("/student/register", studentCreateDTO, String.class);
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -66,10 +66,10 @@ public class StudentRegistrationTest {
                 "John Doe",
                 Map.of("Spanish", KnowledgeLevel.BEGINNER),
                 TeachingStyle.FLEXIBLE,
-                "Learn Espanol");
+                "Learn Espanol"
+        );
 
-        ResponseEntity<String> response = restTemplate.postForEntity("/student/register", studentCreateDTO,
-                String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity("/student/register", studentCreateDTO, String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }
