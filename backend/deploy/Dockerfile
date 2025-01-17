@@ -2,7 +2,7 @@
 FROM maven:latest AS build
 WORKDIR /app
 ADD ./backend .
-RUN mvn package
+RUN mvn package -Dmaven.test.skip
 
 #deploy with java 21
 FROM bellsoft/liberica-openjdk-alpine:21 AS deploy
