@@ -102,7 +102,7 @@ export default function TeacherProfile({
                 window.location.reload();
             } else
                 toast({
-                    title: "Updating teacher failed",
+                    title: "Updating profile failed",
                     description: `${res.status === 400 ? res.body : ""}`,
                     variant: "destructive",
                 });

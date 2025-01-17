@@ -64,7 +64,7 @@ export default function StudentProfile({
                 window.location.reload();
             } else
                 toast({
-                    title: "Updating student failed",
+                    title: "Updating profile failed",
                     description: `${res.status === 400 ? res.body : ""}`,
                     variant: "destructive",
                 });
