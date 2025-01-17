@@ -78,10 +78,10 @@ public class TeacherRepositoryCustomImpl implements TeacherRepositoryCustom {
                 case TeacherFilterDTO.Order.ALPHABETICAL_ASC:
                     queryOrder = builder.asc(teacherRoot.get(User.Fields.fullName));
                     break;
-                case TeacherFilterDTO.Order.YEARS_OF_EXPERIANCE_DESC:
+                case TeacherFilterDTO.Order.YEARS_OF_EXPERIENCE_DESC:
                     queryOrder = builder.desc(teacherRoot.get(Teacher.Fields.yearsOfExperience));
                     break;
-                case TeacherFilterDTO.Order.YEARS_OF_EXPERIANCE_ASC:
+                case TeacherFilterDTO.Order.YEARS_OF_EXPERIENCE_ASC:
                     queryOrder = builder.asc(teacherRoot.get(Teacher.Fields.yearsOfExperience));
                     break;
                 case TeacherFilterDTO.Order.HOURLY_RATE_DESC:

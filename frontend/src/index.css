@@ -167,3 +167,14 @@ div[aria-label="Notifications (F8)"] > ol > li > div > div {
   text-wrap: auto ;
   text-wrap: pretty;
 }
+
+.multi-select-badge {
+  padding: 0;
+  padding-left: 0.5rem;
+  max-height: 22px;
+}
+
+.multi-select-badge > button {
+  padding: 4px;
+  margin-right: -2px;
+}
