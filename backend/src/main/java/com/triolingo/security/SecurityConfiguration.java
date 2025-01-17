@@ -51,11 +51,11 @@ public class SecurityConfiguration {
                 .formLogin(config -> config
                         .loginProcessingUrl("/login")
                         .usernameParameter("email")
-                        .successHandler(this::authenticationSuccessHandler)
+                        .successHandler(this::formLoginSuccessHandler)
                         .failureHandler(this::authenticationFailureHandler)
                         .permitAll())
                 .oauth2Login(oauth -> oauth
-                        .successHandler(this::authenticationSuccessHandler)
+                        .successHandler(this::oauth2SuccessHandler)
                         .failureHandler(this::authenticationFailureHandler)
                         .userInfoEndpoint(
                                 userInfo -> userInfo.userService(databaseUserService)))
@@ -82,8 +82,18 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    private void authenticationSuccessHandler(HttpServletRequest request, HttpServletResponse response,
+    private void oauth2SuccessHandler(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException {
+        authenticationSuccessHandler(request, response, authentication, true);
+    }
+
+    private void formLoginSuccessHandler(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) throws IOException {
+        authenticationSuccessHandler(request, response, authentication, false);
+    }
+
+    private void authenticationSuccessHandler(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication, boolean isDirectRedirect) throws IOException {
         User user = ((DatabaseUser) authentication.getPrincipal()).getStoredUser();
         String redirectUrl;
 
@@ -98,15 +108,14 @@ public class SecurityConfiguration {
         else
             redirectUrl = env.getProperty("path.frontend.home");
 
-        response.setContentType("application/json");
-        response.getWriter().write("{\"redirectUrl\": \"" + redirectUrl + "\"}");
-        response.setStatus(HttpServletResponse.SC_OK);
+        sendRedirect(response, redirectUrl, HttpServletResponse.SC_OK, isDirectRedirect);
     }
 
     private void authenticationFailureHandler(HttpServletRequest request, HttpServletResponse response,
             RuntimeException exception) throws IOException {
         exception.printStackTrace(System.err);
         String redirectUrl;
+        boolean isDirectRedirect = false;
 
         if (exception instanceof BadCredentialsException)
             redirectUrl = env.getProperty("path.frontend.login") + "?badCredentials=";
@@ -114,13 +123,24 @@ public class SecurityConfiguration {
                 && exception.getCause() instanceof UsernameNotFoundException) {
             redirectUrl = env.getProperty("path.frontend.student.register") + "?oAuth2Failed=&email="
                     + ex.getPrincipalName();
-        } else if (exception instanceof OAuth2AuthenticationException)
+            isDirectRedirect = true;
+        } else if (exception instanceof OAuth2AuthenticationException) {
             redirectUrl = env.getProperty("path.frontend.login") + "?oAuth2Failed=";
-        else
+            isDirectRedirect = true;
+        } else
             redirectUrl = env.getProperty("path.frontend.login") + "?internalError=";
 
-        response.setContentType("application/json");
-        response.getWriter().write("{\"redirectUrl\": \"" + redirectUrl + "\"}");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        sendRedirect(response, redirectUrl, HttpServletResponse.SC_UNAUTHORIZED, isDirectRedirect);
+    }
+
+    private void sendRedirect(HttpServletResponse response, String redirectUrl, int status, boolean isDirectRedirect)
+            throws IOException {
+        if (isDirectRedirect) {
+            response.sendRedirect(response.encodeRedirectURL(env.getProperty("path.frontend.base") + redirectUrl));
+        } else {
+            response.setContentType("application/json");
+            response.getWriter().write("{\"redirectUrl\": \"" + redirectUrl + "\"}");
+            response.setStatus(status);
+        }
     }
 }
