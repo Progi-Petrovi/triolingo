@@ -1,7 +1,7 @@
 export type ReviewType = {
     id: string;
-    teacherId: string;
-    studentName: string;
+    teacher: string;
+    student: string;
     rating: number;
     content: string;
     date: string;
