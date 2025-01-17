@@ -182,3 +182,7 @@ export function enumToStringList(enumObject: Record<string, string>) {
         enumObjectToString(enumObject, key)
     );
 }
+
+export function enumToEnumNamesList(enumObject: Record<string, string>) {
+    return Object.values(enumObject);
+}

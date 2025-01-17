@@ -143,6 +143,8 @@ function SelectInput({
     placeholder,
     defaultValue,
 }: SelectInputProps) {
+    console.log(form, options, name, label, placeholder, defaultValue);
+
     return (
         <>
             <FormLabel>{label}:</FormLabel>
@@ -202,6 +204,9 @@ export default function Filter({
 }) {
     return (
         <Form {...form}>
+            <Button onClick={() => console.log("Print form", form.getValues())}>
+                Print form
+            </Button>
             <form onSubmit={form.handleSubmit(onSubmit)} className="mb-6">
                 <div className="flex flex-row flex-wrap gap-4">
                     <div className="flex justify-end items-end">
@@ -209,15 +214,24 @@ export default function Filter({
                             <FilterField key={props.name}>
                                 {field === FilterFields.MULTISELECT ? (
                                     <MultiSelectInput
-                                        {...(props as MultiSelectInputProps)}
+                                        {...({
+                                            ...props,
+                                            form,
+                                        } as MultiSelectInputProps)}
                                     />
                                 ) : field === FilterFields.RANGE ? (
                                     <RangeInput
-                                        {...(props as RangeInputProps)}
+                                        {...({
+                                            ...props,
+                                            form,
+                                        } as RangeInputProps)}
                                     />
                                 ) : field === FilterFields.SELECT ? (
                                     <SelectInput
-                                        {...(props as SelectInputProps)}
+                                        {...({
+                                            ...props,
+                                            form,
+                                        } as SelectInputProps)}
                                     />
                                 ) : null}
                             </FilterField>
