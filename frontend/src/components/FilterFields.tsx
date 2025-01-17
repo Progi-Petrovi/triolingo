@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Select,
     SelectTrigger,
@@ -18,7 +19,7 @@ import { useState } from "react";
 
 export function FilterField({ children }: { children: React.ReactNode }) {
     return (
-        <div className="flex flex flex-col justify-end items-end">
+        <div className="flex flex-col justify-end items-end">
             <div className="flex flex-row justify-center items-center gap-2">
                 {children}
             </div>

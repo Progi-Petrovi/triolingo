@@ -185,8 +185,8 @@ public class LessonController {
                 .map((request) -> dtoMapper.createDto(request, LessonRequestViewDTO.class)).toList();
     }
 
-    @PostMapping("/request/{id} or hasRole('ADMIN')")
-    @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED')")
+    @PostMapping("/request/{id}")
+    @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED') or hasRole('ADMIN')")
     @Operation(description = "Creates a request for the specified lesson")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201"),
