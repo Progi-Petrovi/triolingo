@@ -43,7 +43,7 @@ export const Review = ({ review }: ReviewProps) => {
                         >
                             <div className={"flex items-center px-3 gap-1"}>
                                 <span className={"font-semibold"}>
-                                    {review.studentName}
+                                    {review.student}
                                 </span>
                                 <StarRating rating={review.rating} />
                                 <span className={"text-xs"}>

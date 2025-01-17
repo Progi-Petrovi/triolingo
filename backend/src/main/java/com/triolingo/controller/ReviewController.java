@@ -64,13 +64,14 @@ public class ReviewController {
             @AuthenticationPrincipal DatabaseUser principle) {
         Student student = studentService.fetch(principle.getStoredUser().getId());
         Logger.getLogger("ReviewController").info("Creating review: " + reviewDto);
-        Review review = reviewService.createReview(reviewDto, student);
-        Teacher teacher = review.getTeacher();
+        Long teacherId = reviewDto.teacher();
+        Teacher teacher = teacherService.fetch(teacherId);
         List<Review> teacherReviews = reviewService.findAllByTeacher(teacher);
         if (teacherReviews.stream()
                 .anyMatch(r -> r.getStudent().getId().equals(student.getId()))) {
             throw new IllegalArgumentException("You have already reviewed this teacher");
         }
+        Review review = reviewService.createReview(reviewDto, student);
         Logger.getLogger("ReviewController").info("Review created: " + review);
         return dtoMapper.createDto(review, ReviewViewDTO.class);
     }

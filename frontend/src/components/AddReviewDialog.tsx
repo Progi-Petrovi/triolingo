@@ -70,6 +70,8 @@ export function submitReview(
 ) {
     const fetch = useFetch();
 
+    console.log("Submitting review", review);
+
     fetch("review/create", {
         method: "POST",
         headers: {
