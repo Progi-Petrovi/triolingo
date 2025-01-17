@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -32,10 +32,10 @@ public class StudentRegistrationTest {
                 "John Doe",
                 Map.of("Spanish", KnowledgeLevel.BEGINNER),
                 TeachingStyle.FLEXIBLE,
-                "Learn Espanol");
+                "Learn Espanol"
+        );
 
-        ResponseEntity<String> response = restTemplate.postForEntity("/student/register", studentCreateDTO,
-                String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity("/student/register", studentCreateDTO, String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
@@ -47,14 +47,13 @@ public class StudentRegistrationTest {
                 "John Doe",
                 Map.of("Spanish", KnowledgeLevel.BEGINNER),
                 TeachingStyle.FLEXIBLE,
-                "Learn Espanol");
+                "Learn Espanol"
+        );
 
-        ResponseEntity<String> response1 = restTemplate.postForEntity("/student/register", studentCreateDTO,
-                String.class);
+        ResponseEntity<String> response1 = restTemplate.postForEntity("/student/register", studentCreateDTO, String.class);
         assertThat(response1.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        ResponseEntity<String> response2 = restTemplate.postForEntity("/student/register", studentCreateDTO,
-                String.class);
+        ResponseEntity<String> response2 = restTemplate.postForEntity("/student/register", studentCreateDTO, String.class);
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -66,10 +65,10 @@ public class StudentRegistrationTest {
                 "John Doe",
                 Map.of("Spanish", KnowledgeLevel.BEGINNER),
                 TeachingStyle.FLEXIBLE,
-                "Learn Espanol");
+                "Learn Espanol"
+        );
 
-        ResponseEntity<String> response = restTemplate.postForEntity("/student/register", studentCreateDTO,
-                String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity("/student/register", studentCreateDTO, String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }
