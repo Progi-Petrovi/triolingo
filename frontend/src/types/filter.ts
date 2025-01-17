@@ -1,22 +1,21 @@
 import { enumToStringList } from "@/utils/main";
 
-enum OrderOptions {
-    ALPHABETICAL_DESC = "ALPHABETICAL_DESC",
-    ALPHABETICAL_ASC = "ALPHABETICAL_ASC",
-    YEARS_OF_EXPERIENCE_DESC = "YEARS_OF_EXPERIENCE_DESC",
-    YEARS_OF_EXPERIENCE_ASC = "YEARS_OF_EXPERIENCE_ASC",
-    HOURLY_RATE_DESC = "HOURLY_RATE_DESC",
-    HOURLY_RATE_ASC = "HOURLY_RATE_ASC",
+enum SortOptions {
+    ALPHABETICAL_ASC = "ABC \u2191", // A-Z
+    ALPHABETICAL_DESC = "ABC \u2193", // Z-A
+    YEARS_OF_EXPERIENCE_ASC = "Experience \u2191", // Low to High
+    YEARS_OF_EXPERIENCE_DESC = "Experience \u2193", // High to Low
+    HOURLY_RATE_ASC = "Rate \u2191", // Low to High
+    HOURLY_RATE_DESC = "Rate \u2193", // High to Low
 }
-
 
 enum TeachingStyle {
-    INDIVIDUAL = "INDIVIDUAL",
-    FLEXIBLE = "FLEXIBLE",
-    GROUP = "GROUP",
+    INDIVIDUAL = "Individual",
+    FLEXIBLE = "Flexible",
+    GROUP = "Group",
 }
 
-export const orderOptionStrings = enumToStringList(OrderOptions);
+export const sortOptionStrings = enumToStringList(SortOptions);
 export const teachingStyleStrings = enumToStringList(TeachingStyle);
 
 export enum FilterField {
