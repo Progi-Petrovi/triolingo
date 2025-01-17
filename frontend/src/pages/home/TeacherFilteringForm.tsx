@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TeacherTableRow } from "@/types/user-table-row";
-import { sortOptionStrings, teachingStyleStrings } from "@/types/filter";
+import { orderOptionStrings, teachingStyleStrings } from "@/types/filter";
 import Filter from "@/components/Filter";
 import { toEnum } from "@/utils/main";
 import { FilterField } from "@/types/filter";
@@ -15,7 +15,7 @@ const filterSchema = z
             .optional(),
         minHourlyRate: z.number().min(0).optional(),
         maxHourlyRate: z.number().min(0).optional(),
-        sort: z.enum(sortOptionStrings as [string, ...string[]]),
+        order: z.enum(orderOptionStrings as [string, ...string[]]),
     })
     .superRefine(({ minYearsOfExperience, maxYearsOfExperience }, ctx) => {
         if (minYearsOfExperience && maxYearsOfExperience) {
@@ -72,10 +72,10 @@ export default function TeacherFilteringForm({
         },
         {
             type: FilterField.SELECT,
-            name: "sort",
-            label: "Sort",
-            options: sortOptionStrings,
-            placeholder: sortOptionStrings[0],
+            name: "order",
+            label: "Sort by",
+            options: orderOptionStrings,
+            placeholder: "Select sort",
         },
     ];
 
@@ -89,7 +89,7 @@ export default function TeacherFilteringForm({
                 : teachingStyleStrings.map(toEnum),
             minHourlyRate: data.minHourlyRate || 0,
             maxHourlyRate: data.maxHourlyRate || 10000000,
-            sort: toEnum(data.sort),
+            order: toEnum(data.order),
         };
     };
 

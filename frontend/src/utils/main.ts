@@ -20,6 +20,7 @@ import { Role, Student, Teacher, User } from "@/types/users";
 import moment from "moment";
 import { useFetch } from "@/hooks/use-fetch";
 
+
 export function initials(fullName: string): string {
     const initials = fullName.split(" ").map((name) => name[0]);
     return [initials[0], initials[initials.length - 1]].join("");
@@ -173,6 +174,23 @@ function toEnglishCase(word: string) {
 
 function enumObjectToString(enumObject: Record<string, string>, key: string) {
     return enumObject[key].split("_").map(toEnglishCase).join(" ");
+}
+
+export function enumToString(enumObject: Record<string, string>) : (key: string) => string {
+    return (key: string) => {return enumObjectToString(enumObject, key)};
+}
+
+export function optionsMapToSelectValuesMap(enumType: any, optionsMap: any) {
+    const selectValueMap: any = {};
+    const enumOptionsToString = enumToString(enumType);
+
+    for (const key in enumType) {
+        if (optionsMap.hasOwnProperty(enumType[key])) {
+            selectValueMap[enumOptionsToString(enumType[key])] = optionsMap[enumType[key]];
+        }
+    }
+
+    return selectValueMap;
 }
 
 export function enumToStringList(enumObject: Record<string, string>) {
