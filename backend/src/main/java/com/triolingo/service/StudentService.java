@@ -52,7 +52,9 @@ public class StudentService {
     public Student create(StudentCreateDTO studentDto) {
         if (userRepository.existsByEmail(studentDto.email()))
             throw new EntityExistsException("User with that email already exists");
-
+        if (studentDto.password().length() < 8) {
+            throw new IllegalArgumentException("Password must be at least 8 characters");
+        }
         Student student = dtoMapper.createEntity(studentDto, Student.class);
         student.setPassword(passwordEncoder.encode(student.getPassword()));
         return studentRepository.save(student);
