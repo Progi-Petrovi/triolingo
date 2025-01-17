@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    @Secured({ "ROLE_USER", "ROLE_VERIFIED" })
+    @Secured("ROLE_USER")
     @Operation(description = "Changes password of the user the current principal is logged in as.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
