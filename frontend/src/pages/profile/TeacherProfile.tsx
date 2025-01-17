@@ -87,7 +87,7 @@ export default function TeacherProfile({
     });
 
     async function onSubmit(data: TeacherFormValues) {
-        if (!profileOwner || !editMode) {
+        if (!(profileOwner || role === Role.ROLE_ADMIN) || !editMode) {
             return;
         }
 
