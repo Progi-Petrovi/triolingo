@@ -146,7 +146,7 @@ public class TeacherController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> deleteTeacher(
-                                           @AuthenticationPrincipal DatabaseUser principal) {
+            @AuthenticationPrincipal DatabaseUser principal) {
         teacherService.delete((Teacher) principal.getStoredUser());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -172,7 +172,7 @@ public class TeacherController {
     }
 
     @GetMapping("/{id}/email")
-    @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED')")
+    @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED') or hasRole('ADMIN')")
     @Operation(description = "Returns teacher email if the logged in student has an approved lesson request with the teacher")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),

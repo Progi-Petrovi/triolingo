@@ -141,7 +141,7 @@ public class StudentController {
     }
 
     @GetMapping("/{id}/email")
-    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED') or hasRole('ADMIN')")
     @Operation(description = "Returns student email if the logged in teacher has an approved lesson request with the student")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),

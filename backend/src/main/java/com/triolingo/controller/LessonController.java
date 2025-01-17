@@ -51,7 +51,7 @@ public class LessonController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('USER') and hasRole('VERIFIED')")
+    @PreAuthorize("hasRole('USER') and hasRole('VERIFIED') or hasRole('ADMIN')")
     @Operation(description = "Returns lesson with the specified id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -74,7 +74,7 @@ public class LessonController {
     }
 
     @GetMapping("/teacher/{id}")
-    @PreAuthorize("hasRole('USER') and hasRole('VERIFIED')")
+    @PreAuthorize("hasRole('USER') and hasRole('VERIFIED') or hasRole('ADMIN')")
     @Operation(description = "Returns all lessons created by the specified teacher.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -113,7 +113,7 @@ public class LessonController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED') or hasRole('ADMIN')")
     @Operation(description = "Creates a new lesson")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201"),
@@ -126,7 +126,7 @@ public class LessonController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED') or hasRole('ADMIN')")
     @Operation(description = "Updates the lesson status")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -144,7 +144,7 @@ public class LessonController {
     }
 
     @GetMapping("/requests/{id}")
-    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED') or hasRole('ADMIN')")
     @Operation(description = "Returns all requests for specified lesson id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
@@ -185,7 +185,7 @@ public class LessonController {
                 .map((request) -> dtoMapper.createDto(request, LessonRequestViewDTO.class)).toList();
     }
 
-    @PostMapping("/request/{id}")
+    @PostMapping("/request/{id} or hasRole('ADMIN')")
     @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED')")
     @Operation(description = "Creates a request for the specified lesson")
     @ApiResponses(value = {
@@ -208,15 +208,14 @@ public class LessonController {
     }
 
     @PutMapping("/request/{id}")
-    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED')")
+    @PreAuthorize("hasRole('TEACHER') and hasRole('VERIFIED') or hasRole('ADMIN')")
     @Operation(description = "Updates the request status")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public ResponseEntity<?> updateRequest(@AuthenticationPrincipal DatabaseUser principal, @PathVariable("id") Long id,
-            @RequestBody LessonRequestUpdateDTO dto) {
+    public ResponseEntity<?> updateRequest(@PathVariable("id") Long id, @RequestBody LessonRequestUpdateDTO dto) {
         LessonRequest lessonRequest = lessonRequestRepository.findById(id).get();
         lessonService.setRequestStatus(lessonRequest, dto.status());
 
