@@ -2,11 +2,14 @@ package com.triolingo.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Instant;
 
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,16 +43,17 @@ public class VerificationService {
 
     public VerificationToken createVerification(User user) {
         VerificationToken verificationToken = verificationRepository.findByUser(user).orElse(null);
+        VerificationToken newVerificationToken = new VerificationToken(user);
         if (verificationToken != null) {
-            if (verificationToken.getExpirationDate().isBefore(Instant.now()))
-                verificationRepository.delete(verificationToken);
-            else
+            if (verificationToken.getExpirationDate().isBefore(Instant.now())) {
+                newVerificationToken.setId(verificationToken.getId());
+            } else
                 return verificationToken;
         }
 
-        verificationToken = new VerificationToken(user);
-        verificationRepository.save(verificationToken);
-        return verificationToken;
+        verificationRepository.save(newVerificationToken);
+
+        return newVerificationToken;
     }
 
     public void verify(String token) {
@@ -70,6 +74,11 @@ public class VerificationService {
 
         File file = ResourceUtils.getFile("classpath:templates/email-verification.html");
         String content = Files.readString(file.toPath());
+
+        ClassPathResource resource = new ClassPathResource("templates/email-verification.html");
+        try (InputStream inputStream = resource.getInputStream()) {
+            content = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
 
         content = content.replace("{{verification_link}}", uri.toString());
 

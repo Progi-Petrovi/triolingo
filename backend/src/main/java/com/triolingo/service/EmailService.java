@@ -1,13 +1,11 @@
 package com.triolingo.service;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -22,16 +20,12 @@ public class EmailService {
         this.env = env;
     }
 
-    public void sendMessage(String recepient, String subject, String content, String... inlineFiles)
+    public void sendMessage(String recepient, String subject, String content)
             throws MessagingException, FileNotFoundException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
         helper.setText(content, true);
-        for (String filePath : inlineFiles) {
-            File file = ResourceUtils.getFile(filePath);
-            helper.addInline(file.getName(), file);
-        }
         helper.setTo(recepient);
         helper.setSubject(subject);
 
@@ -41,4 +35,5 @@ public class EmailService {
 
         mailSender.send(mimeMessage);
     }
+
 }

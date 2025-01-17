@@ -44,4 +44,17 @@ INSERT OR IGNORE INTO user (id, email, full_name, password, verified)
 VALUES (100, 'admin@triolingo.space', 'admin', '$2a$10$zc5V1BakWl/0kiU9fRsLxeR0FS.vbPdsIGGG6DOfBJE1ODm3nA1eK', 1);
 
 INSERT OR IGNORE INTO admin(id)
-VALUES (100)
+VALUES (100);
+
+/*
+INSERT OR IGNORE INTO user (id, email, full_name, password, verified)
+VALUES (101, 'teacher@triolingo.space', 'teacher', '$2a$10$zc5V1BakWl/0kiU9fRsLxeR0FS.vbPdsIGGG6DOfBJE1ODm3nA1eK', 1);
+
+INSERT OR IGNORE INTO teacher(years_of_experience, profile_image_hash, qualifications, teaching_style, hourly_rate, id)
+VALUES (50, NULL, 'qualified', 0, 5.0, 101);
+
+INSERT OR IGNORE INTO user (id, email, full_name, password, verified)
+VALUES (102, 'leonardo.simunovic@fer.hr', 'Leonardo Šimunović', '$2a$10$zc5V1BakWl/0kiU9fRsLxeR0FS.vbPdsIGGG6DOfBJE1ODm3nA1eK', 1);
+
+INSERT OR IGNORE INTO student(learning_goals, preferred_teaching_style, id)
+VALUES ('Apple', 0, 102);*/
