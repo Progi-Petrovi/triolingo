@@ -1,7 +1,13 @@
 package com.triolingo.service;
 
 import com.dtoMapper.DtoMapper;
+import com.triolingo.aggregate.LessonAggregate;
+import com.triolingo.aggregate.LessonBulkAggregate;
+import com.triolingo.aggregate.LessonRequestAggregate;
+import com.triolingo.aggregate.LessonRequestBulkAggregate;
 import com.triolingo.dto.lesson.*;
+import com.triolingo.dto.student.StudentViewDTO;
+import com.triolingo.dto.teacher.TeacherViewDTO;
 import com.triolingo.entity.TeachingStyle;
 import com.triolingo.entity.lesson.Lesson;
 import com.triolingo.entity.lesson.LessonRequest;
@@ -18,9 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
@@ -188,5 +197,44 @@ public class LessonService {
     @Scheduled(cron = "0 */10 * * * *")
     public void cleanLessons() {
         lessonRepository.updateAllStatusIfExpired();
+    }
+
+    public LessonAggregate generateAggregate(Lesson lesson) {
+        return new LessonAggregate(
+                dtoMapper.createDto(lesson, LessonViewDTO.class),
+                dtoMapper.createDto(lesson.getTeacher(), TeacherViewDTO.class));
+    }
+
+    public LessonRequestAggregate generateRequestAggregate(LessonRequest request) {
+        return new LessonRequestAggregate(
+                dtoMapper.createDto((request), LessonRequestViewDTO.class),
+                generateAggregate(request.getLesson()),
+                dtoMapper.createDto(request.getStudent(), StudentViewDTO.class));
+    }
+
+    public LessonBulkAggregate generateBulkAggregate(Collection<Lesson> lessons) {
+        Set<Teacher> teachers = new HashSet<>();
+
+        for (Lesson lesson : lessons)
+            teachers.add(lesson.getTeacher());
+
+        return new LessonBulkAggregate(
+                lessons.stream().map(lesson -> dtoMapper.createDto(lesson, LessonViewDTO.class)).toList(),
+                teachers.stream().map(teacher -> dtoMapper.createDto(teacher, TeacherViewDTO.class)).toList());
+    }
+
+    public LessonRequestBulkAggregate generateRequestBulkAggregate(Collection<LessonRequest> requests) {
+        Set<Student> students = new HashSet<>();
+        Set<Lesson> lessons = new HashSet<>();
+
+        for (LessonRequest request : requests) {
+            lessons.add(request.getLesson());
+            students.add(request.getStudent());
+        }
+
+        return new LessonRequestBulkAggregate(
+                requests.stream().map(request -> dtoMapper.createDto(request, LessonRequestViewDTO.class)).toList(),
+                generateBulkAggregate(lessons),
+                students.stream().map(student -> dtoMapper.createDto(student, StudentViewDTO.class)).toList());
     }
 }

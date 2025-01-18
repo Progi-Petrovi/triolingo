@@ -21,6 +21,16 @@ export interface LessonDTO {
 	teacherPayment: number;
 }
 
+export interface LessonAggregate {
+	lesson: LessonDTO;
+	teacher: Teacher;
+}
+
+export interface LessonBulkAggregate {
+	lessons: LessonDTO[];
+	teachers: Teacher[];
+}
+
 export type LessonRequest = {
 	id: number;
 	lesson: Lesson;
@@ -35,10 +45,16 @@ export interface LessonRequestDTO {
 	status: string;
 }
 
-export enum LessonRequestStatus {
-	PENDING = "PENDING",
-	ACCEPTED = "ACCEPTED",
-	REJECTED = "REJECTED",
+export interface LessonRequestAggregate {
+	request: LessonRequestDTO;
+	lessonAggregate?: LessonAggregate;
+	student: Student;
+}
+
+export interface LessonRequestBulkAggregate {
+	requests: LessonRequestDTO[];
+	lessonBulkAggregate: LessonBulkAggregate;
+	students: Student[];
 }
 
 export enum LessonStatus {
@@ -46,4 +62,10 @@ export enum LessonStatus {
 	CLOSED = "CLOSED",
 	CANCELLED = "CANCELLED",
 	COMPLETE = "COMPLETE",
+}
+
+export enum LessonRequestStatus {
+	PENDING = "PENDING",
+	ACCEPTED = "ACCEPTED",
+	REJECTED = "REJECTED",
 }
