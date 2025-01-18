@@ -1,16 +1,16 @@
 package com.triolingo.service;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import com.triolingo.entity.VerificationToken;
@@ -19,6 +19,8 @@ import com.triolingo.repository.UserRepository;
 import com.triolingo.repository.VerificationRepository;
 
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Service
 @Transactional
@@ -29,6 +31,9 @@ public class VerificationService {
 
     private final EmailService emailService;
     private final Environment env;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public VerificationService(VerificationRepository verificationRepository, UserRepository userRepository,
             EmailService emailService, Environment env) {
@@ -41,14 +46,16 @@ public class VerificationService {
     public VerificationToken createVerification(User user) {
         VerificationToken verificationToken = verificationRepository.findByUser(user).orElse(null);
         if (verificationToken != null) {
-            if (verificationToken.getExpirationDate().isBefore(Instant.now()))
+            if (verificationToken.getExpirationDate().isBefore(Instant.now())) {
                 verificationRepository.delete(verificationToken);
-            else
+                entityManager.flush();
+            } else
                 return verificationToken;
         }
 
         verificationToken = new VerificationToken(user);
         verificationRepository.save(verificationToken);
+
         return verificationToken;
     }
 
@@ -68,8 +75,12 @@ public class VerificationService {
         URI uri = uriBuilderFactory.uriString("/verification/verify/{token}")
                 .build(verificationToken.getToken());
 
-        File file = ResourceUtils.getFile("classpath:templates/email-verification.html");
-        String content = Files.readString(file.toPath());
+        String content = "";
+
+        ClassPathResource resource = new ClassPathResource("templates/email-verification.html");
+        try (InputStream inputStream = resource.getInputStream()) {
+            content = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
 
         content = content.replace("{{verification_link}}", uri.toString());
 
