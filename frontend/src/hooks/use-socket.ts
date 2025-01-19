@@ -53,7 +53,7 @@ export function useWSTeacherRequests(
 ) {
 	const { toast } = useToast();
 
-	const socketUrl = "user/topic/lesson-requests";
+	const socketUrl = "/user/topic/lesson-requests";
 
 	const socketCallback = (_message: any) => {
 		const requestAggregate: LessonRequestAggregate = JSON.parse(_message.body);
@@ -97,9 +97,12 @@ export function useWSStudentRequests(
 	const { toast } = useToast();
 
 	const webSocketAccepted = {
-		socketUrl: "user/topic/lesson-request-accepted",
-		socketCallback: (message: any) => {
-			const lessonRequest = JSON.parse(message.body);
+		socketUrl: "/user/topic/lesson-request-accepted",
+		socketCallback: async (message: any) => {
+			const lessonRequest: LessonRequest =
+				await lessonRequestAggregatetoLessonRequest(
+					JSON.parse(message.body)
+				);
 			console.log("Lesson request accepted: ", lessonRequest);
 			console.log("User: ", user);
 
@@ -107,7 +110,7 @@ export function useWSStudentRequests(
 				title:
 					lessonRequest.lesson.teacher.fullName +
 					" accepted your request for " +
-					lessonRequest.lesson.language.name +
+					lessonRequest.lesson.language +
 					" lesson " +
 					lessonRequest.lesson.id,
 			});
@@ -118,21 +121,20 @@ export function useWSStudentRequests(
 	};
 
 	const webSocketRejected = {
-		socketUrl: "user/topic/lesson-request-rejected",
-		socketCallback: (message: any) => {
-			const lessonRequest = JSON.parse(message.body);
+		socketUrl: "/user/topic/lesson-request-rejected",
+		socketCallback: async (message: any) => {
+			const lessonRequest: LessonRequest =
+				await lessonRequestAggregatetoLessonRequest(
+					JSON.parse(message.body)
+				);
 			console.log("Lesson request accepted: ", lessonRequest);
 			console.log("User: ", user);
-			console.log(
-				"lessonRequest.student.id !== user.id",
-				lessonRequest.student.id !== user.id
-			);
 
 			toast({
 				title:
 					lessonRequest.lesson.teacher.fullName +
 					" rejected your request for " +
-					lessonRequest.lesson.language.name +
+					lessonRequest.lesson.language +
 					" lesson " +
 					lessonRequest.lesson.id,
 				variant: "destructive",
