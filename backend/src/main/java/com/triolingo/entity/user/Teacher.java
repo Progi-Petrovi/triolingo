@@ -46,6 +46,9 @@ public class Teacher extends User {
     @NotNull
     private Double hourlyRate;
 
+    @NotNull
+    private String phoneNumber = "";
+
     @Override
     public List<GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>(Collections.singletonList(Role.TEACHER.getAuthority()));

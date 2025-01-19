@@ -11,6 +11,7 @@ public record TeacherUpdateDTO(
         String qualifications,
         TeachingStyle teachingStyle,
         String profileImageHash,
-        Double hourlyRate) {
+        Double hourlyRate,
+        String phoneNumber) {
 
 }

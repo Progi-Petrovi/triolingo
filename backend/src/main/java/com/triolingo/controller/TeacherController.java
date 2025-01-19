@@ -171,7 +171,7 @@ public class TeacherController {
         return new ResponseEntity<>(fileName, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}/email")
+    @GetMapping("/{id}/contact")
     @PreAuthorize("hasRole('STUDENT') and hasRole('VERIFIED') or hasRole('ADMIN')")
     @Operation(description = "Returns teacher email if the logged in student has an approved lesson request with the teacher")
     @ApiResponses(value = {
@@ -179,13 +179,13 @@ public class TeacherController {
             @ApiResponse(responseCode = "400", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public String getTeacherEmail(@AuthenticationPrincipal DatabaseUser principal,
+    public TeacherContactDTO getTeacherContact(@AuthenticationPrincipal DatabaseUser principal,
             @PathVariable("id") Long id) {
         Student student = studentService.fetch(principal.getStoredUser().getId());
         Teacher teacher = teacherService.fetch(id);
         if (!lessonService.requestExistsByTeacherAndStudentAndStatus(teacher, student, LessonRequest.Status.ACCEPTED))
             throw new IllegalArgumentException("You don't have an accepted request with that teacher");
-        return teacher.getEmail();
+        return dtoMapper.createDto(teacher, TeacherContactDTO.class);
     }
 
     @GetMapping("/{id}/studentNumber")
