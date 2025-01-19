@@ -1,50 +1,66 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Client } from "@stomp/stompjs";
+import { Client, StompSubscription } from "@stomp/stompjs";
 import { useToast } from "./use-toast";
 import PathConstants from "@/routes/pathConstants";
-import { Role, User } from "@/types/users";
+import { Role } from "@/types/users";
 import { LessonRequest, LessonRequestAggregate } from "@/types/lesson";
 import { lessonRequestAggregatetoLessonRequest } from "@/utils/main";
+import { useState } from "react";
+import { User } from "../types/users";
 
 type WebSocketProp = {
 	socketUrl: string;
 	socketCallback: (message: any) => void;
 };
 
-export default function useWebSocket(props: WebSocketProp[] | WebSocketProp) {
-	if (!Array.isArray(props)) {
-		props = [props];
-	}
-	const client = new Client({
-		brokerURL: PathConstants.API_URL + "/ws",
-		connectHeaders: {
-			// You may need to pass authentication headers if required
-		},
-		onConnect: () => {
-			console.log("Connected to WebSocket");
-			props.forEach((prop) => {
-				client.subscribe(prop.socketUrl, (message: { body: any }) => {
-					prop.socketCallback(message);
-				});
-			});
-		},
-		onDisconnect: () => {
-			console.log("Disconnected from WebSocket");
-		},
-		onStompError: (frame: any) => {
-			console.error("Error in WebSocket connection:", frame);
-		},
+export async function useClient(): Promise<Client> {
+	let connected: Function = () => {};
+	const promise = new Promise((r) => {
+		connected = r;
 	});
 
-	const useClient = () => {
+	const [client] = useState(
+		new Client({
+			brokerURL: PathConstants.API_URL + "/ws",
+			connectHeaders: {
+				// You may need to pass authentication headers if required
+			},
+			onConnect: function () {
+				console.log("Connected to WebSocket");
+				connected();
+			},
+			onDisconnect: () => {
+				console.log("Disconnected from WebSocket");
+			},
+			onStompError: (frame: any) => {
+				console.error("Error in WebSocket connection:", frame);
+			},
+		})
+	);
+	if (!client.active) {
 		client.activate();
-		return () => {
-			client.deactivate();
-		};
+		await promise;
+	}
+
+	return client;
+}
+
+export default function useSubscription(props: WebSocketProp[]) {
+	const clientPromise = useClient();
+	const subscriptions: StompSubscription[] = [];
+
+	const subscribe = async () => {
+		const client = await clientPromise;
+		for (const prop of props)
+			subscriptions.push(client.subscribe(prop.socketUrl, prop.socketCallback));
+	};
+	const unsubscribe = () => {
+		for (const subscription of subscriptions) subscription.unsubscribe();
 	};
 
-	return useClient;
+	return { subscribe, unsubscribe };
 }
 
 export function useWSTeacherRequests(
@@ -87,7 +103,7 @@ export function useWSTeacherRequests(
 		);
 	};
 
-	return useWebSocket({ socketUrl, socketCallback });
+	return useSubscription([{ socketUrl, socketCallback }]);
 }
 
 export function useWSStudentRequests(
@@ -145,7 +161,7 @@ export function useWSStudentRequests(
 		},
 	};
 
-	return useWebSocket([webSocketAccepted, webSocketRejected]);
+	return useSubscription([webSocketAccepted, webSocketRejected]);
 }
 
 function safeCallback({ callback, args }: { callback?: (args?: any) => void; args?: any }) {
@@ -223,16 +239,20 @@ export function useWSLessonRequests({
 		args: studentWSCallbackFullArgs,
 	});
 
-	const useClientTeacher = useWSTeacherRequests(user, teacherWSSafeCallback);
-	const useClientStudent = useWSStudentRequests(user, studentWSSafeCallback);
+	let returnedShit = { subscribe: () => {}, unsubscribe: () => {} };
+
+	if (user?.role === Role.ROLE_TEACHER) {
+		returnedShit = useWSTeacherRequests(user, teacherWSSafeCallback);
+	} else if (user?.role === Role.ROLE_STUDENT) {
+		returnedShit = useWSStudentRequests(user, studentWSSafeCallback);
+	}
 
 	return () => {
 		if (user?.role === Role.ROLE_TEACHER) {
 			teacherSafeCallback();
-			useClientTeacher();
 		} else if (user?.role === Role.ROLE_STUDENT) {
 			studentSafeCallback();
-			useClientStudent();
 		}
+		return returnedShit;
 	};
 }
