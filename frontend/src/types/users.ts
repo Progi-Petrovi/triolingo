@@ -22,6 +22,7 @@ export type Teacher = User & {
     teachingStyle: TeachingStyle;
     profileImageHash: string | null;
     hourlyRate: number;
+    phoneNumber: string;
 };
 
 export type Student = User & {

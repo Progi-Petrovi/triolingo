@@ -26,21 +26,26 @@ export default function UserProfile() {
         }
     }, []);
 
-    const endpoint = profileRole === Role.ROLE_TEACHER ? `teacher/${id}` : `student/${id}`;
+    const endpoint =
+        profileRole === Role.ROLE_TEACHER ? `teacher/${id}` : `student/${id}`;
 
     useEffect(() => {
         fetch(endpoint)
             .then((res) => {
                 if (res.status === 404) {
                     console.error(
-                        profileRole === Role.ROLE_TEACHER ? "Teacher" : "Student",
+                        profileRole === Role.ROLE_TEACHER
+                            ? "Teacher"
+                            : "Student",
                         "not found"
                     );
                     return;
                 }
 
                 if (profileRole === Role.ROLE_STUDENT) {
-                    const learningLanguages = languageMapToArray(res.body.learningLanguages);
+                    const learningLanguages = languageMapToArray(
+                        res.body.learningLanguages
+                    );
                     setStudent({
                         ...res.body,
                         learningLanguages,

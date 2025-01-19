@@ -34,7 +34,8 @@ public class TeacherRegistrationTest {
                 "PhD English",
                 TeachingStyle.FLEXIBLE,
                 null,
-                15.5
+                15.5,
+                "0911111111"
         );
 
         ResponseEntity<String> response = restTemplate.postForEntity("/teacher/register", teacherCreateDTO, String.class);
@@ -52,7 +53,8 @@ public class TeacherRegistrationTest {
                 "PhD English",
                 TeachingStyle.FLEXIBLE,
                 null,
-                15.5
+                15.5,
+                "0911111111"
         );
 
         ResponseEntity<String> response1 = restTemplate.postForEntity("/teacher/register", teacherCreateDTO, String.class);
@@ -73,7 +75,8 @@ public class TeacherRegistrationTest {
                 "PhD English",
                 TeachingStyle.FLEXIBLE,
                 null,
-                15.5
+                15.5,
+                "0911111111"
         );
 
         ResponseEntity<String> response = restTemplate.postForEntity("/teacher/register", teacherCreateDTO, String.class);
@@ -92,7 +95,8 @@ public class TeacherRegistrationTest {
                 "PhD English",
                 TeachingStyle.FLEXIBLE,
                 null,
-                15.5
+                15.5,
+                "0911111111"
         );
 
         ResponseEntity<String> response1 = restTemplate.postForEntity("/teacher/register", teacherCreateDTO1, String.class);
@@ -108,7 +112,8 @@ public class TeacherRegistrationTest {
                 "PhD English",
                 TeachingStyle.FLEXIBLE,
                 null,
-                -15.5
+                -15.5,
+                "0911111111"
         );
 
         ResponseEntity<String> response2 = restTemplate.postForEntity("/teacher/register", teacherCreateDTO2, String.class);

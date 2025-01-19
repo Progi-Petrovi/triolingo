@@ -12,6 +12,7 @@ public record TeacherCreateDTO(
         String qualifications,
         TeachingStyle teachingStyle,
         String profileImageHash,
-        Double hourlyRate) {
+        Double hourlyRate,
+        String phoneNumber) {
 
 }
