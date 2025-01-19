@@ -45,16 +45,18 @@ export default function TeacherProfile({
 }: ProfileProps) {
     const teacher = userProfile as Teacher;
 
+    const fetch = useFetch();
+    const { toast } = useToast();
+
     const maxReviews = 5;
     const [{ reviews, latestRewiews, averageRating }, updateReviews] =
         useReviews(maxReviews, teacher.id);
+
     const [numberOfStudents, setNumberOfStudents] = useState<number>(0);
     const [numberOfLessons, setNumberOfLessons] = useState<number>(0);
     const [hasPreviousLessons, setHasPreviousLessons] =
         useState<boolean>(false);
 
-    const fetch = useFetch();
-    const { toast } = useToast();
     const [editMode, setEditMode] = useState<boolean>(false);
 
     const tryFetchingTeacherContact = () => {
