@@ -50,10 +50,22 @@ export default function TeacherProfile({
         useReviews(maxReviews, teacher.id);
     const [numberOfStudents, setNumberOfStudents] = useState<number>(0);
     const [numberOfLessons, setNumberOfLessons] = useState<number>(0);
+    const [hasPreviousLessons, setHasPreviousLessons] =
+        useState<boolean>(false);
 
     const fetch = useFetch();
     const { toast } = useToast();
     const [editMode, setEditMode] = useState<boolean>(false);
+
+    const tryFetchingTeacherContact = () => {
+        fetch(`teacher/${userProfile.id}/contact`).then((res) => {
+            if (res.status === 200) {
+                setHasPreviousLessons(true);
+            } else {
+                setHasPreviousLessons(false);
+            }
+        });
+    };
 
     const fetchStudentAndLessonNumbers = () => {
         fetch(`teacher/${teacher.id}/studentNumber`).then((res) => {
@@ -70,6 +82,12 @@ export default function TeacherProfile({
             return -1;
         });
     };
+
+    useEffect(() => {
+        if (role === Role.ROLE_STUDENT) {
+            tryFetchingTeacherContact();
+        }
+    }, []);
 
     useEffect(() => {
         updateReviews();
@@ -258,6 +276,7 @@ export default function TeacherProfile({
                         form={form}
                         editMode={editMode}
                         toggleEditMode={() => setEditMode(!editMode)}
+                        hasPreviousLessons={hasPreviousLessons}
                     >
                         <TeacherRight />
                     </ProfileLayout>
@@ -268,11 +287,13 @@ export default function TeacherProfile({
                     )}
                 </form>
             </Form>
-            <ChatPopup
-                phoneNumber={teacher.phoneNumber}
-                profileImageHash={teacher.profileImageHash}
-                email={teacher.email}
-            />
+            {hasPreviousLessons && (
+                <ChatPopup
+                    phoneNumber={teacher.phoneNumber}
+                    profileImageHash={teacher.profileImageHash}
+                    email={teacher.email}
+                />
+            )}
         </>
     );
 }
