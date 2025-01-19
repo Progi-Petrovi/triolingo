@@ -25,6 +25,7 @@ import RenderFormButtons from "./components/RenderFormButtons";
 import { Input } from "@/components/ui/input";
 import TeachingStyleFormField from "../common/TeachingStyleFormField";
 import { Textarea } from "@/components/ui/textarea";
+import ChatPopup from "@/components/ChatPopup";
 
 const teacherSchema = z.object({
     teachingStyle: z.nativeEnum(TeachingStyle),
@@ -32,6 +33,7 @@ const teacherSchema = z.object({
     fullName: z.string().min(2).max(250),
     yearsOfExperience: z.coerce.number().min(0).max(100),
     hourlyRate: z.coerce.number().min(0).max(100000),
+    phoneNumber: z.string().optional(),
 });
 
 type TeacherFormValues = z.infer<typeof teacherSchema>;
@@ -83,6 +85,7 @@ export default function TeacherProfile({
             qualifications: teacher.qualifications,
             yearsOfExperience: teacher.yearsOfExperience,
             hourlyRate: teacher.hourlyRate,
+            phoneNumber: teacher.phoneNumber,
         },
     });
 
@@ -242,24 +245,34 @@ export default function TeacherProfile({
     }
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <ProfileLayout
-                    userProfile={userProfile}
-                    profileOwner={profileOwner}
-                    role={role}
-                    form={form}
-                    editMode={editMode}
-                    toggleEditMode={() => setEditMode(!editMode)}
+        <>
+            <Form {...form}>
+                <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4"
                 >
-                    <TeacherRight />
-                </ProfileLayout>
-                {editMode && (
-                    <RenderFormButtons
+                    <ProfileLayout
+                        userProfile={userProfile}
+                        profileOwner={profileOwner}
+                        role={role}
+                        form={form}
+                        editMode={editMode}
                         toggleEditMode={() => setEditMode(!editMode)}
-                    />
-                )}
-            </form>
-        </Form>
+                    >
+                        <TeacherRight />
+                    </ProfileLayout>
+                    {editMode && (
+                        <RenderFormButtons
+                            toggleEditMode={() => setEditMode(!editMode)}
+                        />
+                    )}
+                </form>
+            </Form>
+            <ChatPopup
+                phoneNumber={teacher.phoneNumber}
+                profileImageHash={teacher.profileImageHash}
+                email={teacher.email}
+            />
+        </>
     );
 }

@@ -36,6 +36,7 @@ const formSchema = z
         teachingStyle: z.nativeEnum(TeachingStyle),
         yearsOfExperience: z.coerce.number().max(100),
         hourlyRate: z.coerce.number().min(0).max(100000),
+        phoneNumber: z.string().min(0),
         qualifications: z.string().max(500),
     })
     .superRefine(({ confirmPassword, password }, ctx) => {
@@ -92,6 +93,7 @@ export default function TeacherRegister() {
             confirmPassword: "",
             yearsOfExperience: 0,
             hourlyRate: 0,
+            phoneNumber: "",
             qualifications: "",
             teachingStyle: TeachingStyle.FLEXIBLE,
         },
@@ -240,6 +242,19 @@ export default function TeacherRegister() {
                                         </FormLabel>
                                         <FormControl>
                                             <Input type="number" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="phoneNumber"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Phone number</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

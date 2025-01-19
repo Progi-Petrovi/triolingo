@@ -18,6 +18,7 @@ export type TeacherRegistration = UserRegistration & {
     teachingStyle: TeachingStyle;
     yearsOfExperience: number;
     hourlyRate: number;
+    phoneNumber: string;
     qualifications: string;
     languages: string[];
 };

@@ -7,6 +7,7 @@ import {
     CardContent,
 } from "@/components/ui/card";
 import emailIcon from "@/icons/email-outline.svg";
+import phoneIcon from "@/icons/phone.svg";
 import { initials } from "@/utils/main";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import RenderChangePasswordDialog from "./RenderChangePasswordDialog";
@@ -53,11 +54,12 @@ export default function ProfileLayout({
         useState<boolean>(false);
 
     const tryFetching = () => {
-        fetch(`teacher/${userProfile.id}/email`).then((res) => {
+        fetch(`teacher/${userProfile.id}/contact`).then((res) => {
             if (res.status === 200) {
                 setHasPreviousLessons(true);
+            } else {
+                setHasPreviousLessons(false);
             }
-            setHasPreviousLessons(false);
         });
     };
 
@@ -115,12 +117,44 @@ export default function ProfileLayout({
                         <img src={emailIcon} alt="mail" />
                         <p>{userProfile.email}</p>
                     </CardContent>
+
+                    {profileRole === Role.ROLE_TEACHER && editMode ? (
+                        <FormField
+                            control={form.control}
+                            name="phoneNumber"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Phone number</FormLabel>
+                                    <FormControl>
+                                        <Input {...field}></Input>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    ) : (
+                        <CardContent className="text-center flex gap-2 justify-center items-center">
+                            <img
+                                src={phoneIcon}
+                                alt="phone"
+                                className="w-6 h-6"
+                            />{" "}
+                            {(userProfile as Teacher).phoneNumber
+                                ? (userProfile as Teacher).phoneNumber
+                                : "No phone number"}
+                        </CardContent>
+                    )}
+
                     <CardContent>
                         {profileRole === Role.ROLE_TEACHER
                             ? "Teacher"
                             : "Student"}
                     </CardContent>
-                    <RenderProfileImageEditor profileOwner={profileOwner} />
+
+                    {profileRole === Role.ROLE_TEACHER && (
+                        <RenderProfileImageEditor profileOwner={profileOwner} />
+                    )}
+
                     <RenderChangePasswordDialog
                         profileOwner={profileOwner}
                         editMode={editMode}
