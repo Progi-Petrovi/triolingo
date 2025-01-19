@@ -178,3 +178,7 @@ div[aria-label="Notifications (F8)"] > ol > li > div > div {
   padding: 4px;
   margin-right: -2px;
 }
+
+#freechatpopup{
+  color: black
+}
