@@ -1,3 +1,4 @@
+import PathConstants from "@/routes/pathConstants";
 import { useEffect } from "react";
 
 type ChatPopupType = {
@@ -31,7 +32,7 @@ export default function ChatPopup({
         button: "Chat",
         device: "everywhere",
         logo: "https://d2r80wdbkwti6l.cloudfront.net/15O2wY0m63mnpnVJb7MZ4vnl99HjvJdQ.jpg",
-        person: "${profileImageHash}",
+        person: "${PathConstants.API_URL}/images/profile/${profileImageHash}",
         services: [{ name: "whatsapp", content: "${phoneNumber}" }, { name: "mail", content: "${email}" }],
       });
     `;

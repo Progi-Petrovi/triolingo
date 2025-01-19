@@ -67,7 +67,8 @@ public class LoginRegistrationIntegrationTest {
                 "PhD English",
                 TeachingStyle.FLEXIBLE,
                 null,
-                15.5
+                15.5,
+                "0911111111"
         );
 
         ResponseEntity<String> registerResponse = restTemplate.postForEntity("/teacher/register", teacherCreateDTO, String.class);
