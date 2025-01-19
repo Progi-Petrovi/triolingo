@@ -16,17 +16,15 @@ export default function PendingRequests() {
         loadStudentRequests();
     };
 
-    const useClient = useWSStudentRequests(
-        user as User,
-        loadLessonsAndRequests
-    );
+    const { subscribe, unsubscribe } = useWSStudentRequests(user as User, loadLessonsAndRequests);
 
     useEffect(() => {
         if (!user) {
             fetchUser();
         }
         loadLessonsAndRequests();
-        useClient();
+        subscribe();
+        return unsubscribe();
     }, []);
 
     if (!user) {
@@ -54,36 +52,19 @@ export default function PendingRequests() {
                         pendingLessonRequests.map((lessonRequest) => (
                             <Card key={lessonRequest.id}>
                                 <CardContent className="flex flex-col justify-center items-center pt-4 pb-4 gap-4">
-                                    <span className="font-bold">
-                                        {lessonRequest.lesson.title}
-                                    </span>
+                                    <span className="font-bold">{lessonRequest.lesson.title}</span>
                                     <span>
-                                        @{" "}
-                                        {formatLessonDate(
-                                            lessonRequest.lesson.start
-                                        )}{" "}
-                                        {formatStartTime(
-                                            lessonRequest.lesson.start
-                                        )}{" "}
-                                        -{" "}
-                                        {formatEndTime(
-                                            lessonRequest.lesson.end
-                                        )}
+                                        @ {formatLessonDate(lessonRequest.lesson.start)}{" "}
+                                        {formatStartTime(lessonRequest.lesson.start)} -{" "}
+                                        {formatEndTime(lessonRequest.lesson.end)}
                                     </span>
                                     <span>
                                         Teacher:{" "}
-                                        <Link
-                                            to={`/teacher/${lessonRequest.lesson.teacher.id}`}
-                                        >
-                                            {
-                                                lessonRequest.lesson.teacher
-                                                    .fullName
-                                            }
+                                        <Link to={`/teacher/${lessonRequest.lesson.teacher.id}`}>
+                                            {lessonRequest.lesson.teacher.fullName}
                                         </Link>
                                     </span>
-                                    <span>
-                                        €{lessonRequest.lesson.teacherPayment}
-                                    </span>
+                                    <span>€{lessonRequest.lesson.teacherPayment}</span>
                                 </CardContent>
                             </Card>
                         ))

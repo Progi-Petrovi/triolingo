@@ -1,12 +1,14 @@
 package com.triolingo.controller;
 
-import com.dtoMapper.DtoMapper;
+import com.triolingo.aggregate.LessonAggregate;
+import com.triolingo.aggregate.LessonBulkAggregate;
+import com.triolingo.aggregate.LessonRequestAggregate;
+import com.triolingo.aggregate.LessonRequestBulkAggregate;
 import com.triolingo.dto.lesson.*;
 import com.triolingo.entity.lesson.Lesson;
 import com.triolingo.entity.lesson.LessonRequest;
 import com.triolingo.entity.user.Student;
 import com.triolingo.entity.user.Teacher;
-import com.triolingo.repository.LessonRequestRepository;
 import com.triolingo.security.DatabaseUser;
 import com.triolingo.service.LessonService;
 import com.triolingo.service.StudentService;
@@ -17,8 +19,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,18 +36,13 @@ public class LessonController {
     private final LessonService lessonService;
     private final TeacherService teacherService;
     private final StudentService studentService;
-    private final DtoMapper dtoMapper;
-    private final LessonRequestRepository lessonRequestRepository;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    public LessonController(LessonService lessonService, TeacherService teacherService, StudentService studentService,
-            DtoMapper dtoMapper, LessonRequestRepository lessonRequestRepository) {
+    public LessonController(LessonService lessonService, TeacherService teacherService, StudentService studentService) {
         this.lessonService = lessonService;
         this.teacherService = teacherService;
         this.studentService = studentService;
-        this.dtoMapper = dtoMapper;
-        this.lessonRequestRepository = lessonRequestRepository;
     }
 
     @GetMapping("/{id}")
@@ -57,8 +52,8 @@ public class LessonController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public LessonViewDTO getById(@PathVariable("id") Long id) {
-        return dtoMapper.createDto(lessonService.fetch(id), LessonViewDTO.class);
+    public LessonAggregate getById(@PathVariable("id") Long id) {
+        return lessonService.generateAggregate(lessonService.fetch(id));
     }
 
     @GetMapping("/teacher")
@@ -67,10 +62,9 @@ public class LessonController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200")
     })
-    public List<LessonViewDTO> getByTeacher(@AuthenticationPrincipal DatabaseUser principal) {
+    public LessonBulkAggregate getByTeacher(@AuthenticationPrincipal DatabaseUser principal) {
         Teacher teacher = teacherService.fetch(principal.getStoredUser().getId());
-        return lessonService.findAllByTeacher(teacher).stream()
-                .map((lesson) -> dtoMapper.createDto(lesson, LessonViewDTO.class)).toList();
+        return lessonService.generateBulkAggregate(lessonService.findAllByTeacher(teacher));
     }
 
     @GetMapping("/teacher/{id}")
@@ -80,10 +74,9 @@ public class LessonController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public List<LessonViewDTO> getByTeacher(@PathVariable("id") Long id) {
+    public LessonBulkAggregate getByTeacher(@PathVariable("id") Long id) {
         Teacher teacher = teacherService.fetch(id);
-        return lessonService.findAllByTeacher(teacher).stream()
-                .map((lesson) -> dtoMapper.createDto(lesson, LessonViewDTO.class)).toList();
+        return lessonService.generateBulkAggregate(lessonService.findAllByTeacher(teacher));
     }
 
     @GetMapping("/student/{id}")
@@ -93,10 +86,9 @@ public class LessonController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public List<LessonViewDTO> getByStudent(@PathVariable("id") Long id) {
+    public LessonBulkAggregate getByStudent(@PathVariable("id") Long id) {
         Student student = studentService.fetch(id);
-        return lessonService.findAllByStudent(student).stream()
-                .map((lesson) -> dtoMapper.createDto(lesson, LessonViewDTO.class)).toList();
+        return lessonService.generateBulkAggregate(lessonService.findAllByStudent(student));
     }
 
     @GetMapping("/student")
@@ -106,10 +98,9 @@ public class LessonController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public List<LessonViewDTO> getByStudent(@AuthenticationPrincipal DatabaseUser principal) {
+    public LessonBulkAggregate getByStudent(@AuthenticationPrincipal DatabaseUser principal) {
         Student student = studentService.fetch(principal.getStoredUser().getId());
-        return lessonService.findAllByStudent(student).stream()
-                .map((lesson) -> dtoMapper.createDto(lesson, LessonViewDTO.class)).toList();
+        return lessonService.generateBulkAggregate(lessonService.findAllByStudent(student));
     }
 
     @PostMapping
@@ -150,13 +141,12 @@ public class LessonController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public List<LessonRequestViewDTO> getRequestsByLesson(@PathVariable("id") Long id,
+    public LessonRequestBulkAggregate getRequestsByLesson(@PathVariable("id") Long id,
             @AuthenticationPrincipal DatabaseUser principal) {
         Lesson lesson = lessonService.fetch(id);
         if (lesson.getTeacher().getId() != principal.getStoredUser().getId())
             throw new IllegalArgumentException("You are not the owner of the lesson");
-        return lessonService.findAllRequestsByLesson(lesson).stream()
-                .map((request) -> dtoMapper.createDto(request, LessonRequestViewDTO.class)).toList();
+        return lessonService.generateRequestBulkAggregate(lessonService.findAllRequestsByLesson(lesson));
     }
 
     @GetMapping("/requests/teacher")
@@ -166,10 +156,9 @@ public class LessonController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public List<LessonRequestViewDTO> getRequestsByTeacher(@AuthenticationPrincipal DatabaseUser principal) {
+    public LessonRequestBulkAggregate getRequestsByTeacher(@AuthenticationPrincipal DatabaseUser principal) {
         Teacher teacher = teacherService.fetch(principal.getStoredUser().getId());
-        return lessonService.findAllRequestsByTeacher(teacher).stream()
-                .map((request) -> dtoMapper.createDto(request, LessonRequestViewDTO.class)).toList();
+        return lessonService.generateRequestBulkAggregate(lessonService.findAllRequestsByTeacher(teacher));
     }
 
     @GetMapping("/requests/student")
@@ -179,10 +168,9 @@ public class LessonController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
-    public List<LessonRequestViewDTO> getRequestsByStudent(@AuthenticationPrincipal DatabaseUser principal) {
+    public LessonRequestBulkAggregate getRequestsByStudent(@AuthenticationPrincipal DatabaseUser principal) {
         Student student = studentService.fetch(principal.getStoredUser().getId());
-        return lessonService.findAllRequestsByStudent(student).stream()
-                .map((request) -> dtoMapper.createDto(request, LessonRequestViewDTO.class)).toList();
+        return lessonService.generateRequestBulkAggregate(lessonService.findAllRequestsByStudent(student));
     }
 
     @PostMapping("/request/{id}")
@@ -199,12 +187,11 @@ public class LessonController {
         Student student = studentService.fetch(principal.getStoredUser().getId());
         LessonRequest request = lessonService.createRequest(student, lesson);
 
-        LessonRequestViewDTO lessonRequest = dtoMapper.createDto(request, LessonRequestViewDTO.class);
-        messagingTemplate.convertAndSend("/topic/lesson-requests", lessonRequest);
+        LessonRequestAggregate requestAggregate = lessonService.generateRequestAggregate(request);
+        messagingTemplate.convertAndSendToUser(lesson.getTeacher().getEmail(), "/topic/lesson-requests",
+                requestAggregate);
 
-        Long lessonRequestId = request.getId();
-
-        return new ResponseEntity<>(lessonRequestId, HttpStatus.OK);
+        return new ResponseEntity<>(request.getId(), HttpStatus.OK);
     }
 
     @PutMapping("/request/{id}")
@@ -216,13 +203,17 @@ public class LessonController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema()))
     })
     public ResponseEntity<?> updateRequest(@PathVariable("id") Long id, @RequestBody LessonRequestUpdateDTO dto) {
-        LessonRequest lessonRequest = lessonRequestRepository.findById(id).get();
-        lessonService.setRequestStatus(lessonRequest, dto.status());
+        LessonRequest request = lessonService.fetchRequest(id);
+        lessonService.setRequestStatus(request, dto.status());
+
+        LessonRequestAggregate requestAggregate = lessonService.generateRequestAggregate(request);
 
         if (dto.status() == LessonRequest.Status.ACCEPTED) {
-            messagingTemplate.convertAndSend("/topic/lesson-request-accepted", lessonRequest);
+            messagingTemplate.convertAndSendToUser(request.getStudent().getEmail(),
+                    "/topic/lesson-request-accepted", requestAggregate);
         } else if (dto.status() == LessonRequest.Status.REJECTED) {
-            messagingTemplate.convertAndSend("/topic/lesson-request-rejected", lessonRequest);
+            messagingTemplate.convertAndSendToUser(request.getStudent().getEmail(),
+                    "/topic/lesson-request-rejected", requestAggregate);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

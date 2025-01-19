@@ -10,10 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatEndTime, formatLessonDate, formatStartTime } from "@/utils/main";
 import { CalendarComponent } from "@/types/calendar";
 import { useWSStudentRequests } from "@/hooks/use-socket";
-import {
-    useLoadStudentRequests,
-    useLoadTeacherLessons,
-} from "@/hooks/use-lessons";
+import { useLoadStudentRequests, useLoadTeacherLessons } from "@/hooks/use-lessons";
 import { Role, User } from "@/types/users";
 
 export default function BookLessonStudent() {
@@ -32,17 +29,15 @@ export default function BookLessonStudent() {
         loadStudentRequests();
     };
 
-    const useClient = useWSStudentRequests(
-        user as User,
-        loadLessonsAndRequests
-    );
+    const { subscribe, unsubscribe } = useWSStudentRequests(user as User, loadLessonsAndRequests);
 
     useEffect(() => {
         if (!user) {
             fetchUser();
         }
         loadLessonsAndRequests();
-        useClient();
+        subscribe();
+        return unsubscribe;
     }, []);
 
     if (!user) {
@@ -79,9 +74,7 @@ export default function BookLessonStudent() {
     };
 
     const isPending = (lessonId: number) => {
-        const lessonRequest = studentRequests.find(
-            (request) => request.lesson.id === lessonId
-        );
+        const lessonRequest = studentRequests.find((request) => request.lesson.id === lessonId);
 
         if (lessonRequest === undefined) return false;
 
@@ -127,29 +120,20 @@ export default function BookLessonStudent() {
                             {avaliableLessons.map((lessonRequest: Lesson) => (
                                 <Card key={lessonRequest.title}>
                                     <CardHeader>
-                                        <span className="font-bold">
-                                            {lessonRequest.title}
-                                        </span>
-                                        @{" "}
+                                        <span className="font-bold">{lessonRequest.title}</span>@{" "}
                                         {formatLessonDate(lessonRequest.start)}{" "}
                                         {formatStartTime(lessonRequest.start)} -{" "}
                                         {formatEndTime(lessonRequest.end)}
                                         <br />
-                                        <span>
-                                            €{lessonRequest.teacherPayment}
-                                        </span>
+                                        <span>€{lessonRequest.teacherPayment}</span>
                                     </CardHeader>
                                     <CardContent className="flex flex-col gap-4">
                                         {isPending(lessonRequest.id) ? (
-                                            <Button disabled>
-                                                Request sent
-                                            </Button>
+                                            <Button disabled>Request sent</Button>
                                         ) : (
                                             <Button
                                                 onClick={() => {
-                                                    sendLessonRequest(
-                                                        lessonRequest
-                                                    );
+                                                    sendLessonRequest(lessonRequest);
                                                 }}
                                             >
                                                 Request lesson

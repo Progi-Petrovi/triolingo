@@ -4,9 +4,8 @@ import { useFetch } from "@/hooks/use-fetch";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ReviewType } from "@/types/review";
-import { Teacher as TeacherType, User } from "@/types/users";
+import { Teacher as TeacherType } from "@/types/users";
 import useUserContext from "@/context/use-user-context";
-import { useWSStudentRequests } from "@/hooks/use-socket";
 
 export default function TeacherReviews() {
     const { user, fetchUser } = useUserContext();
@@ -15,35 +14,25 @@ export default function TeacherReviews() {
     const [teacher, setTeacher] = useState<TeacherType>();
     const [reviews, setReviews] = useState<ReviewType[]>([]);
     const [sortedReviews, setSortedReviews] = useState<ReviewType[]>([]);
-    const [averageRating, setAverageRating] = useState<number | string>(
-        "No reviews"
-    );
-
-    const useStudentRequestsClient = useWSStudentRequests(user as User);
+    const [averageRating, setAverageRating] = useState<number | string>("No reviews");
 
     useEffect(() => {
         if (!user) {
             fetchUser();
         }
-        useStudentRequestsClient();
     }, []);
 
     const setLastReviews = (reviews: ReviewType[]) => {
         if (!reviews || !reviews.length) return;
         setSortedReviews(
-            reviews.sort((a, b) =>
-                Date.parse(a.date) < Date.parse(b.date) ? 1 : -1
-            )
+            reviews.sort((a, b) => (Date.parse(a.date) < Date.parse(b.date) ? 1 : -1))
         );
     };
 
     const setAvgRating = (reviews: ReviewType[]) => {
         if (!reviews || !reviews.length) setAverageRating("No reviews");
         setAverageRating(
-            (
-                reviews.reduce((acc, review) => acc + review.rating, 0) /
-                reviews.length
-            ).toFixed(1)
+            (reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1)
         );
     };
 
@@ -85,9 +74,7 @@ export default function TeacherReviews() {
                 {reviews && reviews.length && (
                     <>
                         <div className="flex justify-between items-center gap-2">
-                            <div className="font-bold text-xl">
-                                Average rating: {averageRating}
-                            </div>
+                            <div className="font-bold text-xl">Average rating: {averageRating}</div>
                         </div>
                         <Card className="flex flex-col gap-4 p-2">
                             {sortedReviews.map((review) => (

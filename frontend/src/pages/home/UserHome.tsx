@@ -10,9 +10,7 @@ import {
 } from "@/components/ui/table";
 import useUserContext from "@/context/use-user-context";
 import { useFetch } from "@/hooks/use-fetch";
-import { useWSLessonRequests } from "@/hooks/use-socket";
 import { TeacherTableRow } from "@/types/user-table-row";
-import { User } from "@/types/users";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FilteringForm from "./TeacherFilteringForm";
@@ -22,10 +20,6 @@ export default function UserHome() {
     const fetch = useFetch();
     const [teachers, setTeachers] = useState<TeacherTableRow[]>([]);
     const [allLanguages, setAllLanguages] = useState<string[]>([]);
-
-    const useRequestsClient = useWSLessonRequests({
-        user: user as User,
-    });
 
     useEffect(() => {
         if (!user) {
@@ -37,16 +31,12 @@ export default function UserHome() {
         fetch("language").then((res) => {
             setAllLanguages(res.body);
         });
-        useRequestsClient();
     }, []);
 
     return (
         <div className="w-[80vw]">
             {/* Filter Form */}
-            <FilteringForm
-                setTeachers={setTeachers}
-                allLanguages={allLanguages}
-            />
+            <FilteringForm setTeachers={setTeachers} allLanguages={allLanguages} />
 
             {/* Teachers Table */}
             {teachers && teachers.length > 0 ? (
@@ -58,29 +48,19 @@ export default function UserHome() {
                             <TableHead>Languages</TableHead>
                             <TableHead>Teaching style</TableHead>
                             <TableHead>Years of experience</TableHead>
-                            <TableHead className="text-right">
-                                Hourly Rate
-                            </TableHead>
+                            <TableHead className="text-right">Hourly Rate</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {teachers.map((teacher) => (
                             <TableRow key={teacher.id}>
                                 <TableCell className="font-medium">
-                                    <Link to={`/teacher/${teacher.id}`}>
-                                        {teacher.fullName}
-                                    </Link>
+                                    <Link to={`/teacher/${teacher.id}`}>{teacher.fullName}</Link>
                                 </TableCell>
-                                <TableCell>
-                                    {teacher.languages.join(", ")}
-                                </TableCell>
+                                <TableCell>{teacher.languages.join(", ")}</TableCell>
                                 <TableCell>{teacher.teachingStyle}</TableCell>
-                                <TableCell>
-                                    {teacher.yearsOfExperience}
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    €{teacher.hourlyRate}
-                                </TableCell>
+                                <TableCell>{teacher.yearsOfExperience}</TableCell>
+                                <TableCell className="text-right">€{teacher.hourlyRate}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

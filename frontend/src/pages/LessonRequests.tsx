@@ -1,10 +1,6 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import useUserContext from "@/context/use-user-context";
 import { useFetch } from "@/hooks/use-fetch";
 import { LessonRequestStatus } from "@/types/lesson";
@@ -16,23 +12,19 @@ import { User } from "@/types/users";
 
 export default function LessonRequests() {
     const { user, fetchUser } = useUserContext();
-    const [pendingLessonRequests, getTeacherLessonRequests] =
-        useLoadTeacherRequests();
+    const [pendingLessonRequests, getTeacherLessonRequests] = useLoadTeacherRequests();
 
     const fetch = useFetch();
 
-    const useClient = useWSTeacherRequests(
-        user as User,
-        getTeacherLessonRequests
-    );
+    const { subscribe, unsubscribe } = useWSTeacherRequests(user as User, getTeacherLessonRequests);
 
     useEffect(() => {
         if (!user) {
             fetchUser();
-        } else {
-            getTeacherLessonRequests();
-            useClient();
         }
+        getTeacherLessonRequests();
+        subscribe();
+        return unsubscribe;
     }, []);
 
     if (!user) {
@@ -54,9 +46,7 @@ export default function LessonRequests() {
                     getTeacherLessonRequests();
                 }
             })
-            .catch((error) =>
-                console.error("Error modifying lesson request:", error)
-            );
+            .catch((error) => console.error("Error modifying lesson request:", error));
     };
 
     const acceptLessonRequest = (id: number) => {
@@ -81,41 +71,19 @@ export default function LessonRequests() {
                                         {lessonRequest.lesson.language} lesson{" "}
                                         {lessonRequest.lesson.id}
                                     </span>{" "}
-                                    @{" "}
-                                    {formatLessonDate(
-                                        lessonRequest.lesson.start
-                                    )}{" "}
-                                    {formatStartTime(
-                                        lessonRequest.lesson.start
-                                    )}{" "}
-                                    - {formatEndTime(lessonRequest.lesson.end)}
+                                    @ {formatLessonDate(lessonRequest.lesson.start)}{" "}
+                                    {formatStartTime(lessonRequest.lesson.start)} -{" "}
+                                    {formatEndTime(lessonRequest.lesson.end)}
                                     <br />
-                                    <span>
-                                        €{lessonRequest.lesson.teacherPayment}
-                                    </span>
+                                    <span>€{lessonRequest.lesson.teacherPayment}</span>
                                     <br />
-                                    <span>
-                                        Requested by:{" "}
-                                        {lessonRequest.student.fullName}
-                                    </span>
+                                    <span>Requested by: {lessonRequest.student.fullName}</span>
                                 </CardHeader>
                                 <CardFooter className="flex gap-4">
-                                    <Button
-                                        onClick={() =>
-                                            acceptLessonRequest(
-                                                lessonRequest.id
-                                            )
-                                        }
-                                    >
+                                    <Button onClick={() => acceptLessonRequest(lessonRequest.id)}>
                                         Accept
                                     </Button>
-                                    <Button
-                                        onClick={() =>
-                                            rejectLessonRequest(
-                                                lessonRequest.id
-                                            )
-                                        }
-                                    >
+                                    <Button onClick={() => rejectLessonRequest(lessonRequest.id)}>
                                         Reject
                                     </Button>
                                 </CardFooter>

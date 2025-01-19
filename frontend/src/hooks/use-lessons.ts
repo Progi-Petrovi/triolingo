@@ -1,11 +1,14 @@
 import {
-	LessonDTO,
 	LessonRequest,
-	LessonRequestDTO,
 	LessonRequestStatus,
 	Lesson,
+	LessonBulkAggregate,
+	LessonRequestBulkAggregate,
 } from "@/types/lesson";
-import { lessonDTOsToLessons, lessonRequestDTOsToLessonRequests } from "@/utils/main";
+import {
+	lessonBulkAggregateToLessons,
+	lessonRequestBulkAggregateToLessonRequests,
+} from "@/utils/main";
 import { useFetch } from "./use-fetch";
 import { useState } from "react";
 
@@ -20,8 +23,8 @@ export function useLoadTeacherLessons(id?: string) {
 					console.error("Lessons not found");
 					return;
 				}
-				const lessons = res.body as LessonDTO[];
-				setLessons(await lessonDTOsToLessons(lessons));
+				const lessonAggregate = res.body as LessonBulkAggregate;
+				setLessons(await lessonBulkAggregateToLessons(lessonAggregate));
 			})
 			.catch((error) => console.error("Error fetching lessons:", error));
 	};
@@ -41,11 +44,11 @@ export function useLoadTeacherRequests() {
 					return;
 				}
 
-				const lessonRequestDtos = res.body as LessonRequestDTO[];
+				const requestAggregate = res.body as LessonRequestBulkAggregate;
 				setLessonRequests(
 					(
-						await lessonRequestDTOsToLessonRequests(
-							lessonRequestDtos
+						await lessonRequestBulkAggregateToLessonRequests(
+							requestAggregate
 						)
 					).filter(
 						(lessonRequest) =>
@@ -66,22 +69,21 @@ export function useLoadStudentRequests() {
 
 	const loadStudentRequests = async () => {
 		try {
-        const res = await fetch(`lesson/requests/student`)
-			
-				if (res.status === 404) {
-					console.error("Lessons not found");
-					return;
-				}
-				const lessonRequests = res.body as LessonRequestDTO[];
-				console.log("lessonRequests", lessonRequests);
-				setLessonRequests(
-					await lessonRequestDTOsToLessonRequests(lessonRequests)
-				);
-        }
-			catch (error) { 
-                console.error("Error fetching lessons:", error);
-        }
-    };
+			const res = await fetch(`lesson/requests/student`);
+
+			if (res.status === 404) {
+				console.error("Lessons not found");
+				return;
+			}
+			const requestAggregate = res.body as LessonRequestBulkAggregate;
+			console.log("lessonRequests", requestAggregate);
+			setLessonRequests(
+				await lessonRequestBulkAggregateToLessonRequests(requestAggregate)
+			);
+		} catch (error) {
+			console.error("Error fetching lessons:", error);
+		}
+	};
 
 	return [lessonRequests, loadStudentRequests] as const;
 }
