@@ -208,6 +208,23 @@ function enumObjectToString(enumObject: Record<string, string>, key: string) {
     return enumObject[key].split("_").map(toEnglishCase).join(" ");
 }
 
+export function enumToString(enumObject: Record<string, string>) : (key: string) => string {
+    return (key: string) => {return enumObjectToString(enumObject, key)};
+}
+
+export function optionsMapToSelectValuesMap(enumType: any, optionsMap: any) {
+    const selectValueMap: any = {};
+    const enumOptionsToString = enumToString(enumType);
+
+    for (const key in enumType) {
+        if (optionsMap.hasOwnProperty(enumType[key])) {
+            selectValueMap[enumOptionsToString(enumType[key])] = optionsMap[enumType[key]];
+        }
+    }
+
+    return selectValueMap;
+}
+
 export function enumToStringList(enumObject: Record<string, string>) {
     return Object.keys(enumObject).map((key) =>
         enumObjectToString(enumObject, key)

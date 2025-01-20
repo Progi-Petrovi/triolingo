@@ -15,7 +15,7 @@ const filterSchema = z
             .optional(),
         minHourlyRate: z.number().min(0).optional(),
         maxHourlyRate: z.number().min(0).optional(),
-        order: z.enum(orderOptionStrings as [string, ...string[]]),
+        order: z.enum(orderOptionStrings as [string, ...string[]]).optional(),
     })
     .superRefine(({ minYearsOfExperience, maxYearsOfExperience }, ctx) => {
         if (minYearsOfExperience && maxYearsOfExperience) {
@@ -73,9 +73,9 @@ export default function TeacherFilteringForm({
         {
             type: FilterField.SELECT,
             name: "order",
-            label: "Order",
+            label: "Sort by",
             options: orderOptionStrings,
-            placeholder: "Select order",
+            placeholder: "Select sort",
         },
     ];
 
@@ -89,7 +89,7 @@ export default function TeacherFilteringForm({
                 : teachingStyleStrings.map(toEnum),
             minHourlyRate: data.minHourlyRate || 0,
             maxHourlyRate: data.maxHourlyRate || 10000000,
-            order: toEnum(data.order),
+            order: data.order ? toEnum(data.order) : "ALPHABETICAL_DESC",
         };
     };
 

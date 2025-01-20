@@ -15,7 +15,7 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import MultipleSelector, { Option } from "./ui/multi-select";
-import { useState } from "react";
+import { selectValueMapper } from "@/types/filter";
 
 export function FilterField({ children }: { children: React.ReactNode }) {
     return (
@@ -61,10 +61,16 @@ export function RangeInput({
                                     value={minValueHandler || ""}
                                     onChange={(e) => {
                                         field.onChange(
-                                            Number(e.target.value) || 0
+                                            Math.max(
+                                                0,
+                                                Number(e.target.value)
+                                            ) || 0
                                         );
                                         setMinValueHandler(
-                                            Number(e.target.value) || 0
+                                            Math.max(
+                                                0,
+                                                Number(e.target.value)
+                                            ) || 0
                                         );
                                     }}
                                 />
@@ -89,10 +95,16 @@ export function RangeInput({
                                     value={maxValueHandler || ""}
                                     onChange={(e) => {
                                         field.onChange(
-                                            Number(e.target.value) || 0
+                                            Math.max(
+                                                0,
+                                                Number(e.target.value)
+                                            ) || 0
                                         );
                                         setMaxValueHandler(
-                                            Number(e.target.value) || 0
+                                            Math.max(
+                                                0,
+                                                Number(e.target.value)
+                                            ) || 0
                                         );
                                     }}
                                 />
@@ -135,7 +147,9 @@ export function SelectInput({
                     <FormItem>
                         <FormControl>
                             <Select
-                                defaultValue={defaultValue || ""}
+                                defaultValue={
+                                    selectValueMapper(defaultValue) || ""
+                                }
                                 onValueChange={(value) => {
                                     field.onChange(value);
                                     setValueHandler(value);
@@ -148,7 +162,7 @@ export function SelectInput({
                                 <SelectContent>
                                     {options.map((option) => (
                                         <SelectItem key={option} value={option}>
-                                            {option}
+                                            {selectValueMapper(option)}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -207,26 +221,4 @@ export function MultiSelectInput({
             />
         </>
     );
-}
-
-export function useRangeInput(props: { name: string; label: string }) {
-    const [minValueHandler, setMinValueHandler] = useState(0);
-    const [maxValueHandler, setMaxValueHandler] = useState(0);
-
-    return (form: any) => {
-        return [
-            () => (
-                <RangeInput
-                    form={form}
-                    name={props.name}
-                    label={props.label}
-                    minValueHandler={minValueHandler}
-                    setMinValueHandler={setMinValueHandler}
-                    maxValueHandler={maxValueHandler}
-                    setMaxValueHandler={setMaxValueHandler}
-                />
-            ),
-            [() => setMinValueHandler(0), () => setMaxValueHandler(0)],
-        ];
-    };
 }
