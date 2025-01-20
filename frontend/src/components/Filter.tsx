@@ -60,9 +60,6 @@ export default function Filter({
 
     const form = useForm<z.infer<typeof filterSchema>>({
         resolver: zodResolver(filterSchema),
-        defaultValues: {
-            order: "ALPHABETICAL_DESC",
-        },
     });
 
     const elementCreators: (() => JSX.Element)[] = [];
