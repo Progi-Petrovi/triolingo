@@ -60,9 +60,6 @@ export default function Filter({
 
     const form = useForm<z.infer<typeof filterSchema>>({
         resolver: zodResolver(filterSchema),
-        defaultValues: {
-            order: "ALPHABETICAL_DESC",
-        },
     });
 
     const elementCreators: (() => JSX.Element)[] = [];
@@ -105,6 +102,14 @@ export default function Filter({
 
     return (
         <Form {...form}>
+            {/* <Button
+                onClick={() => {
+                    console.log("Print form data: ", form.getValues());
+                }}
+            >
+                Print Form Data
+            </Button> */}
+
             <form onSubmit={form.handleSubmit(onSubmit)} className="mb-6">
                 <div className="flex flex-row flex-wrap gap-4">
                     {elementCreators.map((elementCreator, i) => (
@@ -112,9 +117,7 @@ export default function Filter({
                     ))}
 
                     <div className="flex justify-end items-end">
-                        <Button type="submit" className="">
-                            Apply Filters
-                        </Button>
+                        <Button type="submit">Apply Filters</Button>
                     </div>
                 </div>
             </form>
