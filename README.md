@@ -5,6 +5,8 @@
 
 Ovaj projekt rezultat je timskog rada razvijenog u sklopu projektnog zadatka kolegija [Programsko inženjerstvo](https://www.fer.unizg.hr/predmet/proinz) na Fakultetu elektrotehnike i računarstva Sveučilišta u Zagrebu.
 
+Link deployane aplikacije: https://triolingo.space/
+
 ## Postavljanje - razvojno okruženje
 
 ### Frontend
