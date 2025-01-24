@@ -125,6 +125,7 @@ export default function StudentProfile({
                     form={form}
                     editMode={editMode}
                     toggleEditMode={() => setEditMode(!editMode)}
+                    hasPreviousLessons={false}
                 >
                     <StudentRight />
                 </ProfileLayout>

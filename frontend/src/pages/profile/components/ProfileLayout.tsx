@@ -35,7 +35,7 @@ type ProfileLayoutType = {
     editMode: boolean;
     toggleEditMode: () => void;
     form: any;
-    hasPreviousLessons: boolean;
+    hasPreviousLessons?: boolean;
 };
 
 export default function ProfileLayout({
