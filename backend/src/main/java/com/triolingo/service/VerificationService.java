@@ -5,10 +5,17 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -65,6 +72,14 @@ public class VerificationService {
             throw new IllegalArgumentException("Failed to find verification token");
 
         verificationToken.getUser().setVerified(true);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        List<GrantedAuthority> authorities = Stream.concat(
+                auth.getAuthorities().stream(), Stream.of(new SimpleGrantedAuthority("ROLE_VERIFIED"))).toList();
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), authorities));
+
         userRepository.save(verificationToken.getUser());
         verificationRepository.delete(verificationToken);
     }

@@ -13,6 +13,8 @@ import jakarta.mail.MessagingException;
 
 import java.io.IOException;
 
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -24,9 +26,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/verification")
 public class VerificationController {
     private final VerificationService verificationService;
+    private final Environment env;
 
-    public VerificationController(VerificationService verificationService) {
+    public VerificationController(VerificationService verificationService, Environment env) {
         this.verificationService = verificationService;
+        this.env = env;
     }
 
     @GetMapping("/request")
@@ -56,7 +60,11 @@ public class VerificationController {
     })
     public ResponseEntity<?> verify(@PathVariable String token) {
         verificationService.verify(token);
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location",
+                env.getProperty("path.frontend.base") + env.getProperty("path.frontend.verificationSuccess"));
+        return new ResponseEntity<String>(headers, HttpStatus.FOUND);
     }
 
 }
